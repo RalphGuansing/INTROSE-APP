@@ -1,4 +1,5 @@
 
+### Inventory View
 class Inventory:
 
 	### suppliers - list of suppliers
