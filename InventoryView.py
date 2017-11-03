@@ -2,24 +2,16 @@
 ### Inventory View
 class Inventory:
 
-	### suppliers - list of suppliers
 	### products - list of products
-	def __init__(self, suppliers, products):
+	def __init__(self, products):
 		Inventory.products = products
-
-	def __init__(self):
-		self.products = []
 
 	def add_product(self, product):
 		self.products.append(product)
 
 	def add_product_quantity(self, product, quantity):
-		x = 0
-		for tempproduct in self.products:
-			if tempproduct == product:
-				self.products[x].add_quantity(quantity)
-				break
-			x += 1
+		a = [prod.add_quantity(quantity) for prod in self.products if prod == product ]
+
 
 	def get_products(self):
 		return self.products
@@ -62,4 +54,3 @@ class Product:
 
 	def __repr__(self):
 		return self.name + '\n' + 'Packaging Type: ' + self.packaging + '\n' + 'Unit Price: ' + self.perunitprice + '\n' + 'Retail Price: ' + self.retailprice
-
