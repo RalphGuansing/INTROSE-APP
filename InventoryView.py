@@ -5,15 +5,10 @@ class Inventory:
 	### suppliers - list of suppliers
 	### products - list of products
 	def __init__(self, suppliers, products):
-		Inventory.suppliers = suppliers
 		Inventory.products = products
 
 	def __init__(self):
-		self.suppliers = []
 		self.products = []
-
-	def add_supplier(self, supplier):
-		self.suppliers.append(supplier)
 
 	def add_product(self, product):
 		self.products.append(product)
@@ -26,23 +21,11 @@ class Inventory:
 				break
 			x += 1
 
-	def get_suppliers(self):
-		return self.suppliers
-
 	def get_products(self):
 		return self.products
 
-	def get_supplier_count(self):
-		return len(self.suppliers)
-
 	def get_product_count(self):
 		return len(self.products)
-
-	def get_products_by_supplier(self, supplier):
-		return list(filter(lambda x: x.supplier == supplier, self.products))
-
-	def get_supplier_by_product(self, product):
-		return list(filter(lambda x: x == product.supplier, self.suppliers))
 
 
 class Supplier:
