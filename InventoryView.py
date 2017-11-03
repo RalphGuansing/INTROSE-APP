@@ -19,22 +19,6 @@ class Inventory:
 	def get_product_count(self):
 		return len(self.products)
 
-
-class Supplier:
-	
-	def __init__(self, name, address, email, contactnumber):
-		self.name = name
-		self.address = address
-		self.email = email
-		self.contactnumber = contactnumber
-
-	def __str__(self):
-		return self.name + '\n' + 'Address: ' + self.address + '\n' + 'Email: ' + self.email + '\n' + 'Contact Number: ' + self.contactnumber
-
-	def __repr__(self):
-		return self.name + '\n' + 'Address: ' + self.address + '\n' + 'Email: ' + self.email + '\n' + 'Contact Number: ' + self.contactnumber
-
-
 class Product:
 
 	def __init__(self, name, supplier, packaging, perunitprice, retailprice, quantity, lastupdated):
