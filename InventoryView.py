@@ -1,3 +1,5 @@
+import pandas as pd
+import pymysql as sql
 
 ### Inventory View
 class Inventory:
@@ -18,6 +20,17 @@ class Inventory:
 
 	def get_product_count(self):
 		return len(self.products)
+
+class InventoryDatabase:
+	
+	def __init__(self):
+		self.connect = sql.connect('localhost','root','root','introse',autocommit=True)
+		self.df_inv = pd.read_sql('SELECT * FROM introse.inventory;',self.connect)
+		self.df_inv = self.df_inv.drop(['idinventory'],axis=1)
+
+	def get_product_list(self):
+		#product_list = [Product(product) for product in self.df_inv]
+		print(self.df_inv['productName'])
 
 class Product:
 
