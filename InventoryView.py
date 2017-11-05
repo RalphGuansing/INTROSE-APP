@@ -22,15 +22,18 @@ class Inventory:
 		return len(self.products)
 
 class InventoryDatabase:
-	
+
 	def __init__(self):
 		self.connect = sql.connect('localhost','root','root','introse',autocommit=True)
 		self.df_inv = pd.read_sql('SELECT * FROM introse.inventory;',self.connect)
 		self.df_inv = self.df_inv.drop(['idinventory'],axis=1)
+		self.df_inv['productName'] = self.df_inv['productName'].astype('str')
+		#print(self.df_inv['perunitprice'])
 
 	def get_product_list(self):
-		#product_list = [Product(product) for product in self.df_inv]
-		print(self.df_inv['productName'])
+		product_list = [Product(row[1][0],row[1][1],row[1][2],row[1][3],row[1][4],row[1][5],row[1][6]) for row in self.df_inv.iterrows()]
+		print(product_list)
+		return product_list
 
 class Product:
 
@@ -47,7 +50,11 @@ class Product:
 		self.quantity += quantity
 
 	def __str__(self):
-		return self.name + '\n' + 'Packaging Type: ' + self.packaging + '\n' + 'Unit Price: ' + self.perunitprice + '\n' + 'Retail Price: ' + self.retailprice
+		return self.name + '\n' + 'Packaging Type: ' + self.packaging + '\n' + 'Unit Price: ' + str(self.perunitprice) + '\n' + 'Retail Price: ' + str(self.retailprice)
 
 	def __repr__(self):
-		return self.name + '\n' + 'Packaging Type: ' + self.packaging + '\n' + 'Unit Price: ' + self.perunitprice + '\n' + 'Retail Price: ' + self.retailprice
+		return self.name + '\n' + 'Packaging Type: ' + self.packaging + '\n' + 'Unit Price: ' + str(self.perunitprice) + '\n' + 'Retail Price: ' + str(self.retailprice)
+
+if __name__ == '__main__':
+	inv = InventoryDatabase()
+	inv.get_product_list()
