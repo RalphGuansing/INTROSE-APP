@@ -3,10 +3,11 @@ import datetime
 class Bookkeep:
 	totalinvoice = 0 ## will update every transaction
 	totalvat = 0
-	totaltaxable = 0 ##
-	currdate = datetime.datetime.now() - datetime.timedelta(days=3) #will update everyday
+	totaltaxable = 0 
+	totalnvat = 0 ##
+	currdate = datetime.datetime.now() - datetime.timedelta(days=3) #will update everyday, date will be placed at driver
 		
-	def __init__(self, amount=0, nonvat=0, innumber=0, cust="Walk-in", ddate=datetime.datetime.now()):
+	def __init__(self, amount=0, nonvat=0, innumber=0, cust="Walk-in", ddate=datetime.datetime.now()): #get values from inputs or db
 		self.amount = amount
 		self.nonvat = nonvat
 		self.innumber = innumber
@@ -17,34 +18,45 @@ class Bookkeep:
 		# Bookkeep.report(self)
 		# Bookkeep.checkddate(self)
 
-		if nonvat != 0:
-			print("if")
-			self.taxable = round((amount - nonvat) /1.12, 2)
-		else:
-			print("else")
-			self.taxable = round(amount /1.12, 2)
-			
+		self.taxable = round((amount - nonvat) /1.12, 2)
 		self.nvat = round(self.taxable * 0.12, 2)
 		
 		Bookkeep.totalinvoice += amount
 		Bookkeep.totalvat += self.nvat
 		Bookkeep.totaltaxable += self.taxable
+		Bookkeep.totaltaxable += self.nonvat
 
+
+	def cancelled(self):
+		Bookkeep.totalinvoice -= amount
+		Bookkeep.totalvat -= self.nvat
+		Bookkeep.totaltaxable -= self.taxable
+		Bookkeep.totaltaxable -= self.nonvat
+		self.amount = None
+		self.nonvat = None
+		self.cust = None
+		self.ddate = None
+		self.taxable = None
+		self.nvat = None
 
 	def resettot(self):
 		Bookkeep.totalinvoice = 0
 		Bookkeep.totalvat = 0
 		Bookkeep.totaltaxable = 0
+		Bookkeep.totaltaxable = 0
 
 	def checkddate(self):
 		if Bookkeep.currdate.day == self.ddate.day - 1:
-			print("burat")
-		# 	do something/ notify sum shit
+			print("pop-up notice gui")
+		# 	output gui here #
+
+
+		# 				    #
 		pass
 
 	def report(self):
 		if Bookkeep.currdate.day == 1:
-			print("nagana")
+			print("generate report and reset value")
 		# 	print total and reset total
 		# 	if possible create excel of total per month w/graph
 		pass 
@@ -101,7 +113,7 @@ if __name__ == '__main__':
 	# master = Bookkeep(0,0)
 
 	# print("master: ", master.totalinvoice)
-	# print("Reset total shit\n")
+	# print("Reset total \n")
 
 	# master.resettot()
 	# print("wew: ", wew.totalinvoice)
