@@ -34,19 +34,14 @@ class Bookkeep:
 		self.cust = cust
 		self.ddate = ddate
 		self.seller = seller
+		self.taxable = round((amount - nonvat) /1.12, 2)
+		self.optax = round(self.taxable * 0.12, 2)
 		if quota > amount:
 			commission = round((quota - amount) / 0.02, 2)
 			self.commission = commission
 		else:
 			self.commission = 0
-
-		self.taxable = round((amount - nonvat) /1.12, 2)
-		self.optax = round(self.taxable * 0.12, 2)
-		Bookkeep.__totalinvoice += self.amount
-		Bookkeep.__totalnvat += self.nonvat
-		Bookkeep.__totaltaxable += self.taxable
-		Bookkeep.__totaloptax += self.optax
-		Bookkeep.__totalcommission += self.commission
+		Bookkeep.settotal(self.amount, self.nonvat, self.taxable, self.optax, self.commission)
 
 	def cancelled(self):
 		"""Method for cancellation of purchase, replaces all attributes to None excepter innumber
@@ -91,6 +86,21 @@ class Bookkeep:
 		# 	print total and reset total
 		# 	if possible create excel of total per month w/graph
 		pass
+		
+	def settotal(amount, nonvat, taxable, optax, commission):
+		"""Method for setting the total invoice, nonvat, taxble, output tax and commission.
+		Args:
+			amount (float): The first parameter, value of purchase without tax reduction.
+			nonvat (float): The second parameter, value that is not included in tax reduction.
+			taxable (float): The third parameter, value of purchase reduced by tax.
+			optax (float): The fourth parameter, value of output tax.
+			commission (float): The fifth parameter, value of commission of the employee.
+		"""
+		Bookkeep.__totalinvoice += amount
+		Bookkeep.__totalnvat += nonvat
+		Bookkeep.__totaltaxable += taxable
+		Bookkeep.__totaloptax += optax
+		Bookkeep.__totalcommission += commission
 
 	def gettotal(self):
 		"""Method for returning the total invoice, nonvat, taxble, output tax and commission.
