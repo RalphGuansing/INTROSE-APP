@@ -12,6 +12,13 @@ class APV_DB:
         
         self.db_connect = pymysql.connect("localhost","root","October2119981!fat","introse",autocommit=True)
         self.cursor = self.db_connect.cursor(pymysql.cursors.DictCursor)
+        self.get_column_names()
+        self.initialize_columns()
+        
+        temp = self.get_apv()
+        
+        print(self.get_apv_table(temp))
+        self.close_database()
         
     def get_column_names(self):
         
@@ -98,7 +105,11 @@ class APV_DB:
         """Ends the connection with the database"""
         
         self.db_connect.close()
-    
+        
+        
+        
+if __name__ == "__main__":
+    app = APV_DB()
 # AUTOMATICALLY SORTED ALPHABETICALLY
 #print(select_statement)
 #cursor.execute(select_statement)#Execute
