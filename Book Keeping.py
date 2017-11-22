@@ -8,14 +8,12 @@ class Bookkeep:
 		__totaltaxable (float): Contains total value of purchase reduced by tax.
 		__totaloptax (float): Contains total output tax.
 		__totalcommission (float): Contains total commission of employees.
-		__currdate (:obj: 'datetime'): Contains the current date.
 	"""
 	__totalinvoice = 0
 	__totalnvat = 0
 	__totaltaxable = 0 
 	__totaloptax = 0
 	__totalcommission = 0
-	__currdate = datetime.datetime.now()
 		
 	def __init__(self, amount=0, nonvat=0, innumber=0, cust="Walk-in", ddate=datetime.datetime.now(), seller=None, quota=0 ):
 		"""Method for initialization of values.
@@ -41,17 +39,13 @@ class Bookkeep:
 			self.commission = commission
 		else:
 			self.commission = 0
-		Bookkeep.settotal(self, self.amount, self.nonvat, self.taxable, self.optax, self.commission, False)
+		Bookkeep.settotal(self.amount, self.nonvat, self.taxable, self.optax, self.commission, False)
 
 	def cancelled(self):
 		"""Method for cancellation of purchase, replaces all attributes to None except innumber
 			and subtracts value from total invoice, nonvat, taxble, output tax and commission.
 		"""
-		Bookkeep.__totalinvoice -= self.amount
-		Bookkeep.__totalnvat -= self.nonvat
-		Bookkeep.__totaltaxable -= self.taxable
-		Bookkeep.__totaloptax -= self.optax
-		Bookkeep.__totalcommission -= self.commission
+		Bookkeep.settotal(self.amount, self.nonvat, self.taxable, self.optax, self.commission, True)
 		self.amount = None
 		self.nonvat = None
 		self.cust = None
@@ -60,26 +54,34 @@ class Bookkeep:
 		self.optax = None
 		self.seller = None
 		self.commission = None
-
-	def checkddate(self):
-		"""Method for checking the due date and notification."""
-		if Bookkeep.__currdate.day == self.ddate.day - 1:
+		
+	def checkddate(self, currdate):
+		"""Method for checking the due date and notification.
+		Args:
+			currdate (:obj:, 'datetime'): The first parameter, the current date.
+		"""
+		if currdate.day == self.ddate.day - 1:
 			print("pop-up notice gui")
 		# 	output gui here #
 
 
 		# 				    #
 		pass
-
-	def report(self):
-		"""Method for creation of monthly report."""
-		if Bookkeep.__currdate.day == 1:
+		
+	@classmethod
+	def report(cls, currdate):
+		"""Method for creation of monthly report.
+		Args:
+			currdate (:obj:, 'datetime'): The first parameter, the current date.
+		"""
+		if currdate.day == 1:
 			print("generate report and reset value")
 		# 	print total and reset total
 		# 	if possible create excel of total per month w/graph
 		pass
-		
-	def settotal(self, amount, nonvat, taxable, optax, commission, value):
+	
+	@classmethod
+	def settotal(cls, amount, nonvat, taxable, optax, commission, value):
 		"""Method for setting the total invoice, nonvat, taxble, output tax and commission.
 		Args:
 			amount (float): The first parameter, value of purchase without tax reduction.
@@ -87,24 +89,24 @@ class Bookkeep:
 			taxable (float): The third parameter, value of purchase reduced by tax.
 			optax (float): The fourth parameter, value of output tax.
 			commission (float): The fifth parameter, value of commission of the employee.
-			value (bool): The sixth parameter, true if setting the values, else increenting the values
+			value (bool): The sixth parameter, true if decrementing the values, else incrementing the values
 		"""
 		if value:
-			Bookkeep.__totalinvoice = amount
-			Bookkeep.__totalnvat = nonvat
-			Bookkeep.__totaltaxable = taxable
-			Bookkeep.__totaloptax = optax
-			Bookkeep.__totalcommission = commission
+			Bookkeep.__totalinvoice -= amount
+			Bookkeep.__totalnvat -= nonvat
+			Bookkeep.__totaltaxable -= taxable
+			Bookkeep.__totaloptax -= optax
+			Bookkeep.__totalcommission -= commission
 		else:
 			Bookkeep.__totalinvoice += amount
 			Bookkeep.__totalnvat += nonvat
 			Bookkeep.__totaltaxable += taxable
 			Bookkeep.__totaloptax += optax
 			Bookkeep.__totalcommission += commission
-
-	def gettotal(self):
+				
+	@classmethod
+	def gettotal(cls):
 		"""Method for returning the total invoice, nonvat, taxble, output tax and commission.
-
 		Returns:
 			[__totalinvoice, __totalnvat, __totaltaxable, __totaloptax, __totalcommission]
 		"""
