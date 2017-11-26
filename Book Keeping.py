@@ -15,7 +15,7 @@ class Bookkeep:
 	__totaloptax = 0
 	__totalcommission = 0
 		
-	def __init__(self, amount=0, nonvat=0, innumber=0, cust="Walk-in", ddate=datetime.datetime.now(), seller=None, quota=0 ):
+	def __init__(self, amount=0, nonvat=0, innumber=0, cust="Walk-in", ddate=datetime.datetime.now(), seller="LCG", quota=0):
 		"""Method for initialization of values.
 		Args:
 			amount (float, optional): The first parameter, value of purchase without tax reduction, defaults to 0.
@@ -23,7 +23,7 @@ class Bookkeep:
 			innumber (float, optional): The third parameter, invouice number of Customer, defaults to 0.
 			cust (:obj: 'str', optional): The fourth parameter, name of Customer, defaults to "Walk-in".
 			ddate (:obj:, 'datetime', optional): The fifth parameter, due date of purchase, defaults to current date.
-			seller (:obj:, 'str', optional): The sixth parameter, name of employee that handled purchase, defaults to None.
+			seller (:obj:, 'str', optional): The sixth parameter, name of employee that handled purchase, defaults to "LCG".
 			quota (float, optional): The seventh parameter, quota of the employee, defaults to 0.
 		"""
 		self.amount = amount
@@ -35,8 +35,7 @@ class Bookkeep:
 		self.taxable = round((amount - nonvat) /1.12, 2)
 		self.optax = round(self.taxable * 0.12, 2)
 		if quota > amount:
-			commission = round((quota - amount) / 0.02, 2)
-			self.commission = commission
+			self.commission = round((quota - amount) / 0.02, 2)
 		else:
 			self.commission = 0
 		Bookkeep.settotal(self.amount, self.nonvat, self.taxable, self.optax, self.commission, False)
@@ -67,6 +66,36 @@ class Bookkeep:
 
 		# 				    #
 		pass
+
+	def editentry(self, amount=None, nonvat=None, cust=None, ddate=None, seller="LCG", quota=None):
+		"""Method for editing the values.
+		Args:
+			amount (float, optional): The first parameter, value of purchase without tax reduction, defaults to None.
+			nonvat (float, optional): The second parameter, value that is not included in tax reduction, defaults to None.
+			cust (:obj: 'str', optional): The third parameter, name of Customer, defaults to None.
+			ddate (:obj:, 'datetime', optional): The fourth parameter, due date of purchase, defaults to None.
+			seller (:obj:, 'str', optional): The fifth parameter, name of employee that handled purchase, defaults to "LCG".
+			quota (float, optional): The sixth parameter, quota of the employee, defaults to None.
+		"""
+		if cust != None:
+			self.cust = cust
+		if seller != None:
+			self.seller = seller
+		if ddate != None:
+			self.ddate = ddate
+		if amount != None:
+			Bookkeep.settotal(self.amount, self.nonvat, self.taxable, self.optax, self.commission, True)
+			self.amount = amount
+			if nonvat != None:
+				self.nonvat = nonvat
+				self.taxable = round((amount - nonvat) /1.12, 2)
+				self.optax = round(self.taxable * 0.12, 2)
+		if quota != None:
+			if quota > self.amount:
+				self.commission = round((quota - amount) / 0.02, 2)
+			else:
+				self.commission = 0
+		Bookkeep.settotal(self.amount, self.nonvat, self.taxable, self.optax, self.commission, False)
 		
 	@classmethod
 	def report(cls, currdate):
