@@ -20,16 +20,17 @@ class MainWindow(QtWidgets.QMainWindow):
         
         self.add_apv_tab()
         
-#        #self.db.close() #close db
-#        
-#    #REMOVE THIS LATER
-#    def get_column_choices(self):
-#        group_statement = "select group_name from column_group"
-#        self.cursor.execute(group_statement)
-#        tempvar = self.cursor.fetchall()
-#        temp = [row["group_name"] for row in tempvar]
-#        print(temp)
-#        return temp
+    def showMessage(self, title, message, info=None):
+        infoBox = QtWidgets.QMessageBox()
+        infoBox.setIcon(QtWidgets.QMessageBox.Warning)
+        infoBox.setText(message)
+        if info is not None:
+            infoBox.setInformativeText(info)
+        infoBox.setWindowTitle(title)
+        #infoBox.setDetailedText("Detailed Text")
+        infoBox.setStandardButtons(QtWidgets.QMessageBox.Ok )
+        infoBox.setEscapeButton(QtWidgets.QMessageBox.Close) 
+        infoBox.exec_()
     
     def close_subFrame(self):
         
@@ -63,7 +64,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
         #REMOVE THESE LATER
         #self.widgetFrame.layout.get_Current_Groups(self.get_column_choices())
-
     
     def add_apv_column_window(self):
         col_data = self.widgetFrame.layout.column_data
@@ -75,8 +75,6 @@ class MainWindow(QtWidgets.QMainWindow):
     def transfer_add_apv(self):
         self.widgetFrame.layout.add_column(self.subFrame.subwidgetFrame.layout.column_names)
         
-    
-
         
     def checkAPV_id(self, id_apv):
         
@@ -93,17 +91,19 @@ class MainWindow(QtWidgets.QMainWindow):
         """ Checks if the new APV # is already in the database """
         
         items = self.widgetFrame.layout.get_items()
-        
-        if self.checkAPV_id(items["id_apv"]):
-            self.apv_execute_statement(items["date"],items["name"],items["id_apv"],items["amount"])
-            self.apv_credit_execute_statement(items["column_names"],items["column_val"],items["id_apv"])
+        if items["id_apv_BOOL"] and items["amount_BOOL"]:
+            if self.checkAPV_id(items["id_apv"]):
+                self.apv_execute_statement(items["date"],items["name"],items["id_apv"],items["amount"])
+                self.apv_credit_execute_statement(items["column_names"],items["column_val"],items["id_apv"])
+                #REMOVE LATER
+                
+                #self.close()
+            else:
+                #SHOW ERROR WINDOW
+                print("Duplicate APV ID!")
         else:
-            #SHOW ERROR WINDOW
-            print("Duplicate APV ID!")
+            self.showMessage("Error Input", "PLEASE INPUT A NUMBER")
         #change to turn back to other window
-        self.close()
-            
-    
     
     def apv_execute_statement(self, date, name, id_apv, amount):
         
@@ -166,38 +166,89 @@ class SubWindow(QtWidgets.QMainWindow):
         self.subwidgetFrame.layout.bAdd.clicked.connect(self.add_column_to_group)
         self.subwidgetFrame.layout.bNew.clicked.connect(self.new_group_tab)
         self.subwidgetFrame.layout.bCancel.clicked.connect(self.close)
-        self.subwidgetFrame.layout.bAdd.clicked.connect(self.add_apv_column_tab)
+        #self.subwidgetFrame.layout.bAdd.clicked.connect(self.add_apv_column_tab)
         self.setCentralWidget(self.subwidgetFrame)
         
     def new_group_tab(self):
         self.setWindowTitle("Add New Group")
         self.subwidgetFrame = WindowFrame(NewGroupView)
         self.subwidgetFrame.layout.bAdd.clicked.connect(self.add_group_name)
-        self.subwidgetFrame.layout.bAdd.clicked.connect(self.new_apv_column_tab)
+        #self.subwidgetFrame.layout.bAdd.clicked.connect(self.new_apv_column_tab)
         self.subwidgetFrame.layout.bBack.clicked.connect(self.new_apv_column_tab)
         self.setCentralWidget(self.subwidgetFrame)
     
     def add_group_name(self):
+        print("here")
         groupName = self.subwidgetFrame.layout.tGroup.text()
-        insert_statement = "INSERT INTO column_group SET group_name = '"+ groupName +"'"
-        self.cursor.execute(insert_statement)
+        isNotDupe = self.checkDupe(groupName, 1)
+        if groupName and isNotDupe:
+            insert_statement = "INSERT INTO column_group SET group_name = '"+ groupName +"'"
+            self.cursor.execute(insert_statement)
+            
+            #GO BACK TO PREVIOUS TAB
+            self.new_apv_column_tab()
+            
+        else:
+            error = []
+            errorMessage = "Error"
+            
+            if not groupName:
+                error.append("No Group name inputted")
+            if not isNotDupe:
+                error.append("Group name already exists")
+            if len(error) == 1:
+                errorMessage += ":"
+            else: 
+                errorMessage += "s:"
+            for i in range(len(error)):
+                errorMessage += """
+                """ + error[i]
+
+            self.mainwindow.showMessage("Error Input",  errorMessage)
         
     def add_column_to_group(self):        
-        groupName = self.subwidgetFrame.layout.radioButton_Group.checkedButton().text()
+        groupName = self.subwidgetFrame.layout.radioButton_Group.checkedButton()
         columnName = self.subwidgetFrame.layout.tColumn.text()
+        isNotDupe = self.checkDupe(columnName, 0)
         
-        
+        if groupName is not None and columnName and isNotDupe:
+            print("groupName", groupName.isChecked())
         #print("group name:" + groupName + " \ncolumn name:" + columnName)
-        
-        insert_statement = """ INSERT INTO column_name_table
-   SET column_name = '"""+ columnName +"""',
-		id_group = (
-       SELECT id_group
-         FROM column_group
-        WHERE group_name = '"""+ groupName +"""' )"""
-        
-        print(insert_statement)
-        self.cursor.execute(insert_statement)#Execute
+            
+            insert_statement = """ INSERT INTO column_name_table
+       SET column_name = '"""+ columnName +"""',
+            id_group = (
+           SELECT id_group
+             FROM column_group
+            WHERE group_name = '"""+ groupName.text() +"""' )"""
+
+            print(insert_statement)
+            self.cursor.execute(insert_statement)#Execute
+            
+            #GO BACK TO PREVIOUS TAB
+            self.add_apv_column_tab()
+            
+        else:#RAISE ERROR
+            error = []
+            errorMessage = "Error"
+            
+            if not columnName:
+                error.append("No Column name inputted")
+            if not isNotDupe:
+                error.append("Column name already exists")
+            if groupName is None:
+                error.append("No Group Selected")
+            if len(error) == 1:
+                errorMessage += ":"
+            else: 
+                errorMessage += "s:"
+            for i in range(len(error)):
+                errorMessage += """
+                """ + error[i]
+
+            self.mainwindow.showMessage("Error Input",  errorMessage)
+            #print("Please select a Radiobutton")
+            
     
     def get_column_groups(self):
         group_statement = "select group_name from column_group"
@@ -222,7 +273,29 @@ class SubWindow(QtWidgets.QMainWindow):
         temp = self.cursor.fetchall()
         #print(temp)
         self.column_names = temp
-      
+    
+    def checkDupe(self, name, num):
+        """ This Function Checks if the a name of a Column/Group has a duplicate 
+            
+            Returns: False if it has a Duplicate, True if unique
+        """
+        # num = 0 if Column Name
+        # num = 1 if Group Name
+        
+        if num == 0:
+            select_statement = """select id_column
+                                from column_name_table
+                                where column_name = '"""+name+"""'"""    
+            
+        if num == 1:
+            select_statement = """select id_group
+                                from column_group
+                                where group_name = '"""+name+"""'"""
+        if select_statement:
+            self.cursor.execute(select_statement)
+            temp = self.cursor.fetchone()
+            return temp is None
+            
         
 
 class WindowFrame(QtWidgets.QWidget):

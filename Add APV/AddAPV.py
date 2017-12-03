@@ -1,4 +1,5 @@
 import sys
+import datetime
 from PyQt5 import QtWidgets
 from PyQt5 import QtGui
 from PyQt5 import QtCore
@@ -9,42 +10,7 @@ class AddAPVView(QtWidgets.QGridLayout):
     def __init__(self, frame):
         super().__init__()
         self.frame = frame
-        self.init_ui()
-        
-#    def createPreview_group(self):
-#        self.preview_GroupBox = QtWidgets.QGroupBox("Preview")
-#        
-#        self.pDate = QtWidgets.QLabel("Date: "+ self.tDate.text())
-#        self.pDate.setStyleSheet('QLabel { font-size: 12pt; padding: 10px;}')
-#        
-#        self.pName = QtWidgets.QLabel("Particulars: "+ self.tName.text())
-#        self.pName.setStyleSheet('QLabel { font-size: 12pt; padding: 10px;}')
-#        
-#        self.pId = QtWidgets.QLabel("APV#: "+ self.tId.text())
-#        self.pId.setStyleSheet('QLabel { font-size: 12pt; padding: 10px;}')
-#        
-#        self.pAmount = QtWidgets.QLabel("Vouchers Payable: "+ self.tAmount.text())
-#        self.pAmount.setStyleSheet('QLabel { font-size: 12pt; padding: 10px;}')
-#        
-#        self.column_data = []
-#        self.pColumn_Table = QtWidgets.QTableWidget()
-#        #self.pColumn_Table.setRowCount(1)
-#        self.pColumn_Table.setColumnCount(2)
-#        self.pColumn_Table.setHorizontalHeaderLabels(["Column Name", "Value"])
-#        self.pColumn_Table.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
-#        self.pColumn_Table.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
-#        
-#        Ggrid = QtWidgets.QGridLayout()
-#        Ggrid.addWidget(self.pDate, 1, 1)
-#        Ggrid.addWidget(self.pName, 2, 1)
-#        Ggrid.addWidget(self.pId, 3, 1)
-#        Ggrid.addWidget(self.pAmount, 4, 1)
-#        Ggrid.addWidget(self.pColumn_Table, 5,1)
-#        
-#        #Ggrid.setColumnStretch(7,4)
-#        Ggrid.setRowStretch(5,1)
-#        self.preview_GroupBox.setLayout(Ggrid)
-        
+        self.init_ui()   
 
     def createColumn_group(self):
         self.column_name_GroupBox = QtWidgets.QGroupBox("Columns")
@@ -98,10 +64,24 @@ class AddAPVView(QtWidgets.QGridLayout):
         items["id_apv"] = self.tId.text()
         items["amount"] = self.tAmount.text()
         
+        try:
+            val = int(self.tId.text())
+            items["id_apv_BOOL"] = True
+        except ValueError:
+            #print("PLEASE INPUT AN NUMBER")
+            items["id_apv_BOOL"] = False
+        
+        try:
+            val = float(self.tAmount.text())
+            items["amount_BOOL"] = True
+        except ValueError:
+            #print("PLEASE INPUT AN NUMBER")
+            items["amount_BOOL"] = False
+        
         
         print(self.column_data)
         for i in range(len(self.column_data)):
-            print(self.pColumn_Table.item(i,1).text())
+            #print(self.pColumn_Table.item(i,1).text())
             self.column_data_val.append(self.pColumn_Table.item(i,1).text())
         
         
@@ -109,19 +89,8 @@ class AddAPVView(QtWidgets.QGridLayout):
         items["column_names"] = self.column_data
         items["column_val"] = self.column_data_val
         
-        print(items)
+        #print(items)
         return items
-    
-#    def preview_items(self):
-#        self.pDate.clear()
-#        self.pDate.setText("Date: "+ self.tDate.text())
-#        self.pName.clear()
-#        self.pName.setText("Particulars: "+ self.tName.text())
-#        self.pId.clear()
-#        self.pId.setText("APV#: "+ self.tId.text())
-#        self.pAmount.clear()
-#        self.pAmount.setText("Vouchers Payable: "+ self.tAmount.text())
-    
     
     def createDetails_group(self):
         self.APV_details_GroupBox = QtWidgets.QGroupBox("")
@@ -130,13 +99,20 @@ class AddAPVView(QtWidgets.QGridLayout):
         
         labelStyle = 'QLabel { font-size: 12pt; padding: 10px; font-weight: bold;}'
         textboxStyle = 'QLineEdit { font-size: 12pt; padding: 2px;}'
+        textboxStyle2 = 'QDateEdit { font-size: 12pt; padding: 2px;}'
         
-        
+
+
+
         self.lDate = QtWidgets.QLabel("Date:")
         #self.lDate.setAlignment(QtCore.Qt.AlignRight)
         self.lDate.setStyleSheet(labelStyle)
-        self.tDate = QtWidgets.QLineEdit(self.frame)
-        self.tDate.setStyleSheet(textboxStyle)
+        self.tDate = QtWidgets.QDateEdit(self.frame)
+        self.tDate.setCalendarPopup(True)
+        self.tDate.setDisplayFormat("yyyy-MM-dd")
+        self.tDate.setDate(datetime.datetime.now())
+        #self.tDate.setDateEditEnabled(True)
+        self.tDate.setStyleSheet(textboxStyle2)
         #self.tDate.textChanged.connect(self.preview_items)
         self.tDate.setFixedWidth(textboxSize)
 

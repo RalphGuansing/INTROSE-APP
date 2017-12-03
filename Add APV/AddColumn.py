@@ -103,6 +103,10 @@ class AddColumnView(QtWidgets.QGridLayout):
         #Create Widgets
        
         self.tree = Main()
+        self.tree.setStyleSheet(""" QTreeView 
+        { 
+            font-size: 12pt; 
+        }""")
         
         self.addWidget(self.tree ,1,1,1,3)
         self.refresh_Tree()
