@@ -61,6 +61,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.widgetFrame.layout.bSubmit.clicked.connect(self.db_add_apv)
         self.widgetFrame.layout.bColumn_Add.clicked.connect(self.add_apv_column_window)        
+        self.widgetFrame.layout.bColumn_Delete.clicked.connect(self.delete_row)        
 
         #REMOVE THESE LATER
         #self.widgetFrame.layout.get_Current_Groups(self.get_column_choices())
@@ -75,7 +76,17 @@ class MainWindow(QtWidgets.QMainWindow):
     def transfer_add_apv(self):
         self.widgetFrame.layout.add_column(self.subFrame.subwidgetFrame.layout.column_names)
         
+    def delete_row(self):
+        row_num = self.widgetFrame.layout.pColumn_Table.currentRow()
+        self.widgetFrame.layout.pColumn_Table.removeRow(row_num)
         
+        #UPDATE COLUMN_DATA
+        self.widgetFrame.layout.column_data = []
+        row_count = self.widgetFrame.layout.pColumn_Table.rowCount()
+        print(row_count)
+        for i in range(row_count):
+            self.widgetFrame.layout.column_data.append(self.widgetFrame.layout.pColumn_Table.item(i,0).text())
+    
     def checkAPV_id(self, id_apv):
         
         """ returns true if it is able to retrieve something from the database """
@@ -178,7 +189,7 @@ class SubWindow(QtWidgets.QMainWindow):
         self.setCentralWidget(self.subwidgetFrame)
     
     def add_group_name(self):
-        print("here")
+        #print("here")
         groupName = self.subwidgetFrame.layout.tGroup.text()
         isNotDupe = self.checkDupe(groupName, 1)
         if groupName and isNotDupe:
@@ -212,7 +223,7 @@ class SubWindow(QtWidgets.QMainWindow):
         isNotDupe = self.checkDupe(columnName, 0)
         
         if groupName is not None and columnName and isNotDupe:
-            print("groupName", groupName.isChecked())
+            #print("groupName", groupName.isChecked())
         #print("group name:" + groupName + " \ncolumn name:" + columnName)
             
             insert_statement = """ INSERT INTO column_name_table
@@ -255,7 +266,7 @@ class SubWindow(QtWidgets.QMainWindow):
         self.cursor.execute(group_statement)
         tempvar = self.cursor.fetchall()
         temp = [row["group_name"] for row in tempvar]
-        print(temp)
+        #print(temp)
         return temp
     
     def get_column_choices(self):
@@ -263,7 +274,7 @@ class SubWindow(QtWidgets.QMainWindow):
         self.cursor.execute(group_statement)
         tempvar = self.cursor.fetchall()
         temp = [row["group_name"] for row in tempvar]
-        print(temp)
+        #print(temp)
         self.column_groups = temp
 
         name_statement = """select g.group_name as 'group', n.column_name as 'name'

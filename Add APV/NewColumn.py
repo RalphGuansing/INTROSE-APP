@@ -14,7 +14,6 @@ class NewColumnView(QtWidgets.QGridLayout):
        
     def createRadio_group(self):
         self.outer_radiobutton_GroupBox = QtWidgets.QGroupBox("Please Select a Group")
-        
         self.outer_radiobutton_GroupBox.setStyleSheet(""" QGroupBox{font-size: 10pt;} """)
         
         self.inner_radiobutton_GroupBox = QtWidgets.QGroupBox()
@@ -22,9 +21,6 @@ class NewColumnView(QtWidgets.QGridLayout):
         
         Ggrid = QtWidgets.QGridLayout()
         boxContainer = QtWidgets.QVBoxLayout()
-        
-#        for n in range (0,100):
-#            self.current_groups.append(self.current_groups[n%2])
  
         self.radioButtons = []
         self.radioButton_Group = QtWidgets.QButtonGroup()
@@ -33,10 +29,9 @@ class NewColumnView(QtWidgets.QGridLayout):
         
         for groupText in self.current_groups:
             radiobutton = QtWidgets.QRadioButton(groupText)
-            #radiobutton.setChecked(True)
             radiobutton.setStyleSheet(radioButtStylesheet)
             radiobutton.groupText = groupText
-            radiobutton.toggled.connect(self.on_radio_button_toggled)
+            #radiobutton.toggled.connect(self.on_radio_button_toggled)
             self.radioButtons.append(radiobutton)
         
         for i,radiobutton in enumerate(self.radioButtons):
@@ -45,14 +40,6 @@ class NewColumnView(QtWidgets.QGridLayout):
         
         
        
-        
-#        GroupBoxIn ->setLayout(LayoutIn ); 
-#        scrollArea->setWidget(GroupBoxIn );  
-#        scrollArea->setWidgetResizable( true );  
-#        LayoutOut ->addWidget(scrollArea);      
-#        GroupBoxOut ->setLayout(LayoutOut ); 
-        
-        #Ggrid.setColumnStretch(7,4)
         Ggrid.setRowStretch(100,1)
         self.inner_radiobutton_GroupBox.setLayout(Ggrid)
         scrollArea.setWidget(self.inner_radiobutton_GroupBox)
@@ -60,18 +47,11 @@ class NewColumnView(QtWidgets.QGridLayout):
         boxContainer.addWidget(scrollArea)
         self.outer_radiobutton_GroupBox.setLayout(boxContainer)
     
-    def on_radio_button_toggled(self):
-        radiobutton = self.frame.sender()
-
-        if radiobutton.isChecked():
-            print("Group is %s" % (radiobutton.groupText))
     
     def init_ui(self):
         #Create Widgets
-        #self.create_Group_Tree()
         
         self.createRadio_group()
-        #self.outer_radiobutton_GroupBox = QtWidgets.QGroupBox("Please Select a Group")
         
         labelStyle = 'QLabel { font-size: 12pt; padding: 10px; font-weight: bold;}'
         textboxStyle = 'QLineEdit { font-size: 12pt; padding: 2px;}'
@@ -82,9 +62,6 @@ class NewColumnView(QtWidgets.QGridLayout):
         self.lColumn.setStyleSheet(labelStyle)
         self.tColumn = QtWidgets.QLineEdit(self.frame)
         self.tColumn.setStyleSheet(textboxStyle)
-        #self.tDate.textChanged.connect(self.preview_items)
-        #self.tColumn.setFixedWidth(textboxSize)
-        
         
         self.bAdd = QtWidgets.QPushButton("Add")
         self.bAdd.setStyleSheet("""
@@ -148,17 +125,9 @@ class NewColumnView(QtWidgets.QGridLayout):
         self.setColumnStretch(2,1)
         self.setColumnStretch(3,1)
         
-        #self.addWidget(self.tree, 1, 1, 1, 3)
         self.addWidget(self.outer_radiobutton_GroupBox, 1, 1, 1, 3)
         self.addWidget(self.lColumn, 7,1,1,1)
         self.addWidget(self.tColumn, 7,2,1,2)
         self.addWidget(self.bAdd, 8, 1, 1, 1)
         self.addWidget(self.bNew, 8, 2, 1, 1)
         self.addWidget(self.bCancel, 8, 3, 1, 1)
-        
-        #self.addWidget(self.preview_GroupBox, 2, 3, 6, 2)
-        
-        #DEBUG
-        #self.bAdd.clicked.connect(self.addColumn_names)
-        #self.tree.doubleClicked.connect(self.tree_DoubleClicked)
-        

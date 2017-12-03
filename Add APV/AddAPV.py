@@ -35,8 +35,6 @@ class AddAPVView(QtWidgets.QGridLayout):
         Ggrid.addWidget(self.pColumn_Table, 1, 1, 3, 4)
         Ggrid.addWidget(self.bColumn_Add, 4, 1, 1, 2)
         Ggrid.addWidget(self.bColumn_Delete, 4, 3, 1, 2)
-#        Ggrid.setColumnStretch(5,1)
-#        Ggrid.setRowStretch(3,1)
         self.column_name_GroupBox.setLayout(Ggrid)
 
     
@@ -45,16 +43,7 @@ class AddAPVView(QtWidgets.QGridLayout):
             self.pColumn_Table.insertRow(self.pColumn_Table.rowCount())
             self.pColumn_Table.setItem(self.pColumn_Table.rowCount()-1,0,QtWidgets.QTableWidgetItem(column_name))
             self.column_data.append(column_name)
-        #self.pColumn_Table.setItem(self.pColumn_Table.rowCount()-1,1,QtWidgets.QTableWidgetItem(self.tColumn_val.text()))
-        
-#        temp = {}
-#        
-#        temp["name"] = self.tColumn_name.text()
-#        temp["value"] = self.tColumn_val.text()
-#        
-#        self.column_data.append(temp)
-#        
-#        print(self.column_data)
+
     
     def get_items(self):
         
@@ -68,20 +57,17 @@ class AddAPVView(QtWidgets.QGridLayout):
             val = int(self.tId.text())
             items["id_apv_BOOL"] = True
         except ValueError:
-            #print("PLEASE INPUT AN NUMBER")
             items["id_apv_BOOL"] = False
         
         try:
             val = float(self.tAmount.text())
             items["amount_BOOL"] = True
         except ValueError:
-            #print("PLEASE INPUT AN NUMBER")
             items["amount_BOOL"] = False
         
         
-        print(self.column_data)
+        
         for i in range(len(self.column_data)):
-            #print(self.pColumn_Table.item(i,1).text())
             self.column_data_val.append(self.pColumn_Table.item(i,1).text())
         
         
@@ -89,7 +75,6 @@ class AddAPVView(QtWidgets.QGridLayout):
         items["column_names"] = self.column_data
         items["column_val"] = self.column_data_val
         
-        #print(items)
         return items
     
     def createDetails_group(self):
@@ -100,8 +85,6 @@ class AddAPVView(QtWidgets.QGridLayout):
         labelStyle = 'QLabel { font-size: 12pt; padding: 10px; font-weight: bold;}'
         textboxStyle = 'QLineEdit { font-size: 12pt; padding: 2px;}'
         textboxStyle2 = 'QDateEdit { font-size: 12pt; padding: 2px;}'
-        
-
 
 
         self.lDate = QtWidgets.QLabel("Date:")
@@ -159,7 +142,6 @@ class AddAPVView(QtWidgets.QGridLayout):
         
         self.createDetails_group()
         self.createColumn_group()
-        #self.createPreview_group()
 
         self.bSubmit = QtWidgets.QPushButton("Submit")
         self.bSubmit.setStyleSheet("""QPushButton { font-size: 14pt; padding: 10px; color: #fff; background-color: #5cb85c; border-color: #4cae4c;
@@ -167,8 +149,6 @@ class AddAPVView(QtWidgets.QGridLayout):
                                                     margin-top: 10px;}
                                         QPushButton:hover {background-color: #4baa4b; border-color: #409140;}""")
         
-#        self.Spacer = QtWidgets.QLabel("")
-#        self.addWidget(self.Spacer, 7, 5, 1, 3)
         self.setColumnStretch(11,1)
         self.setColumnStretch(0,1)
         self.setRowStretch(11,1)
@@ -177,8 +157,5 @@ class AddAPVView(QtWidgets.QGridLayout):
         self.addWidget(self.APV_details_GroupBox, 2, 1, 4, 2)
         self.addWidget(self.column_name_GroupBox, 6, 1, 2, 2)
         self.addWidget(self.bSubmit, 8, 1, 1, 2)
-        #self.addWidget(self.preview_GroupBox, 2, 3, 6, 2)
-        
-        #DEBUG
-        #self.bColumn_Add.clicked.connect(self.add_column)
+
         

@@ -44,12 +44,12 @@ class AddColumnView(QtWidgets.QGridLayout):
         self.frame = frame
         self.column_names = []
         self.cur_column_data = cur_column_data
-        print(self.cur_column_data, "here")
+        #print(self.cur_column_data, "here")
         self.init_ui()
     
     def input_Tree_Choices(self, groups, names):
-        print(groups)
-        print(names)
+        #print(groups)
+        #print(names)
         self.tree.var_column_groups = groups
         self.tree.var_column_names = names
         self.tree.init_tree()
@@ -58,16 +58,16 @@ class AddColumnView(QtWidgets.QGridLayout):
         rootItem = self.tree.model().invisibleRootItem()
         for mainRootNum in range(rootItem.rowCount()):
             rowRootItem = rootItem.child(mainRootNum,0)
-            print("Row:" + rowRootItem.text())
+            #print("Row:" + rowRootItem.text())
             for rowRootNum in range(rowRootItem.rowCount()):
-                print("SubRow:" + rowRootItem.child(rowRootNum,0).text())
+                #print("SubRow:" + rowRootItem.child(rowRootNum,0).text())
                 item = rowRootItem.child(rowRootNum,0)
-                print(self.cur_column_data)
+                #print(self.cur_column_data)
                 if self.cur_column_data is not None:
                     for data in self.cur_column_data:
-                        print("loop self.cur_column")
+                        #print("loop self.cur_column")
                         if item.text() == data:
-                            print("item", item.text(),"column", data)
+                            #print("item", item.text(),"column", data)
                             item.setCheckState(Qt.Checked)
                             item.setEnabled(False)
 
@@ -94,7 +94,7 @@ class AddColumnView(QtWidgets.QGridLayout):
                 #print("SubRow:" + rowRootItem.child(rowRootNum,0).text())
                 item = rowRootItem.child(rowRootNum,0)
                 if item.checkState() and item.isEnabled():
-                    print(item.text())
+                    #print(item.text())
                     self.column_names.append(item.text())
         #self.frame.close()
         
