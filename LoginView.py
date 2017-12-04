@@ -16,7 +16,7 @@ class LoginView(QtWidgets.QGridLayout):
         
         self.logoLabel = QtWidgets.QLabel()
         pixmap = QtGui.QPixmap('test4.png')
-        self.logoLabel.setPixmap(pixmap.scaled(480, 480, QtCore.Qt.KeepAspectRatio))
+        self.logoLabel.setPixmap(pixmap)
         
         #textboxSize = 350
         labelStyle = 'QLabel { font-size: 12pt; padding: 10px; font-weight: bold; font-family: FreeMono; }'
