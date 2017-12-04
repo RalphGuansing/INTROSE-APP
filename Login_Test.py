@@ -1,7 +1,9 @@
 import sys
 import pymysql
+import hashlib
 from PyQt5 import QtWidgets,QtCore,Qt
 from LoginView import LoginView
+
 
 
 
@@ -38,7 +40,14 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setWindowTitle("LCG Veterinary Trading")
         self.widgetFrame = WindowFrame(LoginView)
         self.setCentralWidget(self.widgetFrame)    
+        self.widgetFrame.layout.bLogin.clicked.connect(self.hash_password)  
     
+    #to be edited later
+    def hash_password(self):
+        plaintext = self.widgetFrame.layout.tPassword.text().encode('utf-8')
+        print(plaintext)
+        sha = hashlib.sha1(plaintext)
+        print(sha.hexdigest())
 #    def close_subFrame(self):
 #        
 #        """ Closes the Subwidget frame if it is visible"""
