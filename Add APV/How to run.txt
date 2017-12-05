@@ -1,0 +1,7 @@
+libs:
+	pymysql
+	PyQt5
+
+cmd:
+	python test_gui.py
+
