@@ -39,7 +39,9 @@ class MainWindow(QtWidgets.QMainWindow):
         
     def init_navbar(self):
         """ This method initializes the functionalities of the navbar """
+        #TEMPORARY
         self.widgetFrame.bAccounting.clicked.connect(self.add_apv_tab)
+        self.widgetFrame.bLogo.clicked.connect(self.home_tab)
     
     def login_tab(self):
         self.setWindowTitle("LCG Veterinary Trading")
@@ -55,7 +57,6 @@ class MainWindow(QtWidgets.QMainWindow):
         #self.widgetFrame.layout.bLogin.clicked.connect(self.login)
     
     #ACCOUNTING
-    
     def close_subFrame(self):
         
         """ Closes the Subwidget frame if it is visible"""
@@ -104,7 +105,7 @@ class MainWindow(QtWidgets.QMainWindow):
         
         """ returns true if it is able to retrieve something from the database """
         
-        select_statement = "Select * from `vouchers payable` where id_apv = " + str(id_apv)
+        select_statement = "Select * from accounts_payable where id_apv = " + str(id_apv)
         self.cursor.execute(select_statement)
         temp = self.cursor.fetchone()
         #print(temp)
@@ -133,7 +134,7 @@ class MainWindow(QtWidgets.QMainWindow):
         
         """Executes the insert statement based on the data inputted by the user"""
         
-        insert_statement = 'INSERT INTO `vouchers payable` (date, name, id_apv, amount) VALUES ( \''+ date +'\',\''+ name +'\',\''+ str(id_apv) + '\',\''+str(amount) + '\');'
+        insert_statement = 'INSERT INTO accounts_payable (date, name, id_apv, amount) VALUES ( \''+ date +'\',\''+ name +'\',\''+ str(id_apv) + '\',\''+str(amount) + '\');'
         print(insert_statement)
         self.cursor.execute(insert_statement)#Execute
         
@@ -142,7 +143,7 @@ class MainWindow(QtWidgets.QMainWindow):
         credit_statement = """INSERT INTO credit_type (type_name, id_apv, type_value)
                               Values
                            """
-        tempString1 = ",(SELECT id_apv FROM `vouchers payable`WHERE id_apv = "
+        tempString1 = ",(SELECT id_apv FROM accounts_payable WHERE id_apv = "
 
         for i in range(len(column_names)):
             credit_statement += "('" + column_names[i] + "'"+ tempString1 + str(id_apv) +"), "+ str(column_val[i]) + ")"
@@ -154,29 +155,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         print(credit_statement)
         self.cursor.execute(credit_statement)#Execute
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
     #END OF ACCOUNTING
     
     def login(self):
@@ -195,7 +174,7 @@ class MainWindow(QtWidgets.QMainWindow):
         
         tempvar = self.cursor.fetchone()
         
-        #CORRECT
+        #CORRECT OR VALID
         if tempvar is not None:
             print("Employee ID: " + str(tempvar["employee_id"]))
             print("Username: " + str(tempvar["username"]))
@@ -431,9 +410,19 @@ class WindowFrame(QtWidgets.QWidget):
                          }
                          QPushButton:hover{color:gainsboro;}
                         """
+        buttonStyle2 = """QPushButton {
+                         background:none!important;
+                         color:inherit;
+                         border:none; 
+                         padding:0!important;
+                         font: inherit;
+                         font-size: 24pt; color: white; padding: 1px; font-family:Montserrat;
+                         }
+                         QPushButton:hover{color:gainsboro;}
+                        """
         
-        self.bLogo = QtWidgets.QLabel("LCG")
-        self.bLogo.setStyleSheet(labelStyle2)
+        self.bLogo = QtWidgets.QPushButton("LCG")
+        self.bLogo.setStyleSheet(buttonStyle2)
         
         self.bInvoice = QtWidgets.QPushButton("Invoice")
         self.bInvoice.setStyleSheet(buttonStyle)
