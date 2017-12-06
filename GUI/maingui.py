@@ -369,12 +369,12 @@ class WindowFrame(QtWidgets.QWidget):
     def __init__(self, layout, extra=None):
         super().__init__()
         
-        self.container_layout = QtWidgets.QVBoxLayout()
+        self.container_layout = QtWidgets.QGridLayout()
         self.setContentsMargins(0,0,0,0)
         
         #ADDING NAVBAR
         self.make_navbar()
-        self.container_layout.addWidget(self.navbar)
+        self.container_layout.addWidget(self.navbar,1,1,1,4)
         
         if extra is None:
             self.layout = layout(self)
@@ -383,7 +383,7 @@ class WindowFrame(QtWidgets.QWidget):
         
         self.layout_groupbox = QtWidgets.QGroupBox("")
         self.layout_groupbox.setLayout(self.layout)
-        self.container_layout.addWidget(self.layout_groupbox)
+        self.container_layout.addWidget(self.layout_groupbox,2,1,1,4)
 
         self.setLayout(self.container_layout)
         
