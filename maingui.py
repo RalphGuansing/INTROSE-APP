@@ -17,37 +17,49 @@ class MainWindow(QtWidgets.QMainWindow):
     def add_invoice_tab(self):
         self.setWindowTitle("Invoice")       
         self.widgetFrame = WindowFrame(AddInvoiceView)
+
         self.widgetFrame.layout.bBack.clicked.connect(self.home_invoice_tab)
-        self.widgetFrame.layout.bSubmit.clicked.connect(self.add_invoice_confirm_tab)		
+        self.widgetFrame.layout.bSubmit.clicked.connect(self.add_invoice_confirm_tab)	
+        	
         self.setCentralWidget(self.widgetFrame)
 
     def add_invoice_confirm_tab(self):
         self.setWindowTitle("Invoice")       
         self.widgetFrame = WindowFrame(AddInvoiceConfirm)
+
         self.widgetFrame.layout.bBack.clicked.connect(self.add_invoice_tab)
-        self.widgetFrame.layout.bAddInvoice.clicked.connect(self.home_invoice_tab)      
+        self.widgetFrame.layout.bAddInvoice.clicked.connect(self.home_invoice_tab)
+
         self.setCentralWidget(self.widgetFrame)
         
         
     def view_invoice_tab(self):
         self.setWindowTitle("Invoice")
         self.widgetFrame = WindowFrame(ViewInvoice)
+
+        self.Dialog = QtWidgets.QInputDialog.getInt(self, "Invoice number", "Please enter the invoice number", 1)
+
         self.widgetFrame.layout.bBack.clicked.connect(self.home_invoice_tab)
         self.widgetFrame.layout.bAddInvoice.clicked.connect(self.add_invoice_tab)
+
         self.setCentralWidget(self.widgetFrame)
         
     def home_invoice_tab(self):
         self.setWindowTitle("Invoice")
         self.widgetFrame = WindowFrame(HomeInvoice)
+
         self.widgetFrame.layout.bAddInvoice.clicked.connect(self.add_invoice_tab)
         self.widgetFrame.layout.bViewInvoice.clicked.connect(self.view_invoice_tab)
         self.widgetFrame.layout.bInvoiceList.clicked.connect(self.view_list_tab)
+
         self.setCentralWidget(self.widgetFrame)
 
     def view_list_tab(self):
         self.setWindowTitle("Invoice")
         self.widgetFrame = WindowFrame(InvList)
+
         self.widgetFrame.layout.bBack.clicked.connect(self.home_invoice_tab)
+
         self.setCentralWidget(self.widgetFrame)    
 
 

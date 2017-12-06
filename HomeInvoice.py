@@ -16,26 +16,17 @@ class HomeInvoice(QtWidgets.QGridLayout):
         
         self.bViewInvoice = QtWidgets.QPushButton("View Invoice")
         self.bViewInvoice.setStyleSheet('QPushButton { font-size: 12pt; padding: 10px;}')
-        self.bViewInvoice.setFixedWidth(200)
-  
-        
-        self.lInvoiceNum = QtWidgets.QLabel("Enter Invoice Number:")
-        self.lInvoiceNum.setStyleSheet('QLabel { font-size: 12pt; padding: 10px;}')	  
+        self.bViewInvoice.setFixedWidth(200) 
 
         self.bInvoiceList = QtWidgets.QPushButton("View Invoice List")
         self.bInvoiceList.setStyleSheet('QPushButton { font-size: 12pt; padding: 10px;}')
         self.bInvoiceList.setFixedWidth(200)      
-        
-        self.tInvoiceNum = QtWidgets.QLineEdit(self.frame)
-        self.tInvoiceNum.setFixedWidth(50)
         
         self.setColumnStretch(4,1)
         self.setColumnStretch(1,1)
         self.setRowStretch(16,1)
 
         #Add Widgets
-        self.addWidget(self.bAddInvoice, 1, 2, 1, 1)   
-        self.addWidget(self.lInvoiceNum, 2, 2, 1, 1)
-        self.addWidget(self.tInvoiceNum, 2, 3, 1, 1)        
+        self.addWidget(self.bAddInvoice, 1, 2, 1, 1)           
         self.addWidget(self.bViewInvoice, 3, 2, 1, 1)     
         self.addWidget(self.bInvoiceList, 4, 2, 1, 1)          
