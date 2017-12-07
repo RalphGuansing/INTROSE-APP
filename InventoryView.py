@@ -136,6 +136,7 @@ class Product:
 		return self.name + '\n' + 'Packaging Type: ' + self.packaging + '\n' + 'Unit Price: ' + str(self.perunitprice) + '\n' + 'Retail Price: ' + str(self.retailprice)
 
 if __name__ == '__main__':
+	###open database
 	sample = InventoryDatabase()
 	inv = Inventory(sample.get_product_list(), sample.cursor)
 	print(sample.get_product_list()[0])
