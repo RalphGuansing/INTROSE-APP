@@ -51,7 +51,6 @@ class InventoryDatabase:
 
 		self.connect = sql.connect('localhost','root','root','introse',autocommit=True)
 		self.df_inv = pd.read_sql('SELECT * FROM introse.inventory;',self.connect)
-		#self.df_inv = self.df_inv.drop(['idinventory'],axis=1)
 		self.df_inv['productName'] = self.df_inv['productName'].astype('str')
 		self.cursor = self.connect.cursor()
 
@@ -80,8 +79,10 @@ class InventoryDatabase:
 
 		"""
 		###Check if the product already exists
+		
 		if self.cursor.execute("SELECT * FROM introse.inventory WHERE productName = '" + name + "'") == 0:
 			self.cursor.execute("INSERT INTO `introse`.`inventory` (`productName`, `supplier`, `packagingType`, `perunitprice`, `retailprice`, `quantity`, `lastupdated`) VALUES ('" + name + "', '" + supplier + "', '" + packaging + "', '" + str(perunitprice) + "', '" + str(retailprice) + "', '" + str(quantity) + "', '" + str(datetime.datetime.now()) + "');")
+			self.connect.begin()
 		else:
 			print('Product has already been added')
 
@@ -94,10 +95,11 @@ class InventoryDatabase:
 			quantity (int): amount to be added
 
 		"""
+
 		if self.cursor.execute("SELECT * FROM introse.inventory WHERE productName = '" + product.name + "'") != 0:
-			temp_product = list(filter(lambda x: x.name == product.name, self.products))
+			temp_product = list(filter(lambda x: x.name == product.name, self.get_product_list()))
 			self.cursor.execute("UPDATE `introse`.`inventory` SET `quantity`='" + str((temp_product[0].quantity + quantity)) + "', `lastupdated`='" + str(datetime.datetime.now()) + "' WHERE `idinventory`='" + str(temp_product[0].id) + "';")
-			#a = [prod.add_quantity(quantity) for prod in self.products if prod == product ]
+			self.connect.begin()
 		else:
 			print('product does not exist!')
 
@@ -138,11 +140,11 @@ class Product:
 if __name__ == '__main__':
 	###open database
 	sample = InventoryDatabase()
-	inv = Inventory(sample.get_product_list(), sample.cursor)
-	print(sample.get_product_list()[0])
-	inv.add_product_quantity(sample.get_product_list()[0],30)
-	inv.add_product('yakult','nestle','bottle',10,10,20)
-	sample.close_connection()
+	# inv = Inventory(sample.get_product_list(), sample.cursor)
+	# print(sample.get_product_list()[0])
+	# inv.add_product_quantity(sample.get_product_list()[0],30)
+	# inv.add_product('yakult','nestle','bottle',10,10,20)
+	# sample.close_connection()
 
 
 
