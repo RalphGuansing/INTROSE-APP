@@ -1,7 +1,7 @@
 import sys
 import pymysql
 from PyQt5 import QtWidgets,QtCore,Qt
-from AddAPV import AddAPVView as testlayout
+#from AddAPV import AddAPVView as testlayout
 #from AddColumn import AddColumnView
 #from NewColumn import NewColumnView
 #from NewGroup import NewGroupView
@@ -115,15 +115,21 @@ class MainWindow(QtWidgets.QMainWindow):
         month = self.widgetFrame.layout.beforeMonth
         year = self.widgetFrame.layout.beforeYear
         
+#        customer_name = self.widgetFrame.layout.customer_name
+#        month = self.widgetFrame.layout.selectedMonth
+#        year = self.widgetFrame.layout.selectedYear
+        print('month',month, "year:",year)
+        
         select_statement = """select IFNULL(sum(amount), 0) - IFNULL(sum(payment), 0) as balance
         from accounts_receivable 
-        where customer_id = (select customer_id from customer where customer_name = '"""+customer_name+"""') and MONTH(Date) = """+str(month)+""" and YEAR(Date) = """+str(year)+""" """
+        where customer_id = (select customer_id from customer where customer_name = '"""+customer_name+"""') and Date < '"""+str(year)+"-"+str(month)+"-31"+"""' """
+        
         
         self.cursor.execute(select_statement)
         temp = self.cursor.fetchone()
-        #print(temp)
+        print(temp)
         self.widgetFrame.layout.input_beg_balance(temp)
-        #print(select_statement)
+        print(select_statement)
         #self.widgetFrame.layout.input_ar_table(temp)
     
     
@@ -134,7 +140,7 @@ class MainWindow(QtWidgets.QMainWindow):
         
         select_statement = """select IFNULL(sum(amount), 0) - IFNULL(sum(payment), 0) as balance
         from accounts_receivable 
-        where customer_id = (select customer_id from customer where customer_name = '"""+customer_name+"""') and MONTH(Date) = """+str(month)+""" and YEAR(Date) = """+str(year)+""" """
+        where customer_id = (select customer_id from customer where customer_name = '"""+customer_name+"""') and Date <= '"""+str(year)+"-"+str(month)+"-31"+"""' """
         
         self.cursor.execute(select_statement)
         temp = self.cursor.fetchone()
