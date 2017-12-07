@@ -9,6 +9,7 @@ class test_inventory(unittest.TestCase):
 		self.addTypeEqualityFunc(list,sample.get_product_list())
 		sample.close_connection()
 
+
 	def test_add_product(self):
 		sample = InventoryDatabase()
 		sample.add_product('coffee','nestle','bottle',10,10,20)
