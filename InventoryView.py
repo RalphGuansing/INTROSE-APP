@@ -17,7 +17,60 @@ class Inventory:
 		"""
 
 		self.products = products
-		self.cursor = cursor
+
+
+	def get_products(self):
+
+		"""returns the list of products
+		Returns:
+			[self.products]
+
+		"""
+
+		return self.products
+
+
+	def get_product_count(self):
+
+		"""returns the number of products in the inventory
+		Returns:
+			[len(self.products)]
+
+		"""
+
+		return len(self.products)
+
+
+class InventoryDatabase:
+
+	"""Responsible for retrieving and updating data in the database"""
+
+	def __init__(self):
+
+		"""Default constructor"""
+
+		self.connect = sql.connect('localhost','root','root','introse',autocommit=True)
+		self.df_inv = pd.read_sql('SELECT * FROM introse.inventory;',self.connect)
+		#self.df_inv = self.df_inv.drop(['idinventory'],axis=1)
+		self.df_inv['productName'] = self.df_inv['productName'].astype('str')
+		self.cursor = self.connect.cursor()
+
+
+	def get_product_list(self):
+
+		"""returns the product list from the database
+		Returns:
+			[product_list]
+		"""
+
+		product_list = [Product(row[1][0],row[1][1],row[1][2],row[1][3],row[1][4],row[1][5],row[1][6],row[1][7]) for row in self.df_inv.iterrows()]
+		return product_list
+
+
+	def close_connection(self):
+		"""closes the connection to the database"""
+		self.connect.close()
+
 
 	def add_product(self, name, supplier, packaging, perunitprice, retailprice, quantity):
 
@@ -31,6 +84,7 @@ class Inventory:
 			self.cursor.execute("INSERT INTO `introse`.`inventory` (`productName`, `supplier`, `packagingType`, `perunitprice`, `retailprice`, `quantity`, `lastupdated`) VALUES ('" + name + "', '" + supplier + "', '" + packaging + "', '" + str(perunitprice) + "', '" + str(retailprice) + "', '" + str(quantity) + "', '" + str(datetime.datetime.now()) + "');")
 		else:
 			print('Product has already been added')
+
 
 	def add_product_quantity(self, product, quantity):
 
@@ -47,53 +101,6 @@ class Inventory:
 		else:
 			print('product does not exist!')
 
-	def get_products(self):
-
-		"""returns the list of products
-		Returns:
-			[self.products]
-
-		"""
-
-		return self.products
-
-	def get_product_count(self):
-
-		"""returns the number of products in the inventory
-		Returns:
-			[len(self.products)]
-
-		"""
-
-		return len(self.products)
-
-class InventoryDatabase:
-
-	"""Responsible for retrieving and updating data in the database"""
-
-	def __init__(self):
-
-		"""Default constructor"""
-
-		self.connect = sql.connect('localhost','root','root','introse',autocommit=True)
-		self.df_inv = pd.read_sql('SELECT * FROM introse.inventory;',self.connect)
-		#self.df_inv = self.df_inv.drop(['idinventory'],axis=1)
-		self.df_inv['productName'] = self.df_inv['productName'].astype('str')
-		self.cursor = self.connect.cursor()
-
-	def get_product_list(self):
-
-		"""returns the product list from the database
-		Returns:
-			[product_list]
-		"""
-
-		product_list = [Product(row[1][0],row[1][1],row[1][2],row[1][3],row[1][4],row[1][5],row[1][6],row[1][7]) for row in self.df_inv.iterrows()]
-		return product_list
-
-	def close_connection(self):
-		"""closes the connection to the database"""
-		self.connect.close()
 
 class Product:
 
@@ -121,15 +128,6 @@ class Product:
 		self.quantity = quantity
 		self.lastupdated = lastupdated
 
-	def add_quantity(self, quantity):
-
-		"""updates the quantity of the product
-		Args:
-		quantity (int): amount
-
-		"""
-
-		self.quantity += quantity
 
 	def __str__(self):
 		return self.name + '\n' + 'Packaging Type: ' + self.packaging + '\n' + 'Unit Price: ' + str(self.perunitprice) + '\n' + 'Retail Price: ' + str(self.retailprice)
