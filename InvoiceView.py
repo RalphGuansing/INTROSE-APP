@@ -3,7 +3,19 @@ import pandas as pd
 import pymysql as sql
 
 class Invoice:
-	"""This Module is responsible for keeping track of purchases of clients."""
+	"""This Module is responsible for keeping track of purchases of clients.
+	Attributes:
+		__totalinvoice (float): Contains total value of purchase without tax reduction.
+		__totalnvat (float): Contains total value that is not included in tax reduction.
+		__totaltaxable (float): Contains total value of purchase reduced by tax.
+		__totaloptax (float): Contains total output tax.
+		__totalcommission (float): Contains total commission of employees.
+	"""
+	__totalinvoice = 0
+	__totalnvat = 0
+	__totaltaxable = 0 
+	__totaloptax = 0
+	__totalcommission = 0
 		
 	def __init__(self, amount=0, nonvat=0, innumber=0, cust="Walk-in", ddate=datetime.datetime.now(), seller="LCG", quota=0):
 		"""Method for initialization of values.
@@ -28,11 +40,13 @@ class Invoice:
 			self.commission = round((quota - amount) / 0.02, 2)
 		else:
 			self.commission = 0
+		Bookkeep.settotal(self.amount, self.nonvat, self.taxable, self.optax, self.commission, False)
 
 	def cancelled(self):
 		"""Method for cancellation of purchase, replaces all attributes to None except innumber
 			and subtracts value from total invoice, nonvat, taxble, output tax and commission.
 		"""
+		Bookkeep.settotal(self.amount, self.nonvat, self.taxable, self.optax, self.commission, True)
 		self.amount = None
 		self.nonvat = None
 		self.cust = None
@@ -59,6 +73,7 @@ class Invoice:
 		if ddate != None:
 			self.ddate = ddate
 		if amount != None:
+			Bookkeep.settotal(self.amount, self.nonvat, self.taxable, self.optax, self.commission, True)
 			self.amount = amount
 			if nonvat != None:
 				self.nonvat = nonvat
@@ -69,6 +84,39 @@ class Invoice:
 				self.commission = round((quota - amount) / 0.02, 2)
 			else:
 				self.commission = 0
+		Bookkeep.settotal(self.amount, self.nonvat, self.taxable, self.optax, self.commission, False)
+
+	@classmethod
+	def settotal(cls, amount, nonvat, taxable, optax, commission, value):
+		"""Method for setting the total invoice, nonvat, taxble, output tax and commission.
+		Args:
+			amount (float): The first parameter, value of purchase without tax reduction.
+			nonvat (float): The second parameter, value that is not included in tax reduction.
+			taxable (float): The third parameter, value of purchase reduced by tax.
+			optax (float): The fourth parameter, value of output tax.
+			commission (float): The fifth parameter, value of commission of the employee.
+			value (bool): The sixth parameter, true if decrementing the values, else incrementing the values
+		"""
+		if value:
+			Bookkeep.__totalinvoice -= amount
+			Bookkeep.__totalnvat -= nonvat
+			Bookkeep.__totaltaxable -= taxable
+			Bookkeep.__totaloptax -= optax
+			Bookkeep.__totalcommission -= commission
+		else:
+			Bookkeep.__totalinvoice += amount
+			Bookkeep.__totalnvat += nonvat
+			Bookkeep.__totaltaxable += taxable
+			Bookkeep.__totaloptax += optax
+			Bookkeep.__totalcommission += commission
+				
+	@classmethod
+	def gettotal(cls):
+		"""Method for returning the total invoice, nonvat, taxble, output tax and commission.
+		Returns:
+			[__totalinvoice, __totalnvat, __totaltaxable, __totaloptax, __totalcommission]
+		"""
+		return Bookkeep.__totalinvoice, Bookkeep.__totalnvat, Bookkeep.__totaltaxable, Bookkeep.__totaloptax, Bookkeep.__totalcommission
 
 class InvoiceDB:
 	"""This Module is responsible for storing and editing data in the database."""
