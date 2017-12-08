@@ -29,6 +29,10 @@ class AddInvoiceView(QtWidgets.QGridLayout):
 
         self.current_row += 1
 
+    def change_address_tag(self):
+        self.tAdd.setText(str(self.client_list[self.tBuyer.currentIndex][1]))    
+
+
     def init_ui(self):
         #Create Widgets
         
@@ -37,7 +41,7 @@ class AddInvoiceView(QtWidgets.QGridLayout):
         client_list = []
         seller_list = []
         client_list = invo_db.get_client_name()
-        seller_list = invo_db.get_seller_name()
+        self.seller_list = invo_db.get_seller_name()
         last_id = invo_db.get_last_id()
         invnum = last_id + 1
         self.termsList = ("30 days", "60 days", "90 days", "1 year")
@@ -66,6 +70,7 @@ class AddInvoiceView(QtWidgets.QGridLayout):
         self.tBuyer = QtWidgets.QComboBox(self.frame)
         for x in range(len(client_list)):
             self.tBuyer.insertItem(x, str(client_list[x][0]))
+        self.tBuyer.activated.connect(self.change_address_tag)
         #self.tProduct_code.
         #self.tProduct_code.resize(280, 40)
 
@@ -92,8 +97,7 @@ class AddInvoiceView(QtWidgets.QGridLayout):
 
 
         #TEXT INPUT#
-        self.tAdd = QtWidgets.QLabel("")
-        self.tAdd.setText(str(client_list[self.tBuyer.currentIndex][1]))	
+        self.tAdd = QtWidgets.QLabel(str(self.client_list[0][1]))
 		
         #Label#
         self.lTerms = QtWidgets.QLabel("Terms:")
