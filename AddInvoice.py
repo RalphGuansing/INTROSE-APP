@@ -201,9 +201,9 @@ class AddInvoiceView(QtWidgets.QGridLayout):
         #TEXT INPUT#
         self.tProduct = QtWidgets.QComboBox(self.frame)
         self.tProduct.setFixedWidth(200)		
-        self.tProduct.insertItem(self.productsList[0])
-        self.tProduct.insertItem(self.productsList[1])
-        self.tProduct.insertItem(self.productsList[2])
+        self.tProduct.insertItem(0,self.productsList[0])
+        self.tProduct.insertItem(1,self.productsList[1])
+        self.tProduct.insertItem(2,self.productsList[2])
 
         #Label#
         self.lUnitPrice = QtWidgets.QLabel("Unit Price: ")
