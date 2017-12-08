@@ -166,6 +166,7 @@ class Component:
 			origprice (float): The second parameter, original price of the component.
 			unitprice (float): The third parameter, new price of the component.
 			quantity (int): The fourth parameter, quantity of the component.
+			nonvat (float): The fifth parameter, nonvat of the component.
 		"""
 		self.name = name
 		self.origprice = origprice
