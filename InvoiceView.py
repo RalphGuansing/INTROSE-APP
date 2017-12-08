@@ -152,6 +152,7 @@ class Component:
 		__totalnvat (float): Contains total value that is not included in tax reduction.
 		__totaltaxable (float): Contains total value of purchase reduced by tax.
 		__totaloptax (float): Contains total output tax.
+		__totalprofit (float): Contains total profit.
 	"""
 	__totalinvoice = 0
 	__totalnvat = 0
