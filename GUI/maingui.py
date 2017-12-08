@@ -6,7 +6,8 @@ from PyQt5 import QtWidgets,QtCore,Qt
 from LoginView import LoginView
 from HomeView import HomeView
 from Accounting.Accounting_Home import Accounting_HomeView
-from Accounting.Payable.ViewAPV import AccountsPayable_MonthlyView, input_month_year
+from Accounting.DialogView import *
+from Accounting.Payable.ViewAPV import AccountsPayable_MonthlyView
 from Accounting.Payable.AddAPV import AddAPVView
 from Accounting.Payable.AddColumn import AddColumnView
 from Accounting.Payable.NewColumn import NewColumnView
@@ -30,13 +31,34 @@ class MainWindow(QtWidgets.QMainWindow):
         #self.accounting_home_view()
         #self.view_receivable_tab()
     
+    
+    
+    
+    pass#RALPH
     def cust_monthly_dia(self, func):
         self.dialog_monthly = DialogFrame("Input",input_month_year,self)
         self.dialog_monthly.layout.bSubmit.clicked.connect(self.dialog_monthly.close)
         self.dialog_monthly.layout.bCancel.clicked.connect(self.dialog_monthly.close)
         self.dialog_monthly.layout.bSubmit.clicked.connect(func)
         self.dialog_monthly.exec()
+    
+    def cust_payment_dia(self, func, isPayment):
+        if isPayment:
+            ar_Table = self.widgetFrame.layout.ar_Table
+            try:
+                cost = ar_Table.item(ar_Table.currentRow(), 2).text()
+                self.dialog_payment = DialogFrame("Input",input_payment,self, cost)
+                self.dialog_payment.layout.bSubmit.clicked.connect(self.dialog_payment.close)
+                self.dialog_payment.layout.bCancel.clicked.connect(self.dialog_payment.close)
+                self.dialog_payment.layout.bSubmit.clicked.connect(partial(func, isPayment))
+                self.dialog_payment.exec()
         
+            except:
+                if ar_Table.rowCount() != 0:
+                    self.showMessage('Error Input', "Please select a receivable")
+                else:
+                    self.showMessage('Error', "No receivable to be paid")
+    
     pass#ACCOUNTING   
     def accounting_home_view(self):
         self.setWindowTitle("Accounting")
@@ -70,14 +92,18 @@ class MainWindow(QtWidgets.QMainWindow):
         
     def view_receivable_tab(self, customer_name):
 #        customer_name = self.widgetFrame.layout.customer_name
-        print(customer_name.text())
-        customer_name= customer_name.text()
+        try:
+            print(customer_name.text())
+            self.customer_name= customer_name.text()
+        except:
+            pass
         
         self.setWindowTitle("Accounts Receivable")
-        self.widgetFrame = WindowFrame(AccountsReceivableView, customer_name)
+        self.widgetFrame = WindowFrame(AccountsReceivableView, self.customer_name)
         self.setCentralWidget(self.widgetFrame)
         self.init_navbar()
         self.widgetFrame.layout.bMonthly.clicked.connect(partial(self.cust_monthly_dia, self.view_receivable_monthly_tab))
+        self.widgetFrame.layout.bAdd_Payment.clicked.connect(partial(self.cust_payment_dia, self.add_payment_ar, True))
         
         self.get_customer_details()
         self.get_customer_ar()
@@ -118,6 +144,39 @@ class MainWindow(QtWidgets.QMainWindow):
         
     
 
+    def add_payment_ar(self, isPayment):
+        ar_Table = self.widgetFrame.layout.ar_Table
+        
+        if isPayment:
+            date = self.dialog_payment.layout.tDate.text()
+            pr_id = self.dialog_payment.layout.tPR.text()
+            payment = self.dialog_payment.layout.tPayment.text()
+        else:
+            date = pr_id = payment = None
+            
+        selected = False
+        try:
+            invoice_number = ar_Table.item(ar_Table.currentRow(), 1).text()
+            selected = True
+        except:
+            if ar_Table.rowCount() != 0:
+                self.showMessage('Error Input', "Please select a receivable")
+            else:
+                self.showMessage('Error', "No receivable to be paid")
+            
+        
+        if selected:
+            update_statement = "UPDATE accounts_receivable SET date_paid ='" + date + "', pr_id= '" + str(pr_id) + "',payment= '" + str(payment) + "' WHERE inv_id= " + str(invoice_number) + ";"
+            print(update_statement)
+            self.cursor.execute(update_statement)#Execute
+            if type(self.widgetFrame.layout) is AccountsReceivableView:
+                print(" is AccountsReceivableView")
+                self.view_receivable_tab(self.widgetFrame.layout.customer_name)
+            if type(self.widgetFrame.layout) is AccountsReceivable_MonthlyView:
+                print(" is AccountsReceivable_MonthlyView")
+                self.view_receivable_monthly_tab()
+        #self.view_receivable_tab(self.widgetFrame.layout.customer_name)
+        
     pass#MONTHLY RECEIVABLES
     def view_receivable_monthly_tab(self):
         self.setWindowTitle("Accounts Receivable")
@@ -127,9 +186,12 @@ class MainWindow(QtWidgets.QMainWindow):
         year = self.dialog_monthly.layout.year_choice.value()
         
         self.widgetFrame = WindowFrame(AccountsReceivable_MonthlyView,{"name":customer_name, "month":month, "year":year})
+        self.widgetFrame.layout.bAdd_Payment.clicked.connect(partial(self.cust_payment_dia, self.add_payment_ar,True))
+        #self.widgetFrame.layout.bDel_Payment.clicked.connect(partial(self.cust_payment_dia, self.add_payment_ar, False))
         
         self.setCentralWidget(self.widgetFrame)
         self.init_navbar()
+        
         self.get_customer_ar_monthly()
         self.get_customer_beg_monthly()
         self.get_customer_end_monthly()
@@ -300,7 +362,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.cursor.execute(credit_statement)#Execute
 
     pass #END OF ACCOUNTING
-        
     def showMessage(self, title, message, info=None):
         
         """ This Method is responsible for Showing Dialogs if there is an error """
@@ -550,13 +611,19 @@ class SubWindow(QtWidgets.QMainWindow):
 
 
 class DialogFrame(QtWidgets.QDialog):
-    def __init__(self, title,layout, parent=None):
+    def __init__(self, title,layout, parent=None, extra=None):
         super().__init__(parent)
         self.setWindowTitle(title)
-        self.layout = layout(self)
+        
+        if extra is None:
+            self.layout = layout(self)
+        else:
+            self.layout = layout(self, extra)
+            
         self.setLayout(self.layout)
         
-        self.resize(300,200)
+        self.resize(300,214)
+        
 class SubWindowFrame(QtWidgets.QWidget):
     
     def __init__(self, layout, extra=None):
@@ -576,7 +643,7 @@ class WindowFrame(QtWidgets.QWidget):
         super().__init__()
         
         self.container_layout = QtWidgets.QGridLayout()
-        self.setContentsMargins(0,0,0,0)
+        self.container_layout.setContentsMargins(0,0,0,0)
         
         #ADDING NAVBAR
         self.make_navbar()

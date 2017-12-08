@@ -90,6 +90,14 @@ class AccountsReceivableView(QtWidgets.QGridLayout):
                                                     margin-top: 10px;}
                                         QPushButton:hover {background-color: #4baa4b; border-color: #409140;}""")
         
+        self.bDel_Payment = QtWidgets.QPushButton("Delete Payment")
+        self.bDel_Payment.setStyleSheet("""QPushButton { font-size: 14pt; padding: 10px; color: #fff; 
+        background-color: #d9534f;
+        border-color: #d43f3a;
+                                                    border-radius: 5px;
+                                                    margin-top: 10px;}
+                                        QPushButton:hover {background-color: #d5443f; border-color: #d8504b;}""")
+        
         
         #Making Customer Division
         self.customer_Box()
@@ -101,8 +109,9 @@ class AccountsReceivableView(QtWidgets.QGridLayout):
 
         self.addWidget(self.customer_groupbox, 1, 1, 1, 1)
         self.addWidget(self.ar_groupbox, 1, 2, 1, 3)
-        self.addWidget(self.bMonthly, 2, 2, 1, 1)
+        self.addWidget(self.bMonthly, 2, 1, 1, 1)
         self.addWidget(self.bAdd_Payment, 2, 4, 1, 1)
+        #self.addWidget(self.bDel_Payment, 2, 4, 1, 1)
 #        #self.addWidget(self.lUsername, 3, 1, 1, 1)
 #        self.addWidget(self.tUsername, 3, 1, 1, 2)
 #        #self.addWidget(self.lPassword, 4, 1, 1, 1)

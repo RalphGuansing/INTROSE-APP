@@ -3,71 +3,7 @@ import datetime
 import calendar
 from PyQt5 import QtWidgets
 from PyQt5 import QtGui
-from PyQt5 import QtCore
-
-
-class input_month_year(QtWidgets.QGridLayout):
-    def __init__(self, frame):
-        super().__init__()
-        self.frame = frame
-        self.init_ui()
-    
-    def init_ui(self):
-        now = datetime.date.today()
-        
-        self.labelStyle = """QLabel { font-size: 14pt; color: black; padding: 4px;}"""
-        self.addressStyle = """QLabel { font-size: 12pt; color: #666666; padding: 4px; font-family:Montserrat;}"""
-        
-        
-        self.lMonth = QtWidgets.QLabel("Month: ")
-        self.lMonth.setStyleSheet(self.labelStyle)
-        
-        self.month_choice = QtWidgets.QSpinBox()
-        self.month_choice.setRange(1,12)
-        self.month_choice.setValue(now.month)
-        self.month_choice.setStyleSheet('QSpinBox { font-size: 12pt; padding: 2px;}')
-        
-        
-        self.lYear = QtWidgets.QLabel("Year: ")
-        self.lYear.setStyleSheet(self.labelStyle)
-        
-        self.year_choice = QtWidgets.QSpinBox()
-        self.year_choice.setRange(0,9999)
-        self.year_choice.setValue(now.year)
-        self.year_choice.setStyleSheet('QSpinBox { font-size: 12pt; padding: 2px;}')
-        
-        self.top_box = QtWidgets.QGroupBox("")
-        Ggrid = QtWidgets.QGridLayout()
-        Ggrid.addWidget(self.lMonth,1,1)
-        Ggrid.addWidget(self.month_choice,1,2)
-        Ggrid.addWidget(self.lYear,2,1)
-        Ggrid.addWidget(self.year_choice,2,2)
-        self.top_box.setLayout(Ggrid)
-        
-        self.setRowStretch(4,1)
-#        self.setColumnStretch(0,1)
-#        self.setColumnStretch(3,1)
-        
-        self.bSubmit = QtWidgets.QPushButton("Submit")
-        self.bSubmit.setStyleSheet("""QPushButton { font-size: 14pt; padding: 10px; color: #fff; background-color: #5cb85c; border-color: #4cae4c;
-                                                    border-radius: 5px;
-                                                    margin-top: 10px;}
-                                        QPushButton:hover {background-color: #4baa4b; border-color: #409140;}""")
-        
-        self.bCancel = QtWidgets.QPushButton("Cancel")
-        self.bCancel.setStyleSheet("""QPushButton { font-size: 14pt; padding: 10px; color: #fff; 
-        background-color: #d9534f;
-        border-color: #d43f3a;
-                                                    border-radius: 5px;
-                                                    margin-top: 10px;}
-                                        QPushButton:hover {background-color: #d5443f; border-color: #d8504b;}""")
-        
-        
-        self.addWidget(self.top_box,1,1,2,2)
-        self.addWidget(self.bSubmit,3,1)
-        self.addWidget(self.bCancel,3,2)
-        
-        
+from PyQt5 import QtCore  
         
 
 class AccountsReceivable_MonthlyView(QtWidgets.QGridLayout):
@@ -121,14 +57,22 @@ class AccountsReceivable_MonthlyView(QtWidgets.QGridLayout):
         
     def init_ui(self):
     
-        self.labelStyle = """QLabel { font-size: 14pt; color: black; padding: 4px;}"""
-        self.addressStyle = """QLabel { font-size: 10pt; color: #666666; padding: 4px;}"""
+        self.labelStyle = """QLabel { font-size: 16pt; color: black; padding: 4px;}"""
+        self.addressStyle = """QLabel { font-size: 14pt; color: #666666; padding: 4px;}"""
         
         self.bAdd_Payment = QtWidgets.QPushButton("Add Payment")
         self.bAdd_Payment.setStyleSheet("""QPushButton { font-size: 14pt; padding: 10px; color: #fff; background-color: #5cb85c; border-color: #4cae4c;
                                                     border-radius: 5px;
                                                     margin-top: 10px;}
                                         QPushButton:hover {background-color: #4baa4b; border-color: #409140;}""")
+        
+        self.bDel_Payment = QtWidgets.QPushButton("Delete Payment")
+        self.bDel_Payment.setStyleSheet("""QPushButton { font-size: 14pt; padding: 10px; color: #fff; 
+        background-color: #d9534f;
+        border-color: #d43f3a;
+                                                    border-radius: 5px;
+                                                    margin-top: 10px;}
+                                        QPushButton:hover {background-color: #d5443f; border-color: #d8504b;}""")
         
         
 #        self.account_receivable_Box()
@@ -151,11 +95,12 @@ class AccountsReceivable_MonthlyView(QtWidgets.QGridLayout):
 
 #        self.addWidget(self.customer_groupbox, 1, 1, 1, 1)
         self.addWidget(self.lCustomer_name, 1, 1, 1, 1)
-        self.addWidget(self.lMonth_Year, 1, 2, 1, 1)
-        self.addWidget(self.ar_Table, 2, 1, 1, 3)
+        self.addWidget(self.lMonth_Year, 1, 3, 1, 1)
+        self.addWidget(self.ar_Table, 2, 1, 1, 5)
         self.addWidget(self.lBeginning_Balance, 3, 1, 1, 1)
         self.addWidget(self.lEnding_Balance, 3, 2, 1, 1)
-        self.addWidget(self.bAdd_Payment, 3, 3, 1, 1)
+        self.addWidget(self.bAdd_Payment, 3, 4, 1, 1)
+        self.addWidget(self.bDel_Payment, 3, 5, 1, 1)
 #        #self.addWidget(self.lUsername, 3, 1, 1, 1)
 #        self.addWidget(self.tUsername, 3, 1, 1, 2)
 #        #self.addWidget(self.lPassword, 4, 1, 1, 1)
