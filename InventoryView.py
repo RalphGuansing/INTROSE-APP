@@ -71,31 +71,49 @@ class InventoryDatabase:
 		self.connect.close()
 
 
-	def add_product(self, name, supplier, packaging, per_unit_price, retail_price, quantity):
+	def add_product(self, name, supplier, packaging, per_unit_price, retail_price, quantity, vatable):
 
 		"""add product to the inventory
 		Args:
-			product (Product): product to be added in the inventory
-
+			name (string): product to be added in the inventory
+			supplier (string): supplier of the product
+			packaging (string): packaging type of the product
+			per_unit_price (float): per unit price of the product
+			retail_price (float): retail price of the product
+			quantity (int): quantity of the product
+			vatable (boolean): is the product vatable or non vatable
 		"""
 		###Check if the product already exists
 		
 		if self.cursor.execute("SELECT * FROM introse.inventory WHERE productName = '" + name + "'") == 0:
-			self.cursor.execute("INSERT INTO `introse`.`inventory` (`productName`, `supplier`, `packagingType`, `perunitprice`, `retailprice`, `quantity`, `lastupdated`) VALUES ('" + name + "', '" + supplier + "', '" + packaging + "', '" + str(per_unit_price) + "', '" + str(retail_price) + "', '" + str(quantity) + "', '" + str(datetime.datetime.now()) + "');")
+			self.cursor.execute("INSERT INTO `introse`.`inventory` (`productName`, `supplier`, `packagingType`, `perunitprice`, `retailprice`, `quantity`, `lastupdated`, `vatable`) VALUES ('" + name + "', '" + supplier + "', '" + packaging + "', '" + str(per_unit_price) + "', '" + str(retail_price) + "', '" + str(quantity) + "', '" + str(datetime.datetime.now()) + "', '" + str(vatable) + "');")
 			self.connect.begin()
 		else:
 			print('Product has already been added')
 
 
 	def update_product(self,name,packaging,per_unit_price):
+
+		"""updates a specific product
+		Args:
+			name (string): name of the product
+			packaging (string): packaging type of the product
+			per_unit_price (float): per unit price of the product
+		"""
+
 		if self.is_product_available(name):
-			#temp_product = list(filter(lambda x: x.name == product.name, self.get_product_list()))
 			self.cursor.execute("UPDATE `introse`.`inventory` SET `packagingType`='" + str(packaging) + "',`perunitprice`='" + str(per_unit_price) + "', `lastupdated`='" + str(datetime.datetime.now()) + "' WHERE `productName`='" + str(name) + "';")
 			self.connect.begin()
 		else:
 			print('product does not exist!')		
 
 	def is_product_available(self,name):
+
+		"""checks if the product exists in the database
+		Args:
+			name (string): name of the product
+		"""
+
 		if self.cursor.execute("SELECT * FROM introse.inventory WHERE productName = '" + name + "'") != 0:
 			return True
 		else:
@@ -155,7 +173,7 @@ if __name__ == '__main__':
 	###open database
 	sample = InventoryDatabase()
 	temp = sample.get_product_list()
-	sample.update_product(temp[0],'bottle',10)
+	sample.add_product('sky flakes','my sans','plastic',3,5,100,1)
 	sample.close_connection()
 
 
