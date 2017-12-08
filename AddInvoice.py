@@ -11,11 +11,11 @@ class AddInvoiceView(QtWidgets.QGridLayout):
         self.frame.setWindowTitle("Invoice")
         self.added_products = []
         self.current_row = 0
-        self.component_item1 = Component(name, origprice, unitprice, quantity, unit, nonvat)
-        self.component_item2 = Component(name, origprice, unitprice, quantity, unit, nonvat)
-        self.component_item3 = Component(name, origprice, unitprice, quantity, unit, nonvat)
-        self.component_item4 = Component(name, origprice, unitprice, quantity, unit, nonvat)
-        self.component_item5 = Component(name, origprice, unitprice, quantity, unit, nonvat)
+        #self.component_item1 = Component(name, origprice, unitprice, quantity, unit, nonvat)
+        #self.component_item2 = Component(name, origprice, unitprice, quantity, unit, nonvat)
+        #self.component_item3 = Component(name, origprice, unitprice, quantity, unit, nonvat)
+        #self.component_item4 = Component(name, origprice, unitprice, quantity, unit, nonvat)
+        #self.component_item5 = Component(name, origprice, unitprice, quantity, unit, nonvat)
 
         self.init_ui()
 
@@ -189,10 +189,10 @@ class AddInvoiceView(QtWidgets.QGridLayout):
 
         self.tUnit = QtWidgets.QComboBox(self.frame)
         self.tUnit.setFixedWidth(70)	
-        self.tUnit.setItem(self.unitList[0])
-        self.tUnit.setItem(self.unitList[1])
-        self.tUnit.setItem(self.unitList[2])
-        self.tUnit.setItem(self.unitList[3])
+        self.tUnit.insertItem(self.unitList[0])
+        self.tUnit.insertItem(self.unitList[1])
+        self.tUnit.insertItem(self.unitList[2])
+        self.tUnit.insertItem(self.unitList[3])
 		
         #Label#
         self.lProduct = QtWidgets.QLabel("Product:")
@@ -201,9 +201,9 @@ class AddInvoiceView(QtWidgets.QGridLayout):
         #TEXT INPUT#
         self.tProduct = QtWidgets.QComboBox(self.frame)
         self.tProduct.setFixedWidth(200)		
-        self.tProduct.setItem(self.productsList[0])
-        self.tProduct.setItem(self.productsList[1])
-        self.tProduct.setItem(self.productsList[2])
+        self.tProduct.insertItem(self.productsList[0])
+        self.tProduct.insertItem(self.productsList[1])
+        self.tProduct.insertItem(self.productsList[2])
 
         #Label#
         self.lUnitPrice = QtWidgets.QLabel("Unit Price: ")
