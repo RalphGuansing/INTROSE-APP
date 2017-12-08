@@ -1,13 +1,19 @@
 import sys
 import pymysql
 import hashlib
+from functools import partial
 from PyQt5 import QtWidgets,QtCore,Qt
 from LoginView import LoginView
 from HomeView import HomeView
-from Accounting.AddAPV import AddAPVView
-from Accounting.AddColumn import AddColumnView
-from Accounting.NewColumn import NewColumnView
-from Accounting.NewGroup import NewGroupView
+from Accounting.Accounting_Home import Accounting_HomeView
+from Accounting.Payable.ViewAPV import AccountsPayable_MonthlyView, input_month_year
+from Accounting.Payable.AddAPV import AddAPVView
+from Accounting.Payable.AddColumn import AddColumnView
+from Accounting.Payable.NewColumn import NewColumnView
+from Accounting.Payable.NewGroup import NewGroupView
+from Accounting.Receivable.Customer_List import Customer_ListView
+from Accounting.Receivable.AccountsReceivable import AccountsReceivableView
+from Accounting.Receivable.AccountsReceivable_Monthly import AccountsReceivable_MonthlyView
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -21,55 +27,190 @@ class MainWindow(QtWidgets.QMainWindow):
         self.cursor = self.db.cursor(pymysql.cursors.DictCursor)
         
         self.login_tab()
-        
-    def showMessage(self, title, message, info=None):
-        
-        """ This Method is responsible for Showing Dialogs if there is an error """
-        
-        infoBox = QtWidgets.QMessageBox()
-        infoBox.setIcon(QtWidgets.QMessageBox.Warning)
-        infoBox.setText(message)
-        if info is not None:
-            infoBox.setInformativeText(info)
-        infoBox.setWindowTitle(title)
-        #infoBox.setDetailedText("Detailed Text")
-        infoBox.setStandardButtons(QtWidgets.QMessageBox.Ok )
-        infoBox.setEscapeButton(QtWidgets.QMessageBox.Close) 
-        infoBox.exec_()
-        
-    def init_navbar(self):
-        """ This method initializes the functionalities of the navbar """
-        #TEMPORARY
-        self.widgetFrame.bAccounting.clicked.connect(self.add_apv_tab)
-        self.widgetFrame.bLogo.clicked.connect(self.home_tab)
+        #self.accounting_home_view()
+        #self.view_receivable_tab()
     
-    def login_tab(self):
-        self.setWindowTitle("LCG Veterinary Trading")
-        self.widgetFrame = SubWindowFrame(LoginView)
-        self.setCentralWidget(self.widgetFrame)    
-        self.widgetFrame.layout.bLogin.clicked.connect(self.login)
-    
-    def home_tab(self):
-        self.setWindowTitle("Home")
-        self.widgetFrame = WindowFrame(HomeView)
+    def cust_monthly_dia(self, func):
+        self.dialog_monthly = DialogFrame("Input",input_month_year,self)
+        self.dialog_monthly.layout.bSubmit.clicked.connect(self.dialog_monthly.close)
+        self.dialog_monthly.layout.bCancel.clicked.connect(self.dialog_monthly.close)
+        self.dialog_monthly.layout.bSubmit.clicked.connect(func)
+        self.dialog_monthly.exec()
+        
+    pass#ACCOUNTING   
+    def accounting_home_view(self):
+        self.setWindowTitle("Accounting")
+        self.widgetFrame = WindowFrame(Accounting_HomeView)
         self.setCentralWidget(self.widgetFrame)
         self.init_navbar()
-        #self.widgetFrame.layout.bLogin.clicked.connect(self.login)
+        self.widgetFrame.layout.bView_APayable.clicked.connect(partial(self.cust_monthly_dia, self.view_payable_tab))
+        self.widgetFrame.layout.bAdd_APayable.clicked.connect(self.add_apv_tab)
+        self.widgetFrame.layout.bView_AReceivable.clicked.connect(self.get_customer_names)
+        
+    pass#RECEIVABLES
+    def view_customer_tab(self, customer_names):
+#        month = self.dialog_monthly.layout.month_choice.value()
+#        year = self.dialog_monthly.layout.year_choice.value()
+        self.setWindowTitle("Customer List")
+        self.widgetFrame = WindowFrame(Customer_ListView, customer_names)
+        self.setCentralWidget(self.widgetFrame)
+        self.init_navbar()
+        self.widgetFrame.layout.tCustomer_table.itemDoubleClicked.connect(self.view_receivable_tab)
+        self.widgetFrame.layout.tCustomer_table.itemActivated.connect(self.view_receivable_tab)
+        #self.get_customer_names()
+        
+    def get_customer_names(self):
+        select_statement = "select customer_name from customer"
+        
+        self.cursor.execute(select_statement)
+        temp = self.cursor.fetchall()
+        #print(temp)
+        self.view_customer_tab(temp)
+
+        
+    def view_receivable_tab(self, customer_name):
+#        customer_name = self.widgetFrame.layout.customer_name
+        print(customer_name.text())
+        customer_name= customer_name.text()
+        
+        self.setWindowTitle("Accounts Receivable")
+        self.widgetFrame = WindowFrame(AccountsReceivableView, customer_name)
+        self.setCentralWidget(self.widgetFrame)
+        self.init_navbar()
+        self.widgetFrame.layout.bMonthly.clicked.connect(partial(self.cust_monthly_dia, self.view_receivable_monthly_tab))
+        
+        self.get_customer_details()
+        self.get_customer_ar()
+        self.get_customer_balance()
     
-    #ACCOUNTING
-    def close_subFrame(self):
+    #FOR ACCOUNTS RECEIVABLE
+    def get_customer_details(self):
+        customer_name = self.widgetFrame.layout.customer_name
+        select_statement = """select customer_name, address from customer where customer_name = '"""+customer_name+"""'"""
+        self.cursor.execute(select_statement)
+        temp = self.cursor.fetchone()
+        #print(temp)
+        self.widgetFrame.layout.input_details(temp)
+    
+    def get_customer_ar(self):
+        customer_name = self.widgetFrame.layout.customer_name
+        select_statement = """select DATE_FORMAT(date,'%M %e, %Y') AS Date, inv_id,amount 
+        from accounts_receivable 
+        where customer_id = (select customer_id from customer where customer_name = '"""+ customer_name +"""') and payment is null"""
+        self.cursor.execute(select_statement)
+        temp = self.cursor.fetchall()
+        #print(temp)
+        self.widgetFrame.layout.input_ar_table(temp)
+    
+    def get_customer_balance(self):
+        customer_name = self.widgetFrame.layout.customer_name
         
-        """ Closes the Subwidget frame if it is visible"""
+        select_statement = """select sum(amount) as balance 
+        from accounts_receivable 
+        where customer_id = (select customer_id from customer where customer_name = '"""+ customer_name +"""') and payment is null"""
         
-        try:
-            if self.subFrame is not None:
-                if self.subFrame.isVisible():
-                    self.subFrame.close()
-                    print("Closing Sub-Widget Frame")
-                else:
-                    print("Closing (with memory)")
-        except:
-            print("Closing")
+        self.cursor.execute(select_statement)
+        temp = self.cursor.fetchone()
+        self.widgetFrame.layout.input_balance(temp)
+        
+        
+        
+        
+    
+
+    pass#MONTHLY RECEIVABLES
+    def view_receivable_monthly_tab(self):
+        self.setWindowTitle("Accounts Receivable")
+        
+        customer_name= self.widgetFrame.layout.customer_name
+        month = self.dialog_monthly.layout.month_choice.value()
+        year = self.dialog_monthly.layout.year_choice.value()
+        
+        self.widgetFrame = WindowFrame(AccountsReceivable_MonthlyView,{"name":customer_name, "month":month, "year":year})
+        
+        self.setCentralWidget(self.widgetFrame)
+        self.init_navbar()
+        self.get_customer_ar_monthly()
+        self.get_customer_beg_monthly()
+        self.get_customer_end_monthly()
+
+    def get_customer_ar_monthly(self):
+        customer_name = self.widgetFrame.layout.customer_name
+        month = self.widgetFrame.layout.selectedMonth
+        year = self.widgetFrame.layout.selectedYear
+        
+        select_statement = """select DATE_FORMAT(date,'%M %e, %Y') AS Date, inv_id,amount,date_paid,pr_id,payment
+        from accounts_receivable 
+        where customer_id = (select customer_id from customer where customer_name = '"""+customer_name+"""') and MONTH(Date) = """+str(month)+""" and YEAR(Date) = """+str(year)+""" """
+        
+        self.cursor.execute(select_statement)
+        temp = self.cursor.fetchall()
+        #print(temp)
+        #print(select_statement)
+        self.widgetFrame.layout.input_ar_table(temp)
+        
+    def get_customer_beg_monthly(self):
+        customer_name = self.widgetFrame.layout.customer_name
+        month = self.widgetFrame.layout.beforeMonth
+        year = self.widgetFrame.layout.beforeYear
+        
+#        customer_name = self.widgetFrame.layout.customer_name
+#        month = self.widgetFrame.layout.selectedMonth
+#        year = self.widgetFrame.layout.selectedYear
+        print('month',month, "year:",year)
+        
+        select_statement = """select IFNULL(sum(amount), 0) - IFNULL(sum(payment), 0) as balance
+        from accounts_receivable 
+        where customer_id = (select customer_id from customer where customer_name = '"""+customer_name+"""') and Date < '"""+str(year)+"-"+str(month)+"-31"+"""' """
+        
+        
+        self.cursor.execute(select_statement)
+        temp = self.cursor.fetchone()
+        print(temp)
+        self.widgetFrame.layout.input_beg_balance(temp)
+        print(select_statement)
+        #self.widgetFrame.layout.input_ar_table(temp)
+    
+    
+    def get_customer_end_monthly(self):
+        customer_name = self.widgetFrame.layout.customer_name
+        month = self.widgetFrame.layout.selectedMonth
+        year = self.widgetFrame.layout.selectedYear
+        
+        select_statement = """select IFNULL(sum(amount), 0) - IFNULL(sum(payment), 0) as balance
+        from accounts_receivable 
+        where customer_id = (select customer_id from customer where customer_name = '"""+customer_name+"""') and Date <= '"""+str(year)+"-"+str(month)+"-31"+"""' """
+        
+        self.cursor.execute(select_statement)
+        temp = self.cursor.fetchone()
+        #print(temp)
+        self.widgetFrame.layout.input_end_balance(temp)
+        #print(select_statement)
+
+        
+    pass#PAYABLES
+    def view_payable_tab(self):
+        month = self.dialog_monthly.layout.month_choice.value()
+        year = self.dialog_monthly.layout.year_choice.value()
+        self.setWindowTitle("Monthly Accounts Payable")
+        self.widgetFrame = WindowFrame(AccountsPayable_MonthlyView, {"month":month, "year":year})
+        self.setCentralWidget(self.widgetFrame)
+        self.init_navbar()
+        self.get_apv_monthly()
+    
+#        self.widgetFrame.layout.bColumn_Add.clicked.connect(self.add_apv_column_window)        
+#        self.widgetFrame.layout.bColumn_Delete.clicked.connect(self.delete_row)
+        
+    def get_apv_monthly(self):
+        month = self.widgetFrame.layout.selectedMonth
+        year = self.widgetFrame.layout.selectedYear
+        
+        select_statement = """select DATE_FORMAT(date,'%M %e, %Y') as Date, name, id_apv, amount from accounts_payable where month(date) = """+str(month)+""" and year(date) = """+str(year)+""" """
+        
+        self.cursor.execute(select_statement)
+        temp = self.cursor.fetchall()
+        #print(temp)
+        self.widgetFrame.layout.input_ap_table(temp)
     
     def add_apv_tab(self):
         self.setWindowTitle("Add Account Payable Voucher")
@@ -155,6 +296,58 @@ class MainWindow(QtWidgets.QMainWindow):
 
         print(credit_statement)
         self.cursor.execute(credit_statement)#Execute
+
+    pass #END OF ACCOUNTING
+        
+    def showMessage(self, title, message, info=None):
+        
+        """ This Method is responsible for Showing Dialogs if there is an error """
+        
+        infoBox = QtWidgets.QMessageBox()
+        infoBox.setIcon(QtWidgets.QMessageBox.Warning)
+        infoBox.setText(message)
+        if info is not None:
+            infoBox.setInformativeText(info)
+        infoBox.setWindowTitle(title)
+        #infoBox.setDetailedText("Detailed Text")
+        infoBox.setStandardButtons(QtWidgets.QMessageBox.Ok )
+        infoBox.setEscapeButton(QtWidgets.QMessageBox.Close) 
+        infoBox.exec_()
+        
+    def init_navbar(self):
+        """ This method initializes the functionalities of the navbar """
+        #TEMPORARY
+        self.widgetFrame.bAccounting.clicked.connect(self.accounting_home_view)
+        self.widgetFrame.bLogo.clicked.connect(self.home_tab)
+    
+    def login_tab(self):
+        self.setWindowTitle("LCG Veterinary Trading")
+        self.widgetFrame = SubWindowFrame(LoginView)
+        self.setCentralWidget(self.widgetFrame)    
+        self.widgetFrame.layout.bLogin.clicked.connect(self.login)
+    
+    def home_tab(self):
+        self.setWindowTitle("Home")
+        self.widgetFrame = WindowFrame(HomeView)
+        self.setCentralWidget(self.widgetFrame)
+        self.init_navbar()
+        #self.widgetFrame.layout.bLogin.clicked.connect(self.login)
+    
+    #ACCOUNTING
+    def close_subFrame(self):
+        
+        """ Closes the Subwidget frame if it is visible"""
+        
+        try:
+            if self.subFrame is not None:
+                if self.subFrame.isVisible():
+                    self.subFrame.close()
+                    print("Closing Sub-Widget Frame")
+                else:
+                    print("Closing (with memory)")
+        except:
+            print("Closing")
+    
 
     #END OF ACCOUNTING
     
@@ -351,6 +544,15 @@ class SubWindow(QtWidgets.QMainWindow):
             temp = self.cursor.fetchone()
             return temp is None
             
+#IMPLEMENTING DIALOG WINDOW
+class DialogFrame(QtWidgets.QDialog):
+    def __init__(self, title,layout, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle(title)
+        self.layout = layout(self)
+        self.setLayout(self.layout)
+        
+        self.resize(300,200)
 class SubWindowFrame(QtWidgets.QWidget):
     
     def __init__(self, layout, extra=None):
