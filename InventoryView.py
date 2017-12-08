@@ -71,7 +71,7 @@ class InventoryDatabase:
 		self.connect.close()
 
 
-	def add_product(self, name, supplier, packaging, perunitprice, retailprice, quantity):
+	def add_product(self, name, supplier, packaging, per_unit_price, retail_price, quantity):
 
 		"""add product to the inventory
 		Args:
@@ -81,13 +81,27 @@ class InventoryDatabase:
 		###Check if the product already exists
 		
 		if self.cursor.execute("SELECT * FROM introse.inventory WHERE productName = '" + name + "'") == 0:
-			self.cursor.execute("INSERT INTO `introse`.`inventory` (`productName`, `supplier`, `packagingType`, `perunitprice`, `retailprice`, `quantity`, `lastupdated`) VALUES ('" + name + "', '" + supplier + "', '" + packaging + "', '" + str(perunitprice) + "', '" + str(retailprice) + "', '" + str(quantity) + "', '" + str(datetime.datetime.now()) + "');")
+			self.cursor.execute("INSERT INTO `introse`.`inventory` (`productName`, `supplier`, `packagingType`, `perunitprice`, `retailprice`, `quantity`, `lastupdated`) VALUES ('" + name + "', '" + supplier + "', '" + packaging + "', '" + str(per_unit_price) + "', '" + str(retail_price) + "', '" + str(quantity) + "', '" + str(datetime.datetime.now()) + "');")
 			self.connect.begin()
 		else:
 			print('Product has already been added')
 
 
-	def add_product_quantity(self, product, quantity):
+	def update_product(self,name,packaging,per_unit_price):
+		if self.is_product_available(name):
+			#temp_product = list(filter(lambda x: x.name == product.name, self.get_product_list()))
+			self.cursor.execute("UPDATE `introse`.`inventory` SET `packagingType`='" + str(packaging) + "',`perunitprice`='" + str(per_unit_price) + "', `lastupdated`='" + str(datetime.datetime.now()) + "' WHERE `productName`='" + str(name) + "';")
+			self.connect.begin()
+		else:
+			print('product does not exist!')		
+
+	def is_product_available(self,name):
+		if self.cursor.execute("SELECT * FROM introse.inventory WHERE productName = '" + name + "'") != 0:
+			return True
+		else:
+			return False		
+
+	def add_product_quantity(self, name, quantity):
 
 		"""add a certain quantity to the product
 		Args:
@@ -96,9 +110,9 @@ class InventoryDatabase:
 
 		"""
 
-		if self.cursor.execute("SELECT * FROM introse.inventory WHERE productName = '" + product.name + "'") != 0:
-			temp_product = list(filter(lambda x: x.name == product.name, self.get_product_list()))
-			self.cursor.execute("UPDATE `introse`.`inventory` SET `quantity`='" + str((temp_product[0].quantity + quantity)) + "', `lastupdated`='" + str(datetime.datetime.now()) + "' WHERE `idinventory`='" + str(temp_product[0].id) + "';")
+		if self.is_product_available(name):
+			temp_product = list(filter(lambda x: x.name == name, self.get_product_list()))
+			self.cursor.execute("UPDATE `introse`.`inventory` SET `quantity`='" + str((temp_product[0].quantity + quantity)) + "', `lastupdated`='" + str(datetime.datetime.now()) + "' WHERE `productName`='" + str(name) + "';")
 			self.connect.begin()
 		else:
 			print('product does not exist!')
@@ -108,7 +122,7 @@ class Product:
 
 	"""Represents the products"""
 
-	def __init__(self, id, name, supplier, packaging, perunitprice, retailprice, quantity, lastupdated):
+	def __init__(self, id, name, supplier, packaging, per_unit_price, retail_price, quantity, last_updated):
 
 		"""Constructor
 		Args:
@@ -125,14 +139,14 @@ class Product:
 		self.name = name
 		self.supplier = supplier
 		self.packaging = packaging
-		self.perunitprice = perunitprice
-		self.retailprice = retailprice
+		self.per_unit_price = per_unit_price
+		self.retail_price = retail_price
 		self.quantity = quantity
-		self.lastupdated = lastupdated
+		self.last_updated = last_updated
 
 
 	def __str__(self):
-		return self.name + '\n' + 'Packaging Type: ' + self.packaging + '\n' + 'Unit Price: ' + str(self.perunitprice) + '\n' + 'Retail Price: ' + str(self.retailprice)
+		return self.name + '\n' + 'Packaging Type: ' + self.packaging + '\n' + 'Unit Price: ' + str(self.per_unit_price) + '\n' + 'Retail Price: ' + str(self.retail_price)
 
 	def __repr__(self):
 		return self.name + '\n' + 'Packaging Type: ' + self.packaging + '\n' + 'Unit Price: ' + str(self.perunitprice) + '\n' + 'Retail Price: ' + str(self.retailprice)
@@ -140,11 +154,9 @@ class Product:
 if __name__ == '__main__':
 	###open database
 	sample = InventoryDatabase()
-	# inv = Inventory(sample.get_product_list(), sample.cursor)
-	# print(sample.get_product_list()[0])
-	# inv.add_product_quantity(sample.get_product_list()[0],30)
-	# inv.add_product('yakult','nestle','bottle',10,10,20)
-	# sample.close_connection()
+	temp = sample.get_product_list()
+	sample.update_product(temp[0],'bottle',10)
+	sample.close_connection()
 
 
 
