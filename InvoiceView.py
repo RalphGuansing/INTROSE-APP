@@ -87,7 +87,7 @@ class Invoice:
 		Bookkeep.settotal(self.amount, self.nonvat, self.taxable, self.optax, self.commission, False)
 
 	@classmethod
-	def settotal(cls, amount, nonvat, taxable, optax, commission, value):
+	def set_total(cls, amount, nonvat, taxable, optax, commission, value):
 		"""Method for setting the total invoice, nonvat, taxble, output tax and commission.
 		Args:
 			amount (float): The first parameter, value of purchase without tax reduction.
@@ -111,7 +111,7 @@ class Invoice:
 			Bookkeep.__totalcommission += commission
 				
 	@classmethod
-	def gettotal(cls):
+	def get_total(cls):
 		"""Method for returning the total invoice, nonvat, taxble, output tax and commission.
 		Returns:
 			[__totalinvoice, __totalnvat, __totaltaxable, __totaloptax, __totalcommission]
@@ -178,7 +178,7 @@ class InvoiceDB:
 		sql_statement = pd.read_sql("SELECT invoice_amount, invoice_nonvat, invoice_vat, invoice_taxable FROM lcg_db.invoice;",self.connect)
 		return [sql_statement.invoice_amount.sum(), sql_statement.invoice_nonvat.sum(), sql_statement.invoice_vat.sum(), sql_statement.invoice_taxable.sum()]
 
-	def get_clientname(self, client_id=None):
+	def get_client_name(self, client_id=None):
 		"""Method for getting the client names from the database.
 		Args:
 			client_id (int, optional): The first parameter, checks if looking for specific client, defaults to None.
@@ -193,7 +193,7 @@ class InvoiceDB:
 			sql_statement = pd.read_sql("SELECT client_name, client_address FROM lcg_db.client WHERE idclient = '" + str(client_id) + "';",self.connect)
 			return sql_statement.client_name[0]
 
-	def get_sellername(self, seller_id=None):
+	def get_seller_name(self, seller_id=None):
 		"""Method for getting the client names from the database.
 		Args:
 			seller_id (int, optional): The first parameter, checks if looking for specific seller, defaults to None.
@@ -208,7 +208,7 @@ class InvoiceDB:
 			sql_statement = pd.read_sql("SELECT agent_name FROM lcg_db.agent WHERE idagent = '" + str(seller_id) + "' ;",self.connect)
 			return sql_statement.agent_name[0]
 
-	def get_lastid(self):
+	def get_last_id(self):
 		"""Method for getting the recent id from the database.
 		Returns:
 				idinvoice
