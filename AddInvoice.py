@@ -55,7 +55,7 @@ class AddInvoiceView(QtWidgets.QGridLayout):
         self.linvoiceNum = QtWidgets.QLabel("Invoice Number: ")
         self.linvoiceNum.setStyleSheet('QLabel { font-size: 12pt; padding: 10px;}')
 
-        self.tinvoiceNum = QtWidgets.QLabel("System Generated")
+        self.tinvoiceNum = QtWidgets.QLabel(str(invnum))
         self.tinvoiceNum.setStyleSheet('QLabel { font-size: 12pt; padding: 10px;}')			
 
         #Label#
@@ -65,7 +65,7 @@ class AddInvoiceView(QtWidgets.QGridLayout):
         #TEXT INPUT#
         self.tBuyer = QtWidgets.QComboBox(self.frame)
         for x in range(len(client_list)):
-            self.tBuyer.insertItem(x, client_list[x])
+            self.tBuyer.insertItem(x, str(client_list[x][0]))
         #self.tProduct_code.
         #self.tProduct_code.resize(280, 40)
 
@@ -90,10 +90,7 @@ class AddInvoiceView(QtWidgets.QGridLayout):
 
 
         #TEXT INPUT#
-        self.tAdd = QtWidgets.QLineEdit(self.frame)
-        self.tAdd.setText("Automated")
-        self.tAdd.setReadOnly(1)
-        self.tAdd.setFixedWidth(300)		
+        self.tAdd = QtWidgets.QLabel(str(client_list[self.tBuyer.currentIndex][1]))	
 		
         #Label#
         self.lTerms = QtWidgets.QLabel("Terms:")
