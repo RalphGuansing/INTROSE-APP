@@ -2,12 +2,31 @@ import sys
 from PyQt5 import QtWidgets,QtCore
 
 
+
 class AddInvoiceView(QtWidgets.QGridLayout):
     def __init__(self, frame):
         super().__init__()
         self.frame = frame
         self.frame.setWindowTitle("Invoice")
+        self.added_products = []
+        self.current_row = 0
         self.init_ui()
+
+    def add_products(self):
+        try:
+            self.tProduct_Table.setItem(self.current_row,0,QtWidgets.QTableWidgetItem(str(self.tQuantity.value())))
+            self.tProduct_Table.setItem(self.current_row,1,QtWidgets.QTableWidgetItem(str(self.tUnit.text())))
+            self.tProduct_Table.setItem(self.current_row,2,QtWidgets.QTableWidgetItem(self.products[self.tProduct.currentIndex()].name))
+            self.tProduct_Table.setItem(self.current_row,3,QtWidgets.QTableWidgetItem(str(self.tUnitPrice.text())))
+            self.tProduct_Table.setItem(self.current_row,4,QtWidgets.QTableWidgetItem(str(int(self.tUnitPrice.text()) * int(self.tQuantity.value()))))
+        except ValueError:
+            print('Value Error: Wrong input type')
+
+        self.tQuantity.setValue(0)
+        self.tUnit.setText('')
+        self.tUnitPrice.setText('')
+
+        self.current_row += 1
 
     def init_ui(self):
         #Create Widgets
@@ -169,6 +188,7 @@ class AddInvoiceView(QtWidgets.QGridLayout):
         self.bAdd = QtWidgets.QPushButton("Add")
         self.bAdd.setStyleSheet('QPushButton {color: white;background-color: #1db6d1;border-style: outset;border-width: 2px;border-radius: 10px;border-color: beige;font: bold 12px;min-width: 10em;padding: 4px;}')
         self.bAdd.setFixedWidth(200)
+        self.bAdd.clicked.connect(self.add_products)
         
         self.bDelete = QtWidgets.QPushButton("Delete")
         self.bDelete.setStyleSheet('QPushButton {color: white;background-color: #6017a5;border-style: outset;border-width: 2px;border-radius: 10px;border-color: beige;font: bold 12px;min-width: 10em;padding: 4px;}')        
