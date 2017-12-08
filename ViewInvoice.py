@@ -1,8 +1,9 @@
 import sys
 from PyQt5 import QtWidgets,QtCore
 
-from InvoiceView import *
 
+
+#finish setting client name later
 
 
 class ViewInvoice(QtWidgets.QGridLayout):
@@ -13,6 +14,14 @@ class ViewInvoice(QtWidgets.QGridLayout):
         self.init_ui()
 
     def init_ui(self):
+
+        invo_db = InvoiceDB()
+        components = []
+        client_list = []
+        seller_list = []
+        client_list = invo_db.get_client_name()
+        seller_list = invo_db.get_seller_name()
+        last_id = invo_db.get_last_id()
 
         component_item = Component(name, origprice, unitprice, quantity, nonvat)
         self.totalamount = component_item.unitprice * component_item.quantity
@@ -35,7 +44,10 @@ class ViewInvoice(QtWidgets.QGridLayout):
 
 		#Label#
         self.lSeller = QtWidgets.QLabel("Seller: ")
-        self.lSeller.setStyleSheet('QLabel { font-size: 12pt; padding: 10px;}')		
+        self.lSeller.setStyleSheet('QLabel { font-size: 12pt; padding: 10px;}')	
+
+        self.tSeller = QtWidgets.QLabel(seller_list[0])
+        self.tSeller.setStyleSheet('QLabel { font-size: 12pt; padding: 10px;}')	
 		
 		#Label#
         self.lTerms = QtWidgets.QLabel("Terms: ")
@@ -59,12 +71,7 @@ class ViewInvoice(QtWidgets.QGridLayout):
         self.tProduct_Table.setColumnWidth(2, tablewidth / 2)
         self.tProduct_Table.setColumnWidth(3, tablewidth / 6)		
         self.tProduct_Table.setColumnWidth(4, tablewidth / 6)
-        self.tProduct_Table.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)		
-        self.tProduct_Table.setItem(0, 0, component_item.quantity)
-        self.tProduct_Table.setItem(1, 1, "unit")
-        self.tProduct_Table.setItem(2, 2, component_item.name)
-        self.tProduct_Table.setItem(3, 3, component_item.unitprice)
-        self.tProduct_Table.setItem(4, 4, self.totalamount)
+        self.tProduct_Table.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
 
 
         #self.lnumProducts = QtWidgets.QLabel("Number of Products:")
@@ -120,7 +127,8 @@ class ViewInvoice(QtWidgets.QGridLayout):
         self.addWidget(self.lInvNum, 1, 2, 1, 1)
         self.addWidget(self.lDate, 1, 4, 1, 1)		
         self.addWidget(self.lChargedTo, 2, 2, 1, 1)	
-        self.addWidget(self.lSeller, 2, 4, 1, 1)		
+        self.addWidget(self.lSeller, 2, 4, 1, 1)
+        self.addWidget(self.tSeller, 2, 5, 1, 1)		
         self.addWidget(self.lAddress, 3, 2, 1, 1)			
         self.addWidget(self.lTerms, 3, 4, 1, 1)	
         self.addWidget(self.lProduct_Table, 4, 2, 1, 1)	        

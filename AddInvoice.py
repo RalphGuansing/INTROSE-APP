@@ -83,6 +83,8 @@ class AddInvoiceView(QtWidgets.QGridLayout):
 
         #TEXT INPUT#
         self.tSeller = QtWidgets.QComboBox(self.frame)
+        for x in range(len(seller_list)):
+            self.tSeller.insertItem(x, seller_list[x])
         
 		#Label#
         self.lAdd = QtWidgets.QLabel("Address:")
@@ -90,7 +92,8 @@ class AddInvoiceView(QtWidgets.QGridLayout):
 
 
         #TEXT INPUT#
-        self.tAdd = QtWidgets.QLabel(str(client_list[self.tBuyer.currentIndex][1]))	
+        self.tAdd = QtWidgets.QLabel("")
+        self.tAdd.setText(str(client_list[self.tBuyer.currentIndex][1]))	
 		
         #Label#
         self.lTerms = QtWidgets.QLabel("Terms:")
