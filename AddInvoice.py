@@ -11,6 +11,12 @@ class AddInvoiceView(QtWidgets.QGridLayout):
         self.frame.setWindowTitle("Invoice")
         self.added_products = []
         self.current_row = 0
+        self.component_item1 = Component(name, origprice, unitprice, quantity, unit, nonvat)
+        self.component_item2 = Component(name, origprice, unitprice, quantity, unit, nonvat)
+        self.component_item3 = Component(name, origprice, unitprice, quantity, unit, nonvat)
+        self.component_item4 = Component(name, origprice, unitprice, quantity, unit, nonvat)
+        self.component_item5 = Component(name, origprice, unitprice, quantity, unit, nonvat)
+
         self.init_ui()
 
     def add_products(self):
@@ -23,6 +29,7 @@ class AddInvoiceView(QtWidgets.QGridLayout):
         except ValueError:
             print('Value Error: Wrong input type')
 
+
         self.tQuantity.setValue(0)
         self.tUnit.setText('')
         self.tUnitPrice.setText('')
@@ -30,7 +37,7 @@ class AddInvoiceView(QtWidgets.QGridLayout):
         self.current_row += 1
 
     def change_address_tag(self):
-        self.tAdd.setText(str(self.client_list[self.tBuyer.currentIndex][1]))    
+        self.tAdd.setText(str(self.client_list[self.tBuyer.currentIndex()][1]))    
 
 
     def init_ui(self):
@@ -45,7 +52,9 @@ class AddInvoiceView(QtWidgets.QGridLayout):
         last_id = invo_db.get_last_id()
         invnum = last_id + 1
         self.termsList = ("30 days", "60 days", "90 days", "1 year")
-
+        self.unitList = ("Tetrapack", "Sachet", "Pack", "Buy 1 Take 1")
+        self.productsList = ("Yakult", "Milo", "Hotdog")
+        #Quantity, Unit, Articles, Unit Price, Amount
         
         self.lInvoice_Details = QtWidgets.QLabel("INVOICE DETAILS")
         self.lInvoice_Details.setStyleSheet('QLabel {font: bold 50px; font-size: 12pt; padding: 10px;}')
@@ -164,8 +173,8 @@ class AddInvoiceView(QtWidgets.QGridLayout):
         self.lprofitTotal = QtWidgets.QLabel("Total profit: (system generated)")
         self.lprofitTotal.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         
-        self.lAddPoduct = QtWidgets.QLabel("PRODUCT DETAILS")
-        self.lAddPoduct.setStyleSheet('QLabel {font: bold 50px; font-size: 12pt; padding: 10px;}')
+        self.lAddProduct = QtWidgets.QLabel("PRODUCT DETAILS")
+        self.lAddProduct.setStyleSheet('QLabel {font: bold 50px; font-size: 12pt; padding: 10px;}')
         
 		#Label#
         self.lQuantity = QtWidgets.QLabel("Quantity: ")
@@ -180,6 +189,10 @@ class AddInvoiceView(QtWidgets.QGridLayout):
 
         self.tUnit = QtWidgets.QComboBox(self.frame)
         self.tUnit.setFixedWidth(70)	
+        self.tUnit.setItem(self.unitList[0])
+        self.tUnit.setItem(self.unitList[1])
+        self.tUnit.setItem(self.unitList[2])
+        self.tUnit.setItem(self.unitList[3])
 		
         #Label#
         self.lProduct = QtWidgets.QLabel("Product:")
@@ -188,8 +201,9 @@ class AddInvoiceView(QtWidgets.QGridLayout):
         #TEXT INPUT#
         self.tProduct = QtWidgets.QComboBox(self.frame)
         self.tProduct.setFixedWidth(200)		
-        #self.tProduct_code.
-        #self.tProduct_code.resize(280, 40)
+        self.tProduct.setItem(self.productsList[0])
+        self.tProduct.setItem(self.productsList[1])
+        self.tProduct.setItem(self.productsList[2])
 
         #Label#
         self.lUnitPrice = QtWidgets.QLabel("Unit Price: ")
@@ -259,7 +273,7 @@ class AddInvoiceView(QtWidgets.QGridLayout):
 
         self.addWidget(self.lprofitTotal, 17, 6, 1, 1)
         
-        self.addWidget(self.lAddPoduct, 8, 3, 1, 1)
+        self.addWidget(self.lAddProduct, 8, 3, 1, 1)
 
         self.addWidget(self.lProduct, 9, 3, 1, 1)
         self.addWidget(self.tProduct, 9, 4, 1, 1)
