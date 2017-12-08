@@ -36,7 +36,8 @@ class ViewInventoryList(QtWidgets.QGridLayout):
         self.tInventory_Table.setColumnWidth(0, tablewidth / 6)
         self.tInventory_Table.setColumnWidth(1, tablewidth / 6)
         self.tInventory_Table.setColumnWidth(2, tablewidth / 2)
-        self.tInventory_Table.setColumnWidth(3, tablewidth / 6)					
+        self.tInventory_Table.setColumnWidth(3, tablewidth / 6)	
+        self.tInventory_Table.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)				
 
         self.Add_Inventory_Table = QtWidgets.QPushButton("Add Inventory")
         self.Add_Inventory_Table.setStyleSheet('QPushButton { font-size: 12pt; padding: 10px;}')	

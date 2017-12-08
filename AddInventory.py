@@ -66,8 +66,7 @@ class AddInventoryView(QtWidgets.QGridLayout):
         self.lDate = QtWidgets.QLabel("Date: ")
         self.lDate.setStyleSheet('QLabel { font-size: 12pt; padding: 10px;}')
 
-        self.tDate = QtWidgets.QLabel("System Generated")
-        self.tDate.setStyleSheet('QLabel { font-size: 12pt; padding: 10px;}')		
+        self.tDate = QtWidgets.QCalendarWidget()
 				
 		#Label#
         self.lProduct_Table = QtWidgets.QLabel("PRODUCTS")
@@ -84,7 +83,8 @@ class AddInventoryView(QtWidgets.QGridLayout):
         self.tProduct_Table.setColumnWidth(1, tablewidth / 5)
         self.tProduct_Table.setColumnWidth(2, tablewidth / 3)
         self.tProduct_Table.setColumnWidth(3, tablewidth / 8)		
-        self.tProduct_Table.setColumnWidth(4, tablewidth / 6)			
+        self.tProduct_Table.setColumnWidth(4, tablewidth / 6)
+        self.tProduct_Table.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)			
 
         self.Add_Product_Table = QtWidgets.QPushButton("Add Product")
         self.Add_Product_Table.setStyleSheet('QPushButton { font-size: 12pt; padding: 10px;}')
