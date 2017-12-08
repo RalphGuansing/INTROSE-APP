@@ -15,7 +15,7 @@ class AddInvoiceView(QtWidgets.QGridLayout):
     def add_products(self):
         try:
             self.tProduct_Table.setItem(self.current_row,0,QtWidgets.QTableWidgetItem(str(self.tQuantity.value())))
-            self.tProduct_Table.setItem(self.current_row,1,QtWidgets.QTableWidgetItem(str(self.tUnit.text())))
+            self.tProduct_Table.setItem(self.current_row,1,QtWidgets.QTableWidgetItem(str(self.tUnit.currentText())))
             self.tProduct_Table.setItem(self.current_row,2,QtWidgets.QTableWidgetItem(self.products[self.tProduct.currentIndex()].name))
             self.tProduct_Table.setItem(self.current_row,3,QtWidgets.QTableWidgetItem(str(self.tUnitPrice.text())))
             self.tProduct_Table.setItem(self.current_row,4,QtWidgets.QTableWidgetItem(str(int(self.tUnitPrice.text()) * int(self.tQuantity.value()))))
@@ -31,6 +31,14 @@ class AddInvoiceView(QtWidgets.QGridLayout):
     def init_ui(self):
         #Create Widgets
         
+        invo_db = InvoiceDB()
+        components = []
+        client_list = []
+        seller_list = []
+        client_list = invo_db.get_client_name()
+        seller_list = invo_db.get_seller_name()
+        last_id = invo_db.get_last_id()
+        invnum = last_id + 1
         self.termsList = ("30 days", "60 days", "90 days", "1 year")
 
         
@@ -55,6 +63,8 @@ class AddInvoiceView(QtWidgets.QGridLayout):
 
         #TEXT INPUT#
         self.tBuyer = QtWidgets.QComboBox(self.frame)
+        for x in client_list
+            self.tBuyer.insertItem(x, client_list[x])
         #self.tProduct_code.
         #self.tProduct_code.resize(280, 40)
 
