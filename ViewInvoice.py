@@ -1,6 +1,9 @@
 import sys
 from PyQt5 import QtWidgets,QtCore
 
+from InvoiceView import *
+
+
 
 class ViewInvoice(QtWidgets.QGridLayout):
     def __init__(self, frame):
@@ -10,6 +13,10 @@ class ViewInvoice(QtWidgets.QGridLayout):
         self.init_ui()
 
     def init_ui(self):
+
+        component_item = Component(name, origprice, unitprice, quantity, nonvat)
+        self.totalamount = component_item.unitprice * component_item.quantity
+
         #Create Widgets
         self.lInvoice_Details = QtWidgets.QLabel("INVOICE")
         self.lInvoice_Details.setStyleSheet('QLabel {font: bold 50px; font-size: 12pt; padding: 10px;}')
@@ -52,7 +59,12 @@ class ViewInvoice(QtWidgets.QGridLayout):
         self.tProduct_Table.setColumnWidth(2, tablewidth / 2)
         self.tProduct_Table.setColumnWidth(3, tablewidth / 6)		
         self.tProduct_Table.setColumnWidth(4, tablewidth / 6)
-        self.tProduct_Table.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)			
+        self.tProduct_Table.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)		
+        self.tProduct_Table.setItem(0, 0, component_item.quantity)
+        self.tProduct_Table.setItem(1, 1, "unit")
+        self.tProduct_Table.setItem(2, 2, component_item.name)
+        self.tProduct_Table.setItem(3, 3, component_item.unitprice)
+        self.tProduct_Table.setItem(4, 4, self.totalamount)
 
 
         #self.lnumProducts = QtWidgets.QLabel("Number of Products:")
