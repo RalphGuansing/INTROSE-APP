@@ -1,6 +1,7 @@
 import sys
 from PyQt5 import QtWidgets,QtCore
 
+from InvoiceView import *
 
 
 class AddInvoiceView(QtWidgets.QGridLayout):
@@ -63,7 +64,7 @@ class AddInvoiceView(QtWidgets.QGridLayout):
 
         #TEXT INPUT#
         self.tBuyer = QtWidgets.QComboBox(self.frame)
-        for x in client_list
+        for x in range(len(client_list)):
             self.tBuyer.insertItem(x, client_list[x])
         #self.tProduct_code.
         #self.tProduct_code.resize(280, 40)
