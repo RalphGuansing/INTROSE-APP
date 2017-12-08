@@ -40,7 +40,7 @@ class AddInvoiceView(QtWidgets.QGridLayout):
         components = []
         client_list = []
         seller_list = []
-        client_list = invo_db.get_client_name()
+        self.client_list = invo_db.get_client_name()
         self.seller_list = invo_db.get_seller_name()
         last_id = invo_db.get_last_id()
         invnum = last_id + 1
@@ -68,8 +68,8 @@ class AddInvoiceView(QtWidgets.QGridLayout):
 
         #TEXT INPUT#
         self.tBuyer = QtWidgets.QComboBox(self.frame)
-        for x in range(len(client_list)):
-            self.tBuyer.insertItem(x, str(client_list[x][0]))
+        for x in range(len(self.client_list)):
+            self.tBuyer.insertItem(x, str(self.client_list[x][0]))
         self.tBuyer.activated.connect(self.change_address_tag)
         #self.tProduct_code.
         #self.tProduct_code.resize(280, 40)
@@ -88,8 +88,8 @@ class AddInvoiceView(QtWidgets.QGridLayout):
 
         #TEXT INPUT#
         self.tSeller = QtWidgets.QComboBox(self.frame)
-        for x in range(len(seller_list)):
-            self.tSeller.insertItem(x, seller_list[x])
+        for x in range(len(self.seller_list)):
+            self.tSeller.insertItem(x, self.seller_list[x])
         
 		#Label#
         self.lAdd = QtWidgets.QLabel("Address:")
