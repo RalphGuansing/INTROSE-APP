@@ -12,6 +12,7 @@ class AddInvoiceView(QtWidgets.QGridLayout):
     def init_ui(self):
         #Create Widgets
         
+        self.termsList = ("30 days", "60 days", "90 days", "1 year")
 
         
         self.lInvoice_Details = QtWidgets.QLabel("INVOICE DETAILS")
@@ -42,8 +43,8 @@ class AddInvoiceView(QtWidgets.QGridLayout):
         self.lDate = QtWidgets.QLabel("Date: ")
         self.lDate.setStyleSheet('QLabel { font-size: 12pt; padding: 10px;}')
 
-        self.tDate = QtWidgets.QLabel("System Generated")
-        self.tDate.setStyleSheet('QLabel { font-size: 12pt; padding: 10px;}')		
+        self.tDate = QtWidgets.QCalendarWidget()
+
 		
 		
         #Label#
@@ -70,6 +71,10 @@ class AddInvoiceView(QtWidgets.QGridLayout):
 
         #TEXT INPUT#
         self.tTerms = QtWidgets.QComboBox(self.frame)
+        self.tTerms.insertItem(0, self.termsList[0])
+        self.tTerms.insertItem(1, self.termsList[1])
+        self.tTerms.insertItem(2, self.termsList[2])
+        self.tTerms.insertItem(3, self.termsList[3])
 		
 		#Label#
         self.lProduct_Table = QtWidgets.QLabel("PRODUCTS")
@@ -86,7 +91,8 @@ class AddInvoiceView(QtWidgets.QGridLayout):
         self.tProduct_Table.setColumnWidth(1, tablewidth / 8)
         self.tProduct_Table.setColumnWidth(2, tablewidth / 2)
         self.tProduct_Table.setColumnWidth(3, tablewidth / 8)		
-        self.tProduct_Table.setColumnWidth(4, tablewidth / 8)			
+        self.tProduct_Table.setColumnWidth(4, tablewidth / 8)
+        self.tProduct_Table.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)			
 
         self.Add_Product_Table = QtWidgets.QPushButton("Add Product")
         self.Add_Product_Table.setStyleSheet('QPushButton { font-size: 12pt; padding: 10px;}')
@@ -138,7 +144,7 @@ class AddInvoiceView(QtWidgets.QGridLayout):
         self.lUnit = QtWidgets.QLabel("Unit: ")
         self.lUnit.setStyleSheet('QLabel { font-size: 12pt; padding: 10px;}')
 
-        self.tUnit = QtWidgets.QLineEdit(self.frame)
+        self.tUnit = QtWidgets.QComboBox(self.frame)
         self.tUnit.setFixedWidth(70)	
 		
         #Label#

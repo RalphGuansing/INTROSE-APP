@@ -51,7 +51,8 @@ class ViewInvoice(QtWidgets.QGridLayout):
         self.tProduct_Table.setColumnWidth(1, tablewidth / 6)
         self.tProduct_Table.setColumnWidth(2, tablewidth / 2)
         self.tProduct_Table.setColumnWidth(3, tablewidth / 6)		
-        self.tProduct_Table.setColumnWidth(4, tablewidth / 6)			
+        self.tProduct_Table.setColumnWidth(4, tablewidth / 6)
+        self.tProduct_Table.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)			
 
 
         #self.lnumProducts = QtWidgets.QLabel("Number of Products:")

@@ -34,7 +34,8 @@ class ViewInvoice(QtWidgets.QGridLayout):
         self.tProduct_Table.setColumnWidth(0, tablewidth / 6)
         self.tProduct_Table.setColumnWidth(1, tablewidth / 6)
         self.tProduct_Table.setColumnWidth(2, tablewidth / 2)
-        self.tProduct_Table.setColumnWidth(3, tablewidth / 6)					
+        self.tProduct_Table.setColumnWidth(3, tablewidth / 6)
+        self.tProduct_Table.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)					
 
         self.Add_Product_Table = QtWidgets.QPushButton("Add Product")
         self.Add_Product_Table.setStyleSheet('QPushButton { font-size: 12pt; padding: 10px;}')
