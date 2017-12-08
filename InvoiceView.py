@@ -55,7 +55,7 @@ class InvoiceDB:
 		seller_id = sql_statement.idagent[0]
 		sql_statement = "INSERT INTO `lcg_db`.`invoice` (`invoice_buyer`, `invoice_seller`, `invoice_date`, `invoice_term`, `invoice_ddate`,`invoice_amount`, `invoice_nonvat`, `invoice_vat`, `invoice_taxable`, `invoice_profit`) VALUES ('" + str(client_id) + "', '" + str(seller_id) + "', '" + str(issue_date) + "', '" + terms + "', '" + str(ddate) + "', '" + str(amount) + "', '" + str(nonvat) + "', '" + str(vat) + "', '" + str(taxable) + "', '" + str(profit) + "');"
 		self.cursor.execute(sql_statement)
-		l_id = InvoiceDB.get_lastid(self)
+		l_id = InvoiceDB.get_last_id(self)
 		for component in components:
 			sql_statement = "INSERT INTO `lcg_db`.`component` (`component_invoicenum`, `component_name`, `component_quantity`, `component_origprice`, `component_unitprice`) VALUES ('" + str(l_id) + "', '" + str(component.name) + "', '" + str(component.quantity) + "', '"+ str(component.origprice) +"', '" + str(component.unitprice) + "');"
 			self.cursor.execute(sql_statement)
@@ -137,8 +137,8 @@ class InvoiceDB:
 		"""
 		sql_statement = pd.read_sql("SELECT * FROM lcg_db.invoice WHERE idinvoice = '" + str(invoice_number) + "';", self.connect)
 		invoice_query = [(row[1][0], row[1][1], row[1][2], row[1][3], row[1][4], row[1][5], row[1][6], row[1][7], row[1][8], row[1][9], row[1][10]) for row in sql_statement.iterrows()]
-		client_name = InvoiceDB.get_clientname(self, invoice_query[0][1])
-		seller_name = InvoiceDB.get_sellername(self, invoice_query[0][2])
+		client_name = InvoiceDB.get_client_name(self, invoice_query[0][1])
+		seller_name = InvoiceDB.get_seller_name(self, invoice_query[0][2])
 		return [invoice_query[0][0], client_name, seller_name, invoice_query[0][3], invoice_query[0][4], invoice_query[0][5], invoice_query[0][6], invoice_query[0][7], invoice_query[0][8], invoice_query[0][9], invoice_query[0][10]]
 
 	def close_connection(self):
