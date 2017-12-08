@@ -139,7 +139,7 @@ class MainWindow(QtWidgets.QMainWindow):
         month = self.widgetFrame.layout.selectedMonth
         year = self.widgetFrame.layout.selectedYear
         
-        select_statement = """select DATE_FORMAT(date,'%M %e, %Y') AS Date, inv_id,amount,date_paid,pr_id,payment
+        select_statement = """select DATE_FORMAT(date,'%M %e, %Y') AS Date, inv_id,amount,DATE_FORMAT(date_paid,'%M %e, %Y') AS date_paid,pr_id,payment
         from accounts_receivable 
         where customer_id = (select customer_id from customer where customer_name = '"""+customer_name+"""') and MONTH(Date) = """+str(month)+""" and YEAR(Date) = """+str(year)+""" """
         
@@ -212,6 +212,7 @@ class MainWindow(QtWidgets.QMainWindow):
         #print(temp)
         self.widgetFrame.layout.input_ap_table(temp)
     
+    pass#ADD PAYABLES
     def add_apv_tab(self):
         self.setWindowTitle("Add Account Payable Voucher")
         self.widgetFrame = WindowFrame(AddAPVView)
@@ -224,6 +225,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def add_apv_column_window(self):
         col_data = self.widgetFrame.layout.column_data
         self.subFrame = SubWindow(col_data, self.db, self)
+        #self.subFrame = AddColumnDialogFrame(col_data,self.db, "title",self, self.widgetFrame)
         #self.subFrame.subwidgetFrame.layout.bAdd.clicked.connect(self.transfer_add_apv)
         self.subFrame.show()
         #sys.exit(app.exec_())
@@ -333,7 +335,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.init_navbar()
         #self.widgetFrame.layout.bLogin.clicked.connect(self.login)
     
-    #ACCOUNTING
     def close_subFrame(self):
         
         """ Closes the Subwidget frame if it is visible"""
@@ -349,7 +350,6 @@ class MainWindow(QtWidgets.QMainWindow):
             print("Closing")
     
 
-    #END OF ACCOUNTING
     
     def login(self):
         username = self.widgetFrame.layout.tUsername.text()
@@ -380,6 +380,7 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             self.showMessage("Invalid Entry", "Invalid username or password")
 
+            
 class SubWindow(QtWidgets.QMainWindow):
     
     def __init__(self, col_data, db, mainwindow, parent=None):
@@ -545,6 +546,9 @@ class SubWindow(QtWidgets.QMainWindow):
             return temp is None
             
 #IMPLEMENTING DIALOG WINDOW
+
+
+
 class DialogFrame(QtWidgets.QDialog):
     def __init__(self, title,layout, parent=None):
         super().__init__(parent)
