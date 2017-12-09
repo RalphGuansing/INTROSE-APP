@@ -9,6 +9,9 @@ class AddInvoiceConfirm(QtWidgets.QGridLayout):
         self.frame.setWindowTitle("View Invoice")
         self.init_ui()
 
+    def add_to_table(self, row, column, text):
+        self.tProduct_Table.setItem(row,column,QtWidgets.QTableWidgetItem(text))
+
     def init_ui(self):
         #Create Widgets
         self.lInvoice_Details = QtWidgets.QLabel("INVOICE")
@@ -108,5 +111,19 @@ class AddInvoiceConfirm(QtWidgets.QGridLayout):
         
         self.addWidget(self.bBack, 15, 2, 1, 1)
         
-        self.addWidget(self.bAddInvoice, 15, 3, 1, 1)        
+        self.addWidget(self.bAddInvoice, 15, 3, 1, 1)
+
+class WindowFrame(QtWidgets.QWidget):
+    def __init__(self, layout):
+        super().__init__()
+        self.setWindowTitle("Window")
+        self.layout = layout(self)
+        self.setLayout(self.layout)
+
+class ConfirmWindow(QtWidgets.QMainWindow):
+    def __init__(self, parent=None):
+        super(ConfirmWindow, self).__init__(parent)
+        self.resize(420,420)
+        self.layout = WindowFrame(AddInvoiceConfirm)
+        self.setCentralWidget(self.layout)        
         
