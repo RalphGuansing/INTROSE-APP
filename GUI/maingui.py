@@ -42,9 +42,9 @@ class MainWindow(QtWidgets.QMainWindow):
         #self.view_receivable_tab()
     
     def inventory_view(self):
-        self.inventory = WindowFrame(Tabs)
+        self.widgetFrame = WindowFrame(Tabs)
+        self.setCentralWidget(self.widgetFrame)
         self.init_navbar()
-        self.setCentralWidget(self.inventory)
 
     #RALPH
     def cust_monthly_dia(self, func):
