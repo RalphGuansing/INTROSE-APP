@@ -12,13 +12,9 @@ class AddInvoiceView(QtWidgets.QGridLayout):
         self.added_products = []
         self.current_row = 0
         self.components = []
-        #self.component_item1 = Component(name, origprice, unitprice, quantity, unit, nonvat)
-        #self.component_item2 = Component(name, origprice, unitprice, quantity, unit, nonvat)
-        #self.component_item3 = Component(name, origprice, unitprice, quantity, unit, nonvat)
-        #self.component_item4 = Component(name, origprice, unitprice, quantity, unit, nonvat)
-        #self.component_item5 = Component(name, origprice, unitprice, quantity, unit, nonvat)
 
         self.init_ui()
+    
 
     def add_products(self):
         try:
@@ -43,9 +39,86 @@ class AddInvoiceView(QtWidgets.QGridLayout):
         self.current_row += 1
 
     def change_address_tag(self):
-        self.tAdd.setText(str(self.client_list[self.tBuyer.currentIndex()][1]))    
+        self.tAdd.setText(str(self.client_list[self.tBuyer.currentIndex()][1]))
+        
+        
+        
+    #SETTERS
+    def set_term_list(self, term_list):
+        """This method sets the term list for invoice
+            term_list(['str']): contains an array of strings for term
+        """ 
+        self.tTerms.clear()
+        for i,term in enumerate(term_list):
+            self.tTerms.insertItem(i,term)
+    
+    def set_unit_list(self, unit_list):
+        """This method sets the unit list for invoice
+            unit_list(['str']): contains an array of strings for units
+        """ 
+        self.tUnit.clear()
+        for i,unit in enumerate(unit_list):
+            self.tUnit.insertItem(i,unit)
+            
+    def set_product_list(self, product_list):
+        """This method sets the product list for invoice
+            product_list(['str']): contains an array of strings for products
+        """ 
+        self.tProduct.clear()
+        for i,product in enumerate(product_list):
+            self.tProduct.insertItem(i,unit)
+            
+    def set_buyer_list(self, buyer_list):
+        """This method sets the buyer list for invoice
+            buyer_list(['str']): contains an array of strings for buyers
+        """ 
+        self.tBuyer.clear()
+        for i,buyer in enumerate(buyer_list):
+            self.tBuyer.insertItem(i,buyer)
+    
+    def add_product_to_table(self, product_name, quantity, unit, unit_price, amount):
+        """This method adds a product to the products table"""
 
-
+        self.tProduct_Table.insertRow(self.tProduct_Table.rowCount())
+        self.tProduct_Table.setItem(self.tProduct_Table.rowCount()-1,0,QtWidgets.QTableWidgetItem(str(quantity)))
+        self.tProduct_Table.setItem(self.tProduct_Table.rowCount()-1,1,QtWidgets.QTableWidgetItem(unit))
+        self.tProduct_Table.setItem(self.tProduct_Table.rowCount()-1,2,QtWidgets.QTableWidgetItem(product_name))
+        self.tProduct_Table.setItem(self.tProduct_Table.rowCount()-1,3,QtWidgets.QTableWidgetItem(str(unit_price)))
+        self.tProduct_Table.setItem(self.tProduct_Table.rowCount()-1,4,QtWidgets.QTableWidgetItem(str(amount)))
+        
+    
+    #GETTERS
+    def get_items(self):
+        items = {}
+        #Invoice Details
+        items["invoice_id"] = self.invnum
+        items["date"] = self.tDate.text()
+        
+        #Client Details
+        items["buyer"] = self.tBuyer.currentText()
+        items["Address"] = self.tAdd.text()
+        
+        #Company Details
+        items["seller"] = self.tSeller.currentText()
+        items["term"] = self.tTerm.currentText()
+        
+        components = []
+        
+        for i in range(self.tProduct_Table.rowCount()):
+            component = {}
+            component["quantity"] = self.tProduct_Table.item(i,0).text()
+            component["unit"] = self.tProduct_Table.item(i,1).text()
+            component["product_name"] = self.tProduct_Table.item(i,2).text()
+            component["unit_price"] = self.tProduct_Table.item(i,3).text()
+            component["amount"] = self.tProduct_Table.item(i,4).text()
+            components.append(component)
+        
+        items["components"] = components
+        
+        return items
+                
+                                    
+        
     def init_ui(self):
         #Create Widgets
         
@@ -56,7 +129,7 @@ class AddInvoiceView(QtWidgets.QGridLayout):
         self.client_list = invo_db.get_client_name()
         self.seller_list = invo_db.get_seller_name()
         last_id = invo_db.get_last_id()
-        invnum = last_id + 1
+        self.invnum = last_id + 1
         self.termsList = ("30 days", "60 days", "90 days", "1 year")
         self.unitList = ("Tetrapack", "Sachet", "Pack", "Buy 1 Take 1")
         self.productsList = ("Yakult", "Milo", "Hotdog")
@@ -76,7 +149,7 @@ class AddInvoiceView(QtWidgets.QGridLayout):
         self.linvoiceNum = QtWidgets.QLabel("Invoice Number: ")
         self.linvoiceNum.setStyleSheet('QLabel { font-size: 12pt; padding: 10px;}')
 
-        self.tinvoiceNum = QtWidgets.QLabel(str(invnum))
+        self.tinvoiceNum = QtWidgets.QLabel(str(self.invnum))
         self.tinvoiceNum.setStyleSheet('QLabel { font-size: 12pt; padding: 10px;}')			
 
         #Label#
@@ -136,7 +209,7 @@ class AddInvoiceView(QtWidgets.QGridLayout):
 		
 		#Product Table#
         self.tProduct_Table = QtWidgets.QTableWidget()
-        self.tProduct_Table.setRowCount(5)
+        #self.tProduct_Table.setRowCount(5)
         self.tProduct_Table.setColumnCount(5)
         self.tProduct_Table.setHorizontalHeaderLabels(["Quantity", "Unit", "Articles", "Unit Price", "Amount"])
         self.tProduct_Table.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
