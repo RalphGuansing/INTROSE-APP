@@ -45,6 +45,7 @@ class AddInvoiceView(QtWidgets.QGridLayout):
         self.confirm_window = ConfirmWindow()
         self.confirm_window.show()
         self.confirm_window.layout.layout.bAddInvoice.clicked.connect(self.submit_invoice)
+        # self.confirm_window.layout.layout.bAddInvoice.clicked.connect(self.home_invoice_tab)
         for x in range(self.tProduct_Table.rowCount()):
             self.confirm_window.layout.layout.add_to_table(x,0,self.tProduct_Table.item(x,0).text())
             self.confirm_window.layout.layout.add_to_table(x,1,self.tProduct_Table.item(x,1).text())
@@ -52,9 +53,9 @@ class AddInvoiceView(QtWidgets.QGridLayout):
             self.confirm_window.layout.layout.add_to_table(x,3,self.tProduct_Table.item(x,3).text())
             self.confirm_window.layout.layout.add_to_table(x,4,self.tProduct_Table.item(x,4).text())
 
-        check_info = self.get_items()
+        self.check_info = self.get_items()
 
-        self.confirm_window.layout.layout.checkout_info(self.total_amount,self.total_vat,self.total_taxable,self.total_profit,check_info)
+        self.confirm_window.layout.layout.checkout_info(self.total_amount,self.total_vat,self.total_taxable,self.total_profit,self.check_info)
 
     def set_product_list(self, product_list):
         """This method sets the product list for invoice
@@ -133,14 +134,18 @@ class AddInvoiceView(QtWidgets.QGridLayout):
         
         return items
                 
-    def delete(self):
+    def delete_entry(self):
         print(self.components)
         print(self.total)
 
     def submit_invoice(self):
         invo_db = InvoiceDB()
         invo_entry = Invoice(self.tBuyer.currentText(),self.tDate.text(), self.tTerms.currentText(), self.tSeller.currentText())
+        print(self.check_info["buyer"])
+        invo_db.add_invoice(self.check_info["buyer"], self.check_info["date"], self.check_info["term"],self.check_info["date"],self.check_info["seller"], self.components)
+        # cust, issue_date, terms, ddate, seller, components
         print(invo_entry)
+        self.confirm_window.close()
         invo_db.close_connection()
 
         
@@ -340,7 +345,7 @@ class AddInvoiceView(QtWidgets.QGridLayout):
         self.bDelete = QtWidgets.QPushButton("Delete")
         self.bDelete.setStyleSheet('QPushButton {color: white;background-color: #6017a5;border-style: outset;border-width: 2px;border-radius: 10px;border-color: beige;font: bold 12px;min-width: 10em;padding: 4px;}')        
         self.bDelete.setFixedWidth(200)
-        self.bDelete.clicked.connect(self.delete)
+        self.bDelete.clicked.connect(self.delete_entry)
 
         self.bBack = QtWidgets.QPushButton("Back")
         self.bBack.setStyleSheet('QPushButton {color: white;background-color: #d62f2f;border-style: outset;border-width: 2px;border-radius: 10px;border-color: beige;font: bold 14px;min-width: 10em;padding: 6px;}')
