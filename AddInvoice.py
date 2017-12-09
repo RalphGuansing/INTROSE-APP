@@ -95,7 +95,10 @@ class AddInvoiceView(QtWidgets.QGridLayout):
         self.lDate = QtWidgets.QLabel("Date: ")
         self.lDate.setStyleSheet('QLabel { font-size: 12pt; padding: 10px;}')
 
-        self.tDate = QtWidgets.QCalendarWidget()
+        self.tDate = QtWidgets.QDateEdit(self.frame)
+        self.tDate.setCalendarPopup(True)
+        self.tDate.setDisplayFormat("yyyy-MM-dd")
+        self.tDate.setDate(datetime.datetime.now())
 
 		
 		
