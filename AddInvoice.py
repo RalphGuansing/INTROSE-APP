@@ -24,7 +24,7 @@ class AddInvoiceView(QtWidgets.QGridLayout):
             self.tProduct_Table.setItem(self.current_row,0,QtWidgets.QTableWidgetItem(str(self.tQuantity.value())))
             self.tProduct_Table.setItem(self.current_row,1,QtWidgets.QTableWidgetItem(str(self.tUnit.currentText())))
             self.tProduct_Table.setItem(self.current_row,2,QtWidgets.QTableWidgetItem(self.tProduct[self.tProduct.currentIndex()].currentText())
-            self.tProduct_Table.setItem(self.current_row,3,QtWidgets.QTableWidgetItem(str(self.tUnitPrice.text())))
+            self.tProduct_Table.setItem(self.current_row,3,QtWidgets.QTableWidgetItem(str(self.tUnitPrice.text)
             self.tProduct_Table.setItem(self.current_row,4,QtWidgets.QTableWidgetItem(str(int(self.tUnitPrice.text()) * int(self.tQuantity.value()))))
         except ValueError:
             print('Value Error: Wrong input type')
