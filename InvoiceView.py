@@ -34,52 +34,72 @@ class InvoiceDB:
 		self.connect = sql.connect('localhost','root','p@ssword','lcg_db',autocommit=True) # change for final db
 		self.cursor = self.connect.cursor()
 
-	def add_invoice(self, amount, nonvat, vat, taxable, profit, cust, issue_date, terms, ddate, seller, components):
+	def add_invoice(self, cust, issue_date, terms, ddate, seller, components):
 		"""Method for adding invoice to the database.
 		Args:
-			amount (float): The first parameter, value of purchase without tax reduction.
-			nonvat (float): The second parameter, value that is not included in tax reduction.
-			vat (float): The third parameter, computed tax of the invoice.
-			taxable (float): The fourth parameter, computed amount after tax.
-			profit (float): The fifth parameter, profit from invoice.
-			cust (:obj: 'str'): The sixth parameter, name of Customer.
-			issue_date (:obj:, 'datetime'): The seventh parameter, date of issuance of invoice, defaults to current date.
-			terms (:obj: 'str') The eight parameter, terms of the invoice
-			ddate (:obj:, 'datetime'): The ninth parameter, due date of purchase.
-			seller (:obj:, 'str'): The tenth parameter, name of employee that handled purchase.
-			components (:obj:, 'list'): The eleventh parameter, list of components.
+			cust (:obj: 'str'): The first parameter, name of Customer.
+			issue_date (:obj:, 'datetime'): The second parameter, date of issuance of invoice, defaults to current date.
+			terms (:obj: 'str') The third parameter, terms of the invoice
+			ddate (:obj:, 'datetime'): The fourth parameter, due date of purchase.
+			seller (:obj:, 'str'): The fifth parameter, name of employee that handled purchase.
+			components (:obj:, 'list'): The sixth parameter, list of components.
 		"""
+		total_amount = total_nonvat = total_vat = total_taxable = total_profit = 0
 		sql_statement = pd.read_sql("SELECT idclient FROM lcg_db.client WHERE client_name = '" + cust + "' ;",self.connect)
 		client_id = sql_statement.idclient[0]
 		sql_statement = pd.read_sql("SELECT idagent FROM lcg_db.agent WHERE agent_name = '" + seller + "' ;",self.connect)
 		seller_id = sql_statement.idagent[0]
-		sql_statement = "INSERT INTO `lcg_db`.`invoice` (`invoice_buyer`, `invoice_seller`, `invoice_date`, `invoice_term`, `invoice_ddate`,`invoice_amount`, `invoice_nonvat`, `invoice_vat`, `invoice_taxable`, `invoice_profit`) VALUES ('" + str(client_id) + "', '" + str(seller_id) + "', '" + str(issue_date) + "', '" + terms + "', '" + str(ddate) + "', '" + str(amount) + "', '" + str(nonvat) + "', '" + str(vat) + "', '" + str(taxable) + "', '" + str(profit) + "');"
+		for component in components:
+			total_amount += component.amount
+			total_nonvat += component.nonvat
+			total_vat += component.vat
+			total_taxable += component.taxable
+			total_profit += component.profit
+		sql_statement = "INSERT INTO `lcg_db`.`invoice` (`invoice_buyer`, `invoice_seller`, `invoice_date`, `invoice_term`, `invoice_ddate`,`invoice_amount`, `invoice_nonvat`, `invoice_vat`, `invoice_taxable`, `invoice_profit`) VALUES ('" + str(client_id) + "', '" + str(seller_id) + "', '" + str(issue_date) + "', '" + terms + "', '" + str(ddate) + "', '" + str(total_amount) + "', '" + str(total_nonvat) + "', '" + str(total_vat) + "', '" + str(total_taxable) + "', '" + str(total_profit) + "');"
 		self.cursor.execute(sql_statement)
 		l_id = InvoiceDB.get_last_id(self)
 		for component in components:
-			sql_statement = "INSERT INTO `lcg_db`.`component` (`component_invoicenum`, `component_name`, `component_quantity`, `component_origprice`, `component_unitprice`) VALUES ('" + str(l_id) + "', '" + str(component.name) + "', '" + str(component.quantity) + "', '"+ str(component.origprice) +"', '" + str(component.unitprice) + "');"
+			sql_statement = "INSERT INTO `lcg_db`.`component` (`component_invoicenum`, `component_name`, `component_unit`, `component_quantity`, `component_origprice`, `component_unitprice`, `component_amount`, `component_nonvat`, `component_vat`, `component_taxable`, `component_profit`) VALUES ('" + str(l_id) + "', '" + str(component.name) + "', '" + str(component.unit) + "', '" + str(component.quantity) + "', '"+ str(component.origprice) +"', '" + str(component.unitprice) + "', '" + str(component.amount) + "', '" + str(component.nonvat) + "', '" + str(component.vat) + "', '" + str(component.taxable) + "', '" + str(component.profit) + "');"
 			self.cursor.execute(sql_statement)
 
-	def update_value(self, invoice_number, amount, nonvat, vat, taxable, profit):
+	def update_value(self, invoice_number, components):
 		"""Method for updating entries in the database.
 		Args:
 			invoice_number (int): The first parameter, the invoice number of the record to be updated.
-			amount (float): The second parameter, value of purchase without tax reduction.
-			nonvat (float): The third parameter, value that is not included in tax reduction.
-			vat (float): The fourth parameter, computed tax of the invoice.
-			taxable (float): The fifth parameter, computed amount after tax.
-			profit (float): The sixth parameter, profit from invoice.
+			components (:obj:, 'list'): The second parameter, list of components.
 		"""
-		sql_statement = "UPDATE `lcg_db`.`invoice` SET `invoice_amount`='" + str(amount) + "', `invoice_nonvat`= '" + str(nonvat) + "',`invoice_vat`= '" + str(vat) + "',`invoice_taxable`='" + str(taxable) + "',`invoice_profit`='" + str(profit) + "' WHERE `idinvoice`='" + str(invoice_number) + "';"
+		# if delete elemment all values are 0 to deleter row
+		# loop tru components then update
+
+		# loop agen for total for invoice
+		total_amount = total_nonvat = total_vat = total_taxable = total_profit = 0
+		for component in components:
+			total_amount += component.amount
+			total_nonvat += component.nonvat
+			total_vat += component.vat
+			total_taxable += component.taxable
+			total_profit += component.profit
+			if component.quantity == 0:
+				InvoiceDB.delete_row(self,component_number=component.id)
+			else:
+				sql_statement = "UPDATE `lcg_db`.`component` SET `component_quantity`='" + str(component.quantity) + "', `component_amount`='" + str(component.amount) + "', `component_nonvat`='" + str(component.nonvat) + "', `component_vat`='" + str(component.vat) + "', `component_taxable`='" + str(component.taxable) + "', `component_profit`='" + str(component.profit) + "' WHERE `idcomponent`= '" + str(component.id) + "';"
+				self.cursor.execute(sql_statement)
+
+		sql_statement = "UPDATE `lcg_db`.`invoice` SET `invoice_amount`='" + str(total_amount) + "', `invoice_nonvat`= '" + str(total_nonvat) + "',`invoice_vat`= '" + str(total_vat) + "',`invoice_taxable`='" + str(total_taxable) + "',`invoice_profit`='" + str(total_profit) + "' WHERE `idinvoice`='" + str(invoice_number) + "';"
 		self.cursor.execute(sql_statement)
 	
-	def delete_row(self, invoice_number):
+	def delete_row(self, invoice_number=0, component_number=0):
 		"""Method for deleting an entire row in the database.
 		Args:
-			invoice_number (int): The first parameter, the invoice number of the record to be deleted.
+			invoice_number (int): The first parameter, the invoice number of the record to be deleted, defaults to 0.
+			component_number (int): The second parameter, the component number of the record to be deleted, defaults to 0.
 		"""
-		sql_statement = "DELETE FROM `lcg_db`.`invoice` WHERE `idinvoice`='" + str(invoice_number) + "';"
-		self.cursor.execute(sql_statement)
+		if invoice_number != 0:
+			sql_statement = "DELETE FROM `lcg_db`.`invoice` WHERE `idinvoice`='" + str(invoice_number) + "';"
+			self.cursor.execute(sql_statement)
+		if component_number != 0:
+			sql_statement = "DELETE FROM `lcg_db`.`component` WHERE `idcomponent`='" + str(component_number) + "';"
+			self.cursor.execute(sql_statement)
 
 	def get_total(self):
 		"""Method for getting the total amount, nonvat, vat, and taxable from the database.
@@ -133,13 +153,15 @@ class InvoiceDB:
 		Args:
 			invoice_number (int): The first parameter, invoice number to be searched.
 		Returns:
-				(idinvoice, invoice_buyer, invoice_seller, invoice_date, invoice_term, invoice_ddate, invoice_amount, invoice_nonvat, invoice_vat, invoice_taxable, invoice_profit)
+				(idinvoice, invoice_buyer, invoice_seller, invoice_date, invoice_term, invoice_ddate, invoice_amount, invoice_nonvat, invoice_vat, invoice_taxable, invoice_profit, component)
 		"""
 		sql_statement = pd.read_sql("SELECT * FROM lcg_db.invoice WHERE idinvoice = '" + str(invoice_number) + "';", self.connect)
 		invoice_query = [(row[1][0], row[1][1], row[1][2], row[1][3], row[1][4], row[1][5], row[1][6], row[1][7], row[1][8], row[1][9], row[1][10]) for row in sql_statement.iterrows()]
+		sql_statement2 = pd.read_sql("SELECT * FROM lcg_db.component WHERE component_invoicenum = '" + str(invoice_number) + "';", self.connect)
+		invoice_query2 = [(row[1][0], row[1][1], row[1][2], row[1][3], row[1][4], row[1][5], row[1][6], row[1][7], row[1][8], row[1][9], row[1][10], row[1][11]) for row in sql_statement2.iterrows()]
 		client_name = InvoiceDB.get_client_name(self, invoice_query[0][1])
 		seller_name = InvoiceDB.get_seller_name(self, invoice_query[0][2])
-		return [invoice_query[0][0], client_name, seller_name, invoice_query[0][3], invoice_query[0][4], invoice_query[0][5], invoice_query[0][6], invoice_query[0][7], invoice_query[0][8], invoice_query[0][9], invoice_query[0][10]]
+		return [invoice_query[0][0], client_name, seller_name, invoice_query[0][3], invoice_query[0][4], invoice_query[0][5], invoice_query[0][6], invoice_query[0][7], invoice_query[0][8], invoice_query[0][9], invoice_query[0][10], invoice_query2]
 
 	def close_connection(self):
 		"""Method for closing the database."""
@@ -151,65 +173,77 @@ class Component:
 		__totalinvoice (float): Contains total value of purchase without tax reduction.
 		__totalnvat (float): Contains total value that is not included in tax reduction.
 		__totaltaxable (float): Contains total value of purchase reduced by tax.
-		__totaloptax (float): Contains total output tax.
+		__totalvat (float): Contains total output tax.
 		__totalprofit (float): Contains total profit.
 	"""
 	__totalinvoice = 0
 	__totalnvat = 0
 	__totaltaxable = 0 
-	__totaloptax = 0
+	__totalvat = 0
 	__totalprofit = 0
 
-	def __init__(self, name, origprice, unitprice, quantity, nonvat=0):
+	def __init__(self, name, origprice, unitprice, quantity, unit, id_comp=0, nonvat=0):
 		"""Method for initialization of values.
 		Args:
 			name (:obj:, 'str'): The first parameter, name of the component.
 			origprice (float): The second parameter, original price of the component.
 			unitprice (float): The third parameter, new price of the component.
 			quantity (int): The fourth parameter, quantity of the component.
-			nonvat (float): The fifth parameter, nonvat of the component.
+			unit (:obj:, 'str'): The fifth parameter, unit of measure of the component.
+			id_comp (int, optional): The sixth parameter, id of the component, defaults to 0.
+			nonvat (float, optional): The seventh parameter, nonvat of the component, defaults to 0.
 		"""
+		self.id = id_comp
 		self.name = name
 		self.origprice = origprice
 		self.unitprice = unitprice
 		self.quantity = quantity
+		self.unit = unit
 		self.amount = quantity * unitprice
 		self.nonvat = nonvat
-		self.taxable = round((amount - nonvat) /1.12, 2)
-		self.optax = round(self.taxable * 0.12, 2)
+		self.taxable = round((self.amount - self.nonvat) /1.12, 2)
+		self.vat = round(self.taxable * 0.12, 2)
 		self.profit = self.taxable - self.origprice
-		Component.set_total(self.amount, self.nonvat, self.taxable, self.optax, self.profit, False)
+		Component.set_total(self.amount, self.nonvat, self.taxable, self.vat, self.profit, False)
 
 	def cancelled(self):
 		"""Method for cancellation of purchase, replaces all attributes to None except innumber
 			and subtracts value from total invoice, nonvat, taxble, output tax and commission.
 		"""
-		Component.settotal(self.amount, self.nonvat, self.taxable, self.optax, True)
-		self.amount = None
-		self.nonvat = None
-		self.taxable = None
-		self.optax = None
+		Component.set_total(self.amount, self.nonvat, self.taxable, self.vat, self.profit, True)
+		self.quantity = 0
+		self.amount = 0
+		self.nonvat = 0
+		self.taxable = 0
+		self.vat = 0
+		self.profit = 0
 
-	def edit_entry(self, amount):
+	def edit_entry(self, quantity, nonvat=0):
 		"""Method for editing the values.
 		Args:
-			amount (float): The first parameter, value of purchase without tax reduction.
+			quantity (int): The first parameter, quantity of the component.
+			nonvat (float, optional): The second parameter, nonvat of the component, defaults to 0.
 		"""
-		Component.settotal(self.amount, self.nonvat, self.taxable, self.optax, True)
-		self.amount = amount
+		Component.set_total(self.amount, self.nonvat, self.taxable, self.vat, self.profit, True)
+		self.quantity = quantity
+		self.amount = quantity * self.unitprice
 		self.nonvat = nonvat
-		self.taxable = round((amount - nonvat) /1.12, 2)
-		self.optax = round(self.taxable * 0.12, 2)
-		Component.settotal(self.amount, self.nonvat, self.taxable, self.optax, False)
+		self.taxable = round((self.amount - self.nonvat) /1.12, 2)
+		self.vat = round(self.taxable * 0.12, 2)
+		if self.taxable == 0:
+			self.profit = 0
+		else:
+			self.profit = self.taxable - self.origprice
+		Component.set_total(self.amount, self.nonvat, self.taxable, self.vat, self.profit, False)
 
 	@classmethod
-	def set_total(cls, amount, nonvat, taxable, optax, profit, value):
+	def set_total(cls, amount, nonvat, taxable, vat, profit, value):
 		"""Method for setting the total amount, nonvat, taxble, and output tax.
 		Args:
 			amount (float): The first parameter, value of purchase without tax reduction.
 			nonvat (float): The second parameter, value that is not included in tax reduction.
 			taxable (float): The third parameter, value of purchase reduced by tax.
-			optax (float): The fourth parameter, value of output tax.
+			vat (float): The fourth parameter, value of output tax.
 			profit (float): The fifth parameter, profit from invoice.
 			value (bool): The sixth parameter, true if decrementing the values, else incrementing the values
 		"""
@@ -217,22 +251,19 @@ class Component:
 			Component.__totalinvoice -= amount
 			Component.__totalnvat -= nonvat
 			Component.__totaltaxable -= taxable
-			Component.__totaloptax -= optax
+			Component.__totalvat -= vat
 			Component.__totalprofit -= profit
 		else:
 			Component.__totalinvoice += amount
 			Component.__totalnvat += nonvat
 			Component.__totaltaxable += taxable
-			Component.__totaloptax += optax
+			Component.__totalvat += vat
 			Component.__totalprofit += profit
 				
 	@classmethod
 	def get_total(cls):
 		"""Method for returning the total invoice, nonvat, taxble, output tax and commission.
 		Returns:
-			[__totalinvoice, __totalnvat, __totaltaxable, __totaloptax, __totalprofit]
+			[__totalinvoice, __totalnvat, __totaltaxable, __totalvat, __totalprofit]
 		"""
-		return Component.__totalinvoice, Component.__totalnvat, Component.__totaltaxable, Component.__totaloptax, Component.__totalprofit
-
-
-		
+		return Component.__totalinvoice, Component.__totalnvat, Component.__totaltaxable, Component.__totalvat, Component.__totalprofit
