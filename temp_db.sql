@@ -103,13 +103,19 @@ CREATE TABLE `component` (
   `idcomponent` int(11) NOT NULL AUTO_INCREMENT,
   `component_invoicenum` int(11) NOT NULL,
   `component_name` varchar(100) NOT NULL,
+  `component_unit` varchar(45) NOT NULL,
   `component_quantity` int(11) NOT NULL,
   `component_origprice` decimal(13,2) NOT NULL,
   `component_unitprice` decimal(13,2) NOT NULL,
+  `component_amount` decimal(13,2) NOT NULL,
+  `component_nonvat` decimal(13,2) NOT NULL,
+  `component_vat` decimal(13,2) NOT NULL,
+  `component_taxable` decimal(13,2) NOT NULL,
+  `component_profit` decimal(13,2) NOT NULL,
   PRIMARY KEY (`idcomponent`),
   KEY `component_invoicenum_idx` (`component_invoicenum`),
   CONSTRAINT `component_invoicenum` FOREIGN KEY (`component_invoicenum`) REFERENCES `invoice` (`idinvoice`) ON DELETE CASCADE ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -118,7 +124,7 @@ CREATE TABLE `component` (
 
 LOCK TABLES `component` WRITE;
 /*!40000 ALTER TABLE `component` DISABLE KEYS */;
-INSERT INTO `component` VALUES (12,12,'Jolispag',32,59.00,69.00),(15,15,'Joliswu',15,39.00,49.00),(16,15,'Jolidog',25,29.00,39.00);
+INSERT INTO `component` VALUES (27,23,'Joliswu','jolilent',15,39.00,49.00,735.00,0.00,78.75,656.25,617.25);
 /*!40000 ALTER TABLE `component` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -134,18 +140,19 @@ CREATE TABLE `invoice` (
   `invoice_buyer` int(11) NOT NULL,
   `invoice_seller` int(11) NOT NULL,
   `invoice_date` datetime NOT NULL,
-  `invoice_term` enum('Cash on Delivery','30 Days',' 60 Days','90 Days') NOT NULL,
+  `invoice_term` enum('30 Days',' 60 Days','90 Days') NOT NULL,
   `invoice_ddate` datetime NOT NULL,
   `invoice_amount` decimal(13,2) NOT NULL,
   `invoice_nonvat` decimal(13,2) NOT NULL,
   `invoice_vat` decimal(13,2) NOT NULL,
   `invoice_taxable` decimal(13,2) NOT NULL,
+  `invoice_profit` decimal(13,2) NOT NULL,
   PRIMARY KEY (`idinvoice`),
   KEY `invoice_buyer_idx` (`invoice_buyer`),
   KEY `invoice_seller_idx` (`invoice_seller`),
   CONSTRAINT `invoice_buyer` FOREIGN KEY (`invoice_buyer`) REFERENCES `client` (`idclient`) ON DELETE CASCADE ON UPDATE NO ACTION,
   CONSTRAINT `invoice_seller` FOREIGN KEY (`invoice_seller`) REFERENCES `agent` (`idagent`) ON DELETE CASCADE ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -154,7 +161,7 @@ CREATE TABLE `invoice` (
 
 LOCK TABLES `invoice` WRITE;
 /*!40000 ALTER TABLE `invoice` DISABLE KEYS */;
-INSERT INTO `invoice` VALUES (12,4,5,'2017-12-07 20:45:53','30 Days','2018-01-06 20:45:53',660.00,120.00,20.00,250.00),(15,3,6,'2017-12-08 08:10:07','30 Days','2018-01-07 08:10:07',990.00,200.00,15.00,300.00);
+INSERT INTO `invoice` VALUES (23,3,6,'2017-12-08 23:32:16','30 Days','2018-01-07 23:32:16',735.00,0.00,78.75,656.25,617.25);
 /*!40000 ALTER TABLE `invoice` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -196,4 +203,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-12-08 14:38:05
+-- Dump completed on 2017-12-09 13:58:26
