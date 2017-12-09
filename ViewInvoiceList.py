@@ -2,6 +2,7 @@ import sys
 from PyQt5 import QtWidgets,QtCore
 
 
+
 class ViewInvoice(QtWidgets.QGridLayout):
     def __init__(self, frame):
         super().__init__()

@@ -13,17 +13,15 @@ class MainWindow(QtWidgets.QMainWindow):
         #self.setFixedSize(1024,720)
         self.resize(1500,720)
         self.home_invoice_tab()
-        
-        
+    
     def add_invoice_tab(self):
         self.setWindowTitle("Invoice")       
         self.widgetFrame = WindowFrame(AddInvoiceView)
 
         self.widgetFrame.layout.bBack.clicked.connect(self.home_invoice_tab)
         self.widgetFrame.layout.bSubmit.clicked.connect(self.add_invoice_confirm_tab)	
+        	
         self.setCentralWidget(self.widgetFrame)
-        
-        
 
     def add_invoice_confirm_tab(self):
         self.setWindowTitle("Invoice")       
