@@ -2,6 +2,7 @@ import sys
 from PyQt5 import QtWidgets,QtCore,QtGui,Qt
 from InventoryView import *
 from AddInventoryConfirm import ConfirmWindow
+import datetime
 
 class AddInventoryView(QtWidgets.QGridLayout):
     def __init__(self, frame):
@@ -82,7 +83,12 @@ class AddInventoryView(QtWidgets.QGridLayout):
         self.lDate = QtWidgets.QLabel("Date: ")
         self.lDate.setStyleSheet('QLabel { font-size: 12pt; padding: 10px;}')
 
-        self.tDate = QtWidgets.QCalendarWidget()
+        self.tDate = QtWidgets.QDateEdit(self.frame)
+        self.tDate.setCalendarPopup(True)
+        self.tDate.setDisplayFormat("yyyy-MM-dd")
+        self.tDate.setDate(datetime.datetime.now())
+        #self.tDate.setDateEditEnabled(True)
+        #self.tDate.textChanged.connect(self.preview_items)
 				
 		#Label#
         self.lProduct_Table = QtWidgets.QLabel("PRODUCTS")
