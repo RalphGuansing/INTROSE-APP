@@ -35,4 +35,5 @@ class HomePage(QtWidgets.QGridLayout):
         
         self.addWidget(self.bAddInventory, 2, 1, 1, 1, QtCore.Qt.AlignCenter)  
         self.addWidget(self.bViewInventory, 3, 1, 1, 1, QtCore.Qt.AlignCenter) 
+
         
