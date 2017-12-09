@@ -30,8 +30,8 @@ class MainWindow(QtWidgets.QMainWindow):
         
         self.adb = adb()
         
-        self.view_details_payable_tab()
-        #self.login_tab()
+        #self.view_details_payable_tab()
+        self.login_tab()
         #self.accounting_home_view()
         #self.view_receivable_tab()
     
@@ -169,7 +169,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.widgetFrame = WindowFrame(AddAPVView)
         self.setCentralWidget(self.widgetFrame)
         self.init_navbar()
-        self.widgetFrame.layout.bSubmit.clicked.connect(partial(self.adb.db_add_apv, self.widgetFrame.layout))
+        self.widgetFrame.layout.bSubmit.clicked.connect(partial(self.adb.db_add_apv, self))
         self.widgetFrame.layout.bColumn_Add.clicked.connect(self.add_apv_column_window)        
         self.widgetFrame.layout.bColumn_Delete.clicked.connect(self.delete_row)
     
@@ -198,7 +198,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     pass #END OF ACCOUNTING
     
-    def showMessage(self, title, message, info=None, func=None):
+    def showMessage(self, title, message, info=None, func=None, messageType=0):
         
         """ This Method is responsible for Showing Dialogs if there is an error """
         cont = True;
@@ -216,7 +216,10 @@ class MainWindow(QtWidgets.QMainWindow):
         
         if cont:
             infoBox = QtWidgets.QMessageBox()
-            infoBox.setIcon(QtWidgets.QMessageBox.Warning)
+            if messageType == 0:
+                infoBox.setIcon(QtWidgets.QMessageBox.Warning)
+            else:
+                infoBox.setIcon(QtWidgets.QMessageBox.Information)
             infoBox.setText(message)
             if info is not None:
                 infoBox.setInformativeText(info)
@@ -230,7 +233,10 @@ class MainWindow(QtWidgets.QMainWindow):
                 nobutton = infoBox.addButton(QtWidgets.QMessageBox.No)
 
             infoBox.exec_()
-
+            
+            if messageType == 1:
+                self.accounting_home_view()
+            
             if func is not None:
                 if infoBox.clickedButton() == yesbutton:
                     print("hello")
@@ -246,6 +252,7 @@ class MainWindow(QtWidgets.QMainWindow):
         #TEMPORARY
         self.widgetFrame.bAccounting.clicked.connect(self.accounting_home_view)
         self.widgetFrame.bLogo.clicked.connect(self.home_tab)
+        self.widgetFrame.bLogout.clicked.connect(self.login_tab)
     
     def login_tab(self):
         self.setWindowTitle("LCG Veterinary Trading")
@@ -502,15 +509,19 @@ class WindowFrame(QtWidgets.QWidget):
         self.bAccounting = QtWidgets.QPushButton("Accounting")
         self.bAccounting.setStyleSheet(buttonStyle)
         
-        self.bLogout = QtWidgets.QLabel("Log Out")
-        self.bLogout.setStyleSheet(labelStyle)
+        self.bAdmin = QtWidgets.QPushButton("Admin")
+        self.bAdmin.setStyleSheet(buttonStyle)
+        
+        self.bLogout = QtWidgets.QPushButton("Log Out")
+        self.bLogout.setStyleSheet(buttonStyle)
         
         navGrid.setColumnStretch(5,1)
         navGrid.addWidget(self.bLogo, 1,1)
         navGrid.addWidget(self.bInvoice, 1,2)
         navGrid.addWidget(self.bInventory,1,3)
         navGrid.addWidget(self.bAccounting,1,4)
-        navGrid.addWidget(self.bLogout,1,6)
+        navGrid.addWidget(self.bAdmin,1,6)
+        navGrid.addWidget(self.bLogout,1,7)
         
         self.navbar.setLayout(navGrid)
 

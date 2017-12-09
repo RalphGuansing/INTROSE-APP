@@ -41,7 +41,9 @@ class AddAPVView(QtWidgets.QGridLayout):
     def add_column(self, column_names):
         for column_name in column_names:
             self.pColumn_Table.insertRow(self.pColumn_Table.rowCount())
-            self.pColumn_Table.setItem(self.pColumn_Table.rowCount()-1,0,QtWidgets.QTableWidgetItem(column_name))
+            column_item = QtWidgets.QTableWidgetItem(column_name)
+            column_item.setFlags(QtCore.Qt.ItemIsEnabled)
+            self.pColumn_Table.setItem(self.pColumn_Table.rowCount()-1,0, column_item)
             self.column_data.append(column_name)
 
     
@@ -66,10 +68,11 @@ class AddAPVView(QtWidgets.QGridLayout):
             items["amount_BOOL"] = False
         
         
-        
-        for i in range(len(self.column_data)):
-            self.column_data_val.append(self.pColumn_Table.item(i,1).text())
-        
+        try:
+            for i in range(len(self.column_data)):
+                self.column_data_val.append(self.pColumn_Table.item(i,1).text())
+        except:
+            pass
         
         
         items["column_names"] = self.column_data

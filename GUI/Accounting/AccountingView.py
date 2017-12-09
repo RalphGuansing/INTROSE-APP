@@ -2,6 +2,7 @@ import datetime
 import hashlib
 import pandas as pd
 import pymysql as sql
+from decimal import Decimal
 
 class Customer:
 	"""This Module is responsible for keeping track of Customer's payables."""
@@ -20,7 +21,7 @@ class Customer:
 	def set_all_receivable(self, ar_list):
 		""" This method is for setting all the accounts receivable of a customer.
 		Attributes:
-		     ar_list([]): list of all the accounts receivable of the customer
+			 ar_list([]): list of all the accounts receivable of the customer
 		"""
 		self.accountsreceivables = ar_list
 
@@ -109,7 +110,7 @@ class AccountsPayable:
 	def set_credits(self, credits):
 		""" This method is for setting the sub columns of the accounts payable
 		Attributes:
-		     credits([]): list of all the columns and values of the apv
+			 credits([]): list of all the columns and values of the apv
 		"""
 		self.credits = credits
 
@@ -285,7 +286,7 @@ class AccountingDB:
 	def get_customer_names(self):
 		"""Method for getting the customer list
 		Returns:
-		    	Customer_list
+				Customer_list
 		"""
 		select_statement = "select customer_name from customer"
 
@@ -298,9 +299,9 @@ class AccountingDB:
 	def get_customer_details(self, customer_name):
 		"""Method for getting the details of a specific customer
 		Args:
-		    customer_name('str'): The first parameter, contains the name of the customer
+			customer_name('str'): The first parameter, contains the name of the customer
 		Returns:
-		    Customer_Details
+			Customer_Details
 		"""
 		select_statement = """select customer_name, address from customer where customer_name = '""" + customer_name + """'"""
 		self.cursor.execute(select_statement)
@@ -310,13 +311,13 @@ class AccountingDB:
 	def get_customer_ar(self, customer_name):
 		"""Method for getting the current unpaid invoice of a customer
 		Args:
-		    customer_name('str'): The first parameter, contains the name of the customer
+			customer_name('str'): The first parameter, contains the name of the customer
 		Returns:
-		    Customer_Receivables
+			Customer_Receivables
 		"""
 		select_statement = """select DATE_FORMAT(date,'%M %e, %Y') AS Date, inv_id,amount 
-	        from accounts_receivable 
-	        where customer_id = (select customer_id from customer where customer_name = '""" + customer_name + """') and payment is null"""
+			from accounts_receivable 
+			where customer_id = (select customer_id from customer where customer_name = '""" + customer_name + """') and payment is null"""
 		self.cursor.execute(select_statement)
 		Customer_Receivables = self.cursor.fetchall()
 		return Customer_Receivables
@@ -329,8 +330,8 @@ class AccountingDB:
 			balance
 		"""
 		select_statement = """select sum(amount) as balance 
-	        from accounts_receivable 
-	        where customer_id = (select customer_id from customer where customer_name = '""" + customer_name + """') and payment is null"""
+			from accounts_receivable 
+			where customer_id = (select customer_id from customer where customer_name = '""" + customer_name + """') and payment is null"""
 
 		self.cursor.execute(select_statement)
 		balance = self.cursor.fetchone()
@@ -368,15 +369,15 @@ class AccountingDB:
 	def get_customer_ar_monthly(self, customer_name, month, year):
 		"""Method for getting the monthly account receivables of a customer
 		Args:
-		    customer_name('str'): the first parameter, contains the name of the customer
-		    month (int): the second parameter, contains the month for sorting ar
-		    year (int): the third parameter, contains the year for sorting ar
+			customer_name('str'): the first parameter, contains the name of the customer
+			month (int): the second parameter, contains the month for sorting ar
+			year (int): the third parameter, contains the year for sorting ar
 		Returns:
-		    list of monthly account receivables of a customer
+			list of monthly account receivables of a customer
 		"""
 		select_statement = """select DATE_FORMAT(date,'%M %e, %Y') AS Date, inv_id,amount,DATE_FORMAT(date_paid,'%M %e, %Y') AS date_paid,pr_id,payment
-	        from accounts_receivable 
-	        where customer_id = (select customer_id from customer where customer_name = '""" + customer_name + """') and MONTH(Date) = """ + str(
+			from accounts_receivable 
+			where customer_id = (select customer_id from customer where customer_name = '""" + customer_name + """') and MONTH(Date) = """ + str(
 			month) + """ and YEAR(Date) = """ + str(year) + """ """
 
 		self.cursor.execute(select_statement)
@@ -386,11 +387,11 @@ class AccountingDB:
 	def get_customer_beg_monthly(self, customer_name, month, year):
 		"""Method for getting the total balance before the current month
 		Args:
-		    customer_name('str'): the first parameter, contains the name of the customer
-		    month (int): the second parameter, contains the month for sorting ar
-		    year (int): the third parameter, contains the year for sorting ar
+			customer_name('str'): the first parameter, contains the name of the customer
+			month (int): the second parameter, contains the month for sorting ar
+			year (int): the third parameter, contains the year for sorting ar
 		Returns:
-		    total balance before the current month
+			total balance before the current month
 		"""
 
 		if month == 1:
@@ -400,8 +401,8 @@ class AccountingDB:
 			month = month - 1
 
 		select_statement = """select IFNULL(sum(amount), 0) - IFNULL(sum(payment), 0) as balance
-	        from accounts_receivable 
-	        where customer_id = (select customer_id from customer where customer_name = '""" + customer_name + """') and Date < '""" + str(
+			from accounts_receivable 
+			where customer_id = (select customer_id from customer where customer_name = '""" + customer_name + """') and Date < '""" + str(
 			year) + "-" + str(month) + "-31" + """' """
 
 		self.cursor.execute(select_statement)
@@ -414,16 +415,16 @@ class AccountingDB:
 	def get_customer_end_monthly(self, customer_name, month, year):
 		"""Method for getting the total balance before the current month ends
 		Args:
-		    customer_name('str'): the first parameter, contains the name of the customer
-		    month (int): the second parameter, contains the month for sorting ar
-		    year (int): the third parameter, contains the year for sorting ar
+			customer_name('str'): the first parameter, contains the name of the customer
+			month (int): the second parameter, contains the month for sorting ar
+			year (int): the third parameter, contains the year for sorting ar
 		Returns:
-		    total balance before the current month ends
+			total balance before the current month ends
 		"""
 
 		select_statement = """select IFNULL(sum(amount), 0) - IFNULL(sum(payment), 0) as balance
-	        from accounts_receivable 
-	        where customer_id = (select customer_id from customer where customer_name = '""" + customer_name + """') and Date <= '""" + str(
+			from accounts_receivable 
+			where customer_id = (select customer_id from customer where customer_name = '""" + customer_name + """') and Date <= '""" + str(
 			year) + "-" + str(month) + "-31" + """' """
 
 		self.cursor.execute(select_statement)
@@ -436,10 +437,10 @@ class AccountingDB:
 	def get_apv_monthly(self, month, year):
 		"""Method for getting the current accounts payables for a specific month
 		Args:
-		    month (int):the first parameter, contains the month for sorting account payables
-		    year (int):the second parameter, contains the year for sorting account payables
+			month (int):the first parameter, contains the month for sorting account payables
+			year (int):the second parameter, contains the year for sorting account payables
 		Returns:
-		    list of monthly account payables
+			list of monthly account payables
 		"""
 
 		select_statement = """select DATE_FORMAT(date,'%M %e, %Y') as Date, name, id_apv, amount from accounts_payable where month(date) = """ + str(
@@ -469,7 +470,7 @@ class AccountingDB:
 	def get_apv_details(self, id_apv):
 		"""Method for getting details of a specific Accounts Payable
 		Args:
-		    id_apv (int): the first parameter, contains the apv number
+			id_apv (int): the first parameter, contains the apv number
 		returns:
 			details of the apv
 		"""
@@ -480,7 +481,7 @@ class AccountingDB:
 	def get_apv_columns(self, id_apv):
 		"""Method for getting the sub columns of a specific Accounts Payable
 		Args:
-		    id_apv (int): the first parameter, contains the apv number
+			id_apv (int): the first parameter, contains the apv number
 		returns:
 			list of sub columns
 		"""
@@ -501,26 +502,38 @@ class AccountingDB:
 		# print(temp)
 		return temp is None
 
+
 	def db_add_apv(self, ui_):
 
 		""" Checks if the new APV # is already in the database then inserts  """
 
 		#items = self.widgetFrame.layout.get_items()
 
-		items = ui_.get_items()
+		items = ui_.widgetFrame.layout.get_items()
+
+
 
 		if items["id_apv_BOOL"] and items["amount_BOOL"]:
-			if self.checkAPV_id(items["id_apv"]):
-				self.apv_execute_statement(items["date"], items["name"], items["id_apv"], items["amount"])
-				self.apv_credit_execute_statement(items["column_names"], items["column_val"], items["id_apv"])
-			# REMOVE LATER
+			try:
+				column_sum = sum(Decimal(i) for i in items["column_val"])
 
-			# self.close()
-			else:
-				# SHOW ERROR WINDOW
-				print("Duplicate APV ID!")
+				if Decimal(items["amount"]) == column_sum :
+					if self.checkAPV_id(items["id_apv"]):
+						self.apv_execute_statement(items["date"], items["name"], items["id_apv"], items["amount"])
+						self.apv_credit_execute_statement(items["column_names"], items["column_val"], items["id_apv"])
+						ui_.showMessage("APV Added", "The APV was successfully added to the database", None, None, 1)
+
+					# self.close()
+					else:
+						# SHOW ERROR WINDOW
+						print("Duplicate APV ID!")
+						ui_.showMessage("Error Input", "Duplicate APV ID!")
+				else:
+					ui_.showMessage("Error Input", "Vouchers payable and column values do not match")
+			except:
+				ui_.showMessage("Error Input", "Please Input a proper values")
 		else:
-			self.showMessage("Error Input", "PLEASE INPUT A NUMBER")
+			ui_.showMessage("Error Input", "PLEASE INPUT A NUMBER")
 
 	def apv_execute_statement(self, date, name, id_apv, amount):
 
@@ -534,12 +547,12 @@ class AccountingDB:
 	def apv_credit_execute_statement(self, column_names, column_val, id_apv):
 		"""Method for inserting sub columns of a specific APV
 		Args:
-		    column_names([str]): contains the names of the sub columns
-		    column_val([float]): contains the values of the sub columns
-		    id_apv(int): contains the apv number
+			column_names([str]): contains the names of the sub columns
+			column_val([float]): contains the values of the sub columns
+			id_apv(int): contains the apv number
 		"""
 		credit_statement = """INSERT INTO credit_type (type_name, id_apv, type_value)
-	                              Values"""
+								  Values"""
 		tempString1 = ",(SELECT id_apv FROM accounts_payable WHERE id_apv = "
 
 		for i in range(len(column_names)):
@@ -558,7 +571,7 @@ class AccountingDB:
 	def add_group_name(self, groupName):
 		"""Method for adding new group name for sub columns of an apv
 		Args:
-		    groupName('str'): contains the name of the new group
+			groupName('str'): contains the name of the new group
 
 		"""
 		insert_statement = "INSERT INTO column_group SET group_name = '" + groupName + "'"
@@ -567,20 +580,20 @@ class AccountingDB:
 	def checkDupe(self, name, num):
 		""" This Function Checks if the a name of a Column/Group has a duplicate
 
-            Returns: False if it has a Duplicate, True if unique
-        """
+			Returns: False if it has a Duplicate, True if unique
+		"""
 		# num = 0 if Column Name
 		# num = 1 if Group Name
 
 		if num == 0:
 			select_statement = """select id_column
-	                            from column_name_table
-	                            where column_name = '""" + name + """'"""
+								from column_name_table
+								where column_name = '""" + name + """'"""
 
 		if num == 1:
 			select_statement = """select id_group
-	                            from column_group
-	                            where group_name = '""" + name + """'"""
+								from column_group
+								where group_name = '""" + name + """'"""
 		if select_statement:
 			self.cursor.execute(select_statement)
 			temp = self.cursor.fetchone()
@@ -588,11 +601,11 @@ class AccountingDB:
 
 	def add_column_to_group(self, groupName, columnName):
 		insert_statement = """ INSERT INTO column_name_table
-	           SET column_name = '""" + columnName + """',
-	                id_group = (
-	               SELECT id_group
-	                 FROM column_group
-	                WHERE group_name = '""" + groupName + """' )"""
+			   SET column_name = '""" + columnName + """',
+					id_group = (
+				   SELECT id_group
+					 FROM column_group
+					WHERE group_name = '""" + groupName + """' )"""
 
 		#print(insert_statement)
 		self.cursor.execute(insert_statement)  # Execute
@@ -600,7 +613,7 @@ class AccountingDB:
 	def get_column_choices(self):
 		"""Method for getting the column choices to be used for add APV
 		Returns:
-		    columns{"groups":{...}, "names":{...}}
+			columns{"groups":{...}, "names":{...}}
 		"""
 		columns = {}
 		group_statement = "select group_name from column_group"
@@ -611,8 +624,8 @@ class AccountingDB:
 		columns["groups"] = temp
 
 		name_statement = """select g.group_name as 'group', n.column_name as 'name'
-	                        from column_group as g, column_name_table as n
-	                        where g.id_group = n.id_group"""
+							from column_group as g, column_name_table as n
+							where g.id_group = n.id_group"""
 		self.cursor.execute(name_statement)
 		temp = self.cursor.fetchall()
 		# print(temp)
@@ -631,15 +644,15 @@ class AccountingDB:
 	def login(self, username, encoded_plaintext):
 		"""Method for logging in a the Application
 		Args:
-		    username('str'):contains the username of the user
-		    encoded_plaintext('str'):contains the plaintext password of the user
+			username('str'):contains the username of the user
+			encoded_plaintext('str'):contains the plaintext password of the user
 		"""
 		sha = hashlib.sha1(encoded_plaintext)
 		password = sha.hexdigest()
 
 		select_statement = """select employee_id, username, concat(first_name, ' ' , last_name) as full_name
-	        from employee
-	        where username = '""" + username + """' and password = '""" + password + """'"""
+			from employee
+			where username = '""" + username + """' and password = '""" + password + """'"""
 
 		print(select_statement)
 		self.cursor.execute(select_statement)
