@@ -31,7 +31,7 @@ class InvoiceDB:
 
 	def __init__(self):
 		"""Method for loading the database."""
-		self.connect = sql.connect('localhost','root','p@ssword','lcg_db',autocommit=True) # change for final db
+		self.connect = sql.connect('localhost','root','root','lcg_db',autocommit=True) # change for final db
 		self.cursor = self.connect.cursor()
 
 	def add_invoice(self, cust, issue_date, terms, ddate, seller, components):

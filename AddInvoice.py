@@ -1,5 +1,6 @@
 import sys
 from PyQt5 import QtWidgets,QtCore
+from AddInvoiceConfirm import *
 
 from InvoiceView import *
 
@@ -43,8 +44,8 @@ class AddInvoiceView(QtWidgets.QGridLayout):
     def confirm_submit(self):
         self.confirm_window = ConfirmWindow()
         self.confirm_window.show()
-        self.confirm_window.layout.layout.bSubmit.clicked.connect(self.submit_invoice)
-        for x in range(self.current_row):
+        self.confirm_window.layout.layout.bAddInvoice.clicked.connect(self.submit_invoice)
+        for x in range(self.tProduct_Table.rowCount()):
             self.confirm_window.layout.layout.add_to_table(x,0,self.tProduct_Table.item(x,0).text())
             self.confirm_window.layout.layout.add_to_table(x,1,self.tProduct_Table.item(x,1).text())
             self.confirm_window.layout.layout.add_to_table(x,2,self.tProduct_Table.item(x,2).text())
@@ -134,7 +135,7 @@ class AddInvoiceView(QtWidgets.QGridLayout):
 
     def submit_invoice(self):
         invo_db = InvoiceDB()
-        invo_entry = Invoice(self.tBuyer.currentText(),self.tDate.toPyDateTime(), self.tTerms.currentText(), self.tSeller.currentText())
+        invo_entry = Invoice(self.tBuyer.currentText(),self.tDate.text(), self.tTerms.currentText(), self.tSeller.currentText())
         print(invo_entry)
         invo_db.close_connection()
 
@@ -344,7 +345,7 @@ class AddInvoiceView(QtWidgets.QGridLayout):
         self.bSubmit = QtWidgets.QPushButton("Submit")
         self.bSubmit.setStyleSheet('QPushButton {color: white;background-color: #47c468;border-style: outset;border-width: 2px;border-radius: 10px;border-color: beige;font: bold 14px;min-width: 10em;padding: 6px;}')
         self.bSubmit.setFixedWidth(200)
-        self.bSubmit.clicked.connect(self.submit_invoice)
+        self.bSubmit.clicked.connect(self.confirm_submit)
 
 
         self.setColumnStretch(7,1)

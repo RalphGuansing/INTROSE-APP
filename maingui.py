@@ -19,18 +19,18 @@ class MainWindow(QtWidgets.QMainWindow):
         self.widgetFrame = WindowFrame(AddInvoiceView)
 
         self.widgetFrame.layout.bBack.clicked.connect(self.home_invoice_tab)
-        self.widgetFrame.layout.bSubmit.clicked.connect(self.add_invoice_confirm_tab)	
+        #self.widgetFrame.layout.bSubmit.clicked.connect(self.add_invoice_confirm_tab)	
         	
         self.setCentralWidget(self.widgetFrame)
 
-    def add_invoice_confirm_tab(self):
-        self.setWindowTitle("Invoice")       
-        self.widgetFrame = WindowFrame(AddInvoiceConfirm)
+    # def add_invoice_confirm_tab(self):
+    #     self.setWindowTitle("Invoice")       
+    #     self.widgetFrame = WindowFrame(AddInvoiceConfirm)
 
-        self.widgetFrame.layout.bBack.clicked.connect(self.add_invoice_tab)
-        self.widgetFrame.layout.bAddInvoice.clicked.connect(self.home_invoice_tab)
+    #     self.widgetFrame.layout.bBack.clicked.connect(self.add_invoice_tab)
+    #     self.widgetFrame.layout.bAddInvoice.clicked.connect(self.home_invoice_tab)
 
-        self.setCentralWidget(self.widgetFrame)
+    #     self.setCentralWidget(self.widgetFrame)
         
         
     def view_invoice_tab(self):
