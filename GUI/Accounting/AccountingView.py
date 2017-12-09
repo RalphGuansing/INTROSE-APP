@@ -153,7 +153,7 @@ class AccountingDB:
 
 	def __init__(self):
 		"""Method for loading the database."""
-		self.connect = sql.connect('localhost','root','p@ssword','introse',autocommit=True) # change for final db
+		self.connect = sql.connect('localhost','root','root','introse',autocommit=True) # change for final db
 		self.cursor = self.connect.cursor(sql.cursors.DictCursor)
 
 	def add_accountsreceivable(self, accountsreceivable):

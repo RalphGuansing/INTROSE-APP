@@ -35,7 +35,10 @@ class MainWindow(QtWidgets.QMainWindow):
         #self.accounting_home_view()
         #self.view_receivable_tab()
     
-    pass#RALPH
+    def inventory_view(self):
+        self.inventory = WindowFrame
+
+    #RALPH
     def cust_monthly_dia(self, func):
         self.dialog_monthly = DialogFrame("Input",input_month_year,self)
         self.dialog_monthly.layout.bSubmit.clicked.connect(self.dialog_monthly.close)
@@ -505,6 +508,7 @@ class WindowFrame(QtWidgets.QWidget):
         
         self.bInventory = QtWidgets.QPushButton("Inventory")
         self.bInventory.setStyleSheet(buttonStyle)
+        self.bInventory.clicked.connect(self.inventory_view)
         
         self.bAccounting = QtWidgets.QPushButton("Accounting")
         self.bAccounting.setStyleSheet(buttonStyle)
