@@ -16,6 +16,12 @@ from Accounting.Payable.NewGroup import NewGroupView
 from Accounting.Receivable.Customer_List import Customer_ListView
 from Accounting.Receivable.AccountsReceivable import AccountsReceivableView
 from Accounting.Receivable.AccountsReceivable_Monthly import AccountsReceivable_MonthlyView
+from Inventory.AddInventory import *
+from Inventory.AddInventoryConfirm import *
+from Inventory.guiHomePage import *
+from Inventory.HomePage import *
+from Inventory.InventoryView import *
+from Inventory.ViewInventoryList import *
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -36,7 +42,9 @@ class MainWindow(QtWidgets.QMainWindow):
         #self.view_receivable_tab()
     
     def inventory_view(self):
-        self.inventory = WindowFrame
+        self.inventory = WindowFrame(Tabs)
+        self.init_navbar()
+        self.setCentralWidget(self.inventory)
 
     #RALPH
     def cust_monthly_dia(self, func):
@@ -254,6 +262,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """ This method initializes the functionalities of the navbar """
         #TEMPORARY
         self.widgetFrame.bAccounting.clicked.connect(self.accounting_home_view)
+        self.widgetFrame.bInventory.clicked.connect(self.inventory_view)
         self.widgetFrame.bLogo.clicked.connect(self.home_tab)
         self.widgetFrame.bLogout.clicked.connect(self.login_tab)
     
@@ -508,7 +517,6 @@ class WindowFrame(QtWidgets.QWidget):
         
         self.bInventory = QtWidgets.QPushButton("Inventory")
         self.bInventory.setStyleSheet(buttonStyle)
-        self.bInventory.clicked.connect(self.inventory_view)
         
         self.bAccounting = QtWidgets.QPushButton("Accounting")
         self.bAccounting.setStyleSheet(buttonStyle)
