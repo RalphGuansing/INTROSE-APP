@@ -18,12 +18,24 @@ class Customer:
 		self.accountsreceivables = accountsreceivables
 
 	def set_all_receivable(self, ar_list):
+		""" This method is for setting all the accounts receivable of a customer.
+		Attributes:
+		     ar_list([]): list of all the accounts receivable of the customer
+		"""
 		self.accountsreceivables = ar_list
 
 	def add_receivable(self, accountsreceivable):
+		""" This method is for setting all the accounts receivable of a customer.
+		Attributes:
+			 ar_list(AccountsReceivable): an object with class of AccountsReceivable
+		"""
 		self.accountsreceivables.append(accountsreceivable)
 
 	def del_receivable(self, index):
+		""" This method is for deleting an accountsreceivable in the current list
+		Attributes:
+			 index(int): index of the accounts receivable to be deleted.
+		"""
 		del self.accountsreceivables[index]
 
 
@@ -31,11 +43,15 @@ class AccountsReceivable:
 	"""This Module is responsible for the receivables of customers."""
 		
 	def __init__(self, customer_id, date, invoice_id, amount, date_paid=None, pr_no=None, payment=None):
-		"""This Module is responsible for keeping track of Customer's payables.
+		"""Constructor
 		Attributes:
 			customer_id (int): The first parameter, contains the id of the customer.
-			customer_name ('str'): The second parameter, contains the name of the customer.
-			accountsreceivables (list, optional): The third parameter, contains the list of accountsreceivable.
+			date ('str'): The second parameter, contains the date invoice was issued.
+			invoice_id (int): The third parameter, contains the id of the invoice.
+			amount (Decimal): The fourth parameter, contains the total amount of the invoice.
+			date_paid ('str'): The fifth parameter, contains the date invoice was paid.
+			pr_no (int): The sixth parameter, contains the id of the payment receipt.
+			payment (Decimal): The seventh parameter, contains the total amount paid.
 		"""
 		self.customer_id = customer_id
 		self.date = date
@@ -46,6 +62,17 @@ class AccountsReceivable:
 		self.payment = payment
 
 	def edit_entry(self, customer_id=None, date=None, invoice_id=None, amount=None, date_paid=None, pr_no=None, payment=None):
+		"""This method is for editing the current accounts receivable.
+		Attributes:
+			customer_id (int): The first parameter, contains the id of the customer.
+			date ('str'): The second parameter, contains the date invoice was issued.
+			invoice_id (int): The third parameter, contains the id of the invoice.
+			amount (Decimal): The fourth parameter, contains the total amount of the invoice.
+			date_paid ('str'): The fifth parameter, contains the date invoice was paid.
+			pr_no (int): The sixth parameter, contains the id of the payment receipt.
+			payment (Decimal): The seventh parameter, contains the total amount paid.
+		"""
+
 
 		if customer_id != None:
 			self.customer_id = customer_id
@@ -65,6 +92,14 @@ class AccountsPayable:
 	"""This Module is responsible for the receivables of customers."""
 
 	def __init__(self, date, name, id_apv, amount, credits=[]):
+		"""Constructor
+		Attributes:
+			date ('str'): The first parameter, contains the date payable was issued.
+			name ('str'): The second parameter, contains the particulars of the accounts payable.
+			id_apv (int): The third parameter, contains the id of the accounts payable.
+			amount (Decimal): The fourth parameter, contains the total amount of the invoice.
+			credits ([]): The fifth parameter, contains the sub columns of the apv
+		"""
 		self.date = date
 		self.name = name
 		self.id_apv = id_apv
@@ -72,9 +107,20 @@ class AccountsPayable:
 		self.credits = credits
 
 	def set_credits(self, credits):
+		""" This method is for setting the sub columns of the accounts payable
+		Attributes:
+		     credits([]): list of all the columns and values of the apv
+		"""
 		self.credits = credits
 
 	def edit_entry(self, date=None, name=None, id_apv=None, amount=None):
+		"""This method is for editing the current apv
+		Attributes:
+			date ('str'): The first parameter, contains the date payable was issued.
+			name ('str'): The second parameter, contains the particulars of the accounts payable.
+			id_apv (int): The third parameter, contains the id of the accounts payable.
+			amount (Decimal): The fourth parameter, contains the total amount of the invoice.
+		"""
 		if date is not None:
 			self.date = date
 		if name is not None:
@@ -237,47 +283,71 @@ class AccountingDB:
 
 	#RECEIVABLES
 	def get_customer_names(self):
+		"""Method for getting the customer list
+		Returns:
+		    	Customer_list
+		"""
 		select_statement = "select customer_name from customer"
 
 		self.cursor.execute(select_statement)
-		temp = self.cursor.fetchall()
+		Customer_list = self.cursor.fetchall()
 		# print(temp)
-		return temp
+		return Customer_list
 
 	#FOR ACCOUNTS RECEIVABLE
 	def get_customer_details(self, customer_name):
+		"""Method for getting the details of a specific customer
+		Args:
+		    customer_name('str'): The first parameter, contains the name of the customer
+		Returns:
+		    Customer_Details
+		"""
 		select_statement = """select customer_name, address from customer where customer_name = '""" + customer_name + """'"""
 		self.cursor.execute(select_statement)
-		temp = self.cursor.fetchone()
-		return temp
+		Customer_Details = self.cursor.fetchone()
+		return Customer_Details
 
 	def get_customer_ar(self, customer_name):
+		"""Method for getting the current unpaid invoice of a customer
+		Args:
+		    customer_name('str'): The first parameter, contains the name of the customer
+		Returns:
+		    Customer_Receivables
+		"""
 		select_statement = """select DATE_FORMAT(date,'%M %e, %Y') AS Date, inv_id,amount 
 	        from accounts_receivable 
 	        where customer_id = (select customer_id from customer where customer_name = '""" + customer_name + """') and payment is null"""
 		self.cursor.execute(select_statement)
-		temp = self.cursor.fetchall()
-		return temp
+		Customer_Receivables = self.cursor.fetchall()
+		return Customer_Receivables
 
 	def get_customer_balance(self, customer_name):
-
+		"""Method for getting the current balance  of a customer
+		Args:
+			customer_name('str'): The first parameter, contains the name of the customer
+		Returns:
+			balance
+		"""
 		select_statement = """select sum(amount) as balance 
 	        from accounts_receivable 
 	        where customer_id = (select customer_id from customer where customer_name = '""" + customer_name + """') and payment is null"""
 
 		self.cursor.execute(select_statement)
-		temp = self.cursor.fetchone()
-		return temp
+		balance = self.cursor.fetchone()
+		return balance
 
 	def add_payment_ar(self, dia, main):
-
+		"""Method for adding payment to an account receivable
+		Args:
+			dia(ui_element): The first parameter, contains the dialog elements
+			main(ui_element): The second parameter, contains the invoice current;y selected
+		"""
 		ar_Table = main.ar_Table
 		invoice_number = ar_Table.item(ar_Table.currentRow(), 1).text()
 
 		date = dia.tDate.text()
 		pr_id = dia.tPR.text()
 		payment = dia.tPayment.text()
-
 
 		update_statement = "UPDATE accounts_receivable SET date_paid ='" + date + "', pr_id= '" + str(pr_id) + "',payment= '" + str(payment) + "' WHERE inv_id= " + str(invoice_number) + ";"
 		#print(update_statement)
@@ -286,13 +356,24 @@ class AccountingDB:
 	#MONTHLY RECEIVABLES
 
 	def del_payment_ar(self, invoice_number):
-
+		"""Method for removing a payment of an accounts receivable
+		Args:
+			invoice_number(int): The first parameter, contains the invoice number
+		"""
 		update_statement = "UPDATE accounts_receivable SET date_paid = null, pr_id= null,payment= null WHERE inv_id= " + str(invoice_number) + ";"
 
 		print(update_statement)
 		self.cursor.execute(update_statement)
 
 	def get_customer_ar_monthly(self, customer_name, month, year):
+		"""Method for getting the monthly account receivables of a customer
+		Args:
+		    customer_name('str'): the first parameter, contains the name of the customer
+		    month (int): the second parameter, contains the month for sorting ar
+		    year (int): the third parameter, contains the year for sorting ar
+		Returns:
+		    list of monthly account receivables of a customer
+		"""
 		select_statement = """select DATE_FORMAT(date,'%M %e, %Y') AS Date, inv_id,amount,DATE_FORMAT(date_paid,'%M %e, %Y') AS date_paid,pr_id,payment
 	        from accounts_receivable 
 	        where customer_id = (select customer_id from customer where customer_name = '""" + customer_name + """') and MONTH(Date) = """ + str(
@@ -303,6 +384,14 @@ class AccountingDB:
 		return temp
 
 	def get_customer_beg_monthly(self, customer_name, month, year):
+		"""Method for getting the total balance before the current month
+		Args:
+		    customer_name('str'): the first parameter, contains the name of the customer
+		    month (int): the second parameter, contains the month for sorting ar
+		    year (int): the third parameter, contains the year for sorting ar
+		Returns:
+		    total balance before the current month
+		"""
 
 		if month == 1:
 			month = 12
@@ -323,6 +412,14 @@ class AccountingDB:
 		return temp
 
 	def get_customer_end_monthly(self, customer_name, month, year):
+		"""Method for getting the total balance before the current month ends
+		Args:
+		    customer_name('str'): the first parameter, contains the name of the customer
+		    month (int): the second parameter, contains the month for sorting ar
+		    year (int): the third parameter, contains the year for sorting ar
+		Returns:
+		    total balance before the current month ends
+		"""
 
 		select_statement = """select IFNULL(sum(amount), 0) - IFNULL(sum(payment), 0) as balance
 	        from accounts_receivable 
@@ -337,6 +434,13 @@ class AccountingDB:
 	#PAYABLES
 
 	def get_apv_monthly(self, month, year):
+		"""Method for getting the current accounts payables for a specific month
+		Args:
+		    month (int):the first parameter, contains the month for sorting account payables
+		    year (int):the second parameter, contains the year for sorting account payables
+		Returns:
+		    list of monthly account payables
+		"""
 
 		select_statement = """select DATE_FORMAT(date,'%M %e, %Y') as Date, name, id_apv, amount from accounts_payable where month(date) = """ + str(
 			month) + """ and year(date) = """ + str(year) + """ """
@@ -347,7 +451,13 @@ class AccountingDB:
 		return temp
 
 	def get_apv_monthly_total(self, month, year):
-
+		"""Method for getting the current total accounts payables for a specific month
+		Args:
+			month (int):the first parameter, contains the month for sorting account payables
+			year (int):the second parameter, contains the year for sorting account payables
+		Returns:
+			total vouchers payable
+		"""
 		select_statement = """select sum(amount) as total from accounts_payable where month(date) = """ + str(
 			month) + """ and year(date) = """ + str(year) + """ """
 
@@ -357,11 +467,24 @@ class AccountingDB:
 		return temp
 
 	def get_apv_details(self, id_apv):
+		"""Method for getting details of a specific Accounts Payable
+		Args:
+		    id_apv (int): the first parameter, contains the apv number
+		returns:
+			details of the apv
+		"""
 		select_statement = "select DATE_FORMAT(date,'%M %e, %Y') as Date, name, id_apv, amount from accounts_payable where id_apv =" +str(id_apv)
 		self.cursor.execute(select_statement)
 		return self.cursor.fetchone()
 
 	def get_apv_columns(self, id_apv):
+		"""Method for getting the sub columns of a specific Accounts Payable
+		Args:
+		    id_apv (int): the first parameter, contains the apv number
+		returns:
+			list of sub columns
+		"""
+
 		select_statement = "select type_name, type_value from credit_type where id_apv =" + str(
 			id_apv)
 		self.cursor.execute(select_statement)
@@ -409,7 +532,12 @@ class AccountingDB:
 		self.cursor.execute(insert_statement)  # Execute
 
 	def apv_credit_execute_statement(self, column_names, column_val, id_apv):
-
+		"""Method for inserting sub columns of a specific APV
+		Args:
+		    column_names([str]): contains the names of the sub columns
+		    column_val([float]): contains the values of the sub columns
+		    id_apv(int): contains the apv number
+		"""
 		credit_statement = """INSERT INTO credit_type (type_name, id_apv, type_value)
 	                              Values"""
 		tempString1 = ",(SELECT id_apv FROM accounts_payable WHERE id_apv = "
@@ -428,6 +556,11 @@ class AccountingDB:
 
 
 	def add_group_name(self, groupName):
+		"""Method for adding new group name for sub columns of an apv
+		Args:
+		    groupName('str'): contains the name of the new group
+
+		"""
 		insert_statement = "INSERT INTO column_group SET group_name = '" + groupName + "'"
 		self.cursor.execute(insert_statement)
 
@@ -465,6 +598,10 @@ class AccountingDB:
 		self.cursor.execute(insert_statement)  # Execute
 
 	def get_column_choices(self):
+		"""Method for getting the column choices to be used for add APV
+		Returns:
+		    columns{"groups":{...}, "names":{...}}
+		"""
 		columns = {}
 		group_statement = "select group_name from column_group"
 		self.cursor.execute(group_statement)
@@ -492,6 +629,11 @@ class AccountingDB:
 		return temp
 
 	def login(self, username, encoded_plaintext):
+		"""Method for logging in a the Application
+		Args:
+		    username('str'):contains the username of the user
+		    encoded_plaintext('str'):contains the plaintext password of the user
+		"""
 		sha = hashlib.sha1(encoded_plaintext)
 		password = sha.hexdigest()
 
