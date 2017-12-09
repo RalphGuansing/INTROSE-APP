@@ -17,13 +17,13 @@ class Invoice:
 		self.issue_date = issue_date
 		self.terms = terms
 		if terms == "30 Days":
-			self.ddate = issue_date + datetime.deltatime(days=30)
+			self.ddate = issue_date
 		elif terms == "60 Days":
-			self.ddate = issue_date + datetime.deltatime(days=60)
+			self.ddate = issue_date
 		elif terms == "90 Days":
-			self.ddate = issue_date + datetime.deltatime(days=90)
+			self.ddate = issue_date
 		elif terms == "1 year":
-			self.ddate = issue_date + datetime.deltatime(days=365)
+			self.ddate = issue_date
 		self.seller = seller
 
 class InvoiceDB:

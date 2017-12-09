@@ -139,9 +139,9 @@ CREATE TABLE `invoice` (
   `idinvoice` int(11) NOT NULL AUTO_INCREMENT,
   `invoice_buyer` int(11) NOT NULL,
   `invoice_seller` int(11) NOT NULL,
-  `invoice_date` datetime NOT NULL,
+  `invoice_date` varchar(45) NOT NULL,
   `invoice_term` enum('30 Days',' 60 Days','90 Days') NOT NULL,
-  `invoice_ddate` datetime NOT NULL,
+  `invoice_ddate` varchar(45) NOT NULL,
   `invoice_amount` decimal(13,2) NOT NULL,
   `invoice_nonvat` decimal(13,2) NOT NULL,
   `invoice_vat` decimal(13,2) NOT NULL,
@@ -203,4 +203,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-12-09 13:58:26
+-- Dump completed on 2017-12-09 22:17:06
