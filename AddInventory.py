@@ -41,11 +41,12 @@ class AddInventoryView(QtWidgets.QGridLayout):
         self.current_row += 1
 
     def submit_products(self):
+        print(self.tQuantity.value())
         db_connection = InventoryDatabase()
         for x in range(self.current_row):
             try:
                 db_connection.update_product(self.tProduct_Table.item(x,2).text(),self.tProduct_Table.item(x,1).text(),self.tProduct_Table.item(x,3).text())
-                db_connection.add_product_quantity(self.tProduct_Table.item(x,2).text(),self.tQuantity.value())
+                db_connection.add_product_quantity(self.tProduct_Table.item(x,2).text(),int(self.tProduct_Table.item(x,0).text()))
             except BaseException:
                 print('Error')
         self.current_row = 0

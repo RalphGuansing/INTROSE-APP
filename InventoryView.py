@@ -173,7 +173,7 @@ if __name__ == '__main__':
 	###open database
 	sample = InventoryDatabase()
 	temp = sample.get_product_list()
-	sample.add_product('sky flakes','my sans','plastic',3,5,100,1)
+	sample.add_product_quantity('sky flakes',10)
 	sample.close_connection()
 
 
