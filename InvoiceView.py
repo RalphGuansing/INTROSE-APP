@@ -168,19 +168,7 @@ class InvoiceDB:
 		self.connect.close()
 
 class Component:
-	"""This Module is responsible for the components in an invoice.
-	Attributes:
-		__totalinvoice (float): Contains total value of purchase without tax reduction.
-		__totalnvat (float): Contains total value that is not included in tax reduction.
-		__totaltaxable (float): Contains total value of purchase reduced by tax.
-		__totalvat (float): Contains total output tax.
-		__totalprofit (float): Contains total profit.
-	"""
-	__totalinvoice = 0
-	__totalnvat = 0
-	__totaltaxable = 0 
-	__totalvat = 0
-	__totalprofit = 0
+	"""This Module is responsible for the components in an invoice."""
 
 	def __init__(self, name, origprice, unitprice, quantity, unit, id_comp=0, nonvat=0):
 		"""Method for initialization of values.
@@ -203,14 +191,15 @@ class Component:
 		self.nonvat = nonvat
 		self.taxable = round((self.amount - self.nonvat) /1.12, 2)
 		self.vat = round(self.taxable * 0.12, 2)
-		self.profit = self.taxable - self.origprice
-		Component.set_total(self.amount, self.nonvat, self.taxable, self.vat, self.profit, False)
+		if self.taxable == 0:
+			self.profit = 0
+		else:
+			self.profit = self.taxable - self.origprice
 
 	def cancelled(self):
 		"""Method for cancellation of purchase, replaces all attributes to None except innumber
 			and subtracts value from total invoice, nonvat, taxble, output tax and commission.
 		"""
-		Component.set_total(self.amount, self.nonvat, self.taxable, self.vat, self.profit, True)
 		self.quantity = 0
 		self.amount = 0
 		self.nonvat = 0
@@ -224,7 +213,6 @@ class Component:
 			quantity (int): The first parameter, quantity of the component.
 			nonvat (float, optional): The second parameter, nonvat of the component, defaults to 0.
 		"""
-		Component.set_total(self.amount, self.nonvat, self.taxable, self.vat, self.profit, True)
 		self.quantity = quantity
 		self.amount = quantity * self.unitprice
 		self.nonvat = nonvat
@@ -234,36 +222,10 @@ class Component:
 			self.profit = 0
 		else:
 			self.profit = self.taxable - self.origprice
-		Component.set_total(self.amount, self.nonvat, self.taxable, self.vat, self.profit, False)
 
-	@classmethod
-	def set_total(cls, amount, nonvat, taxable, vat, profit, value):
-		"""Method for setting the total amount, nonvat, taxble, and output tax.
-		Args:
-			amount (float): The first parameter, value of purchase without tax reduction.
-			nonvat (float): The second parameter, value that is not included in tax reduction.
-			taxable (float): The third parameter, value of purchase reduced by tax.
-			vat (float): The fourth parameter, value of output tax.
-			profit (float): The fifth parameter, profit from invoice.
-			value (bool): The sixth parameter, true if decrementing the values, else incrementing the values
-		"""
-		if value:
-			Component.__totalinvoice -= amount
-			Component.__totalnvat -= nonvat
-			Component.__totaltaxable -= taxable
-			Component.__totalvat -= vat
-			Component.__totalprofit -= profit
-		else:
-			Component.__totalinvoice += amount
-			Component.__totalnvat += nonvat
-			Component.__totaltaxable += taxable
-			Component.__totalvat += vat
-			Component.__totalprofit += profit
-				
-	@classmethod
-	def get_total(cls):
+	def get_total(self):
 		"""Method for returning the total invoice, nonvat, taxble, output tax and commission.
 		Returns:
 			[__totalinvoice, __totalnvat, __totaltaxable, __totalvat, __totalprofit]
 		"""
-		return Component.__totalinvoice, Component.__totalnvat, Component.__totaltaxable, Component.__totalvat, Component.__totalprofit
+		return self.amount, self.nonvat, self.taxable, self.vat, self.profit
