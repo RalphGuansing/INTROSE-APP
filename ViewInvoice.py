@@ -1,6 +1,6 @@
 import sys
 from PyQt5 import QtWidgets,QtCore
-
+from InvoiceView import *
 
 
 #finish setting client name later
@@ -23,8 +23,8 @@ class ViewInvoice(QtWidgets.QGridLayout):
         seller_list = invo_db.get_seller_name()
         last_id = invo_db.get_last_id()
 
-        component_item = Component(name, origprice, unitprice, quantity, nonvat)
-        self.totalamount = component_item.unitprice * component_item.quantity
+        #component_item = Component(name, origprice, unitprice, quantity, nonvat)
+        #self.totalamount = component_item.unitprice * component_item.quantity
 
         #Create Widgets
         self.lInvoice_Details = QtWidgets.QLabel("INVOICE")
