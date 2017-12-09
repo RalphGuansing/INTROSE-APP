@@ -1,5 +1,5 @@
 import sys
-from PyQt5 import QtWidgets,QtCore
+from PyQt5 import QtWidgets,QtCore,QtGui,Qt
 from InventoryView import *
 
 class AddInventoryView(QtWidgets.QGridLayout):
@@ -42,9 +42,11 @@ class AddInventoryView(QtWidgets.QGridLayout):
     def submit_products(self):
         db_connection = InventoryDatabase()
         for x in range(self.current_row):
-            #temp_product = list(filter(lambda x: x.name == self.tProduct_Table.item(x,2).text(), db_connection.get_product_list()))
-            db_connection.update_product(self.tProduct_Table.item(x,2).text(),self.tProduct_Table.item(x,1).text(),self.tProduct_Table.item(x,3).text())
-            db_connection.add_product_quantity(self.tProduct_Table.item(x,2).text(),self.tQuantity.value())
+            try:
+                db_connection.update_product(self.tProduct_Table.item(x,2).text(),self.tProduct_Table.item(x,1).text(),self.tProduct_Table.item(x,3).text())
+                db_connection.add_product_quantity(self.tProduct_Table.item(x,2).text(),self.tQuantity.value())
+            except BaseException:
+                print('Error')
         self.current_row = 0
         db_connection.close_connection()
         self.tProduct_Table.clearContents()
@@ -130,9 +132,11 @@ class AddInventoryView(QtWidgets.QGridLayout):
         self.bAdd.setFixedWidth(200)
         self.bAdd.clicked.connect(self.add_product_table)
         
-        self.bDelete = QtWidgets.QPushButton("Delete")
-        self.bDelete.setStyleSheet('QPushButton {color: white;background-color: #6017a5;border-style: outset;border-width: 2px;border-radius: 10px;border-color: beige;font: bold 12px;min-width: 10em;padding: 4px;}')        
-        self.bDelete.setFixedWidth(200)
+        self.bDelete = QtWidgets.QPushButton("")
+        #self.bDelete.setStyleSheet('QPushButton {color: white;background-color: #6017a5;border-style: outset;border-width: 2px;border-radius: 10px;border-color: beige;font: bold 12px;min-width: 10em;padding: 4px;}')        
+        self.bDelete.setFixedWidth(50)
+        self.bDelete.setIcon(QtGui.QIcon('delete_button.png'))
+        self.bDelete.setIconSize(QtCore.QSize(24,24))
         self.bDelete.clicked.connect(self.delete_entry)
 
         self.bBack = QtWidgets.QPushButton("Back")
@@ -158,29 +162,29 @@ class AddInventoryView(QtWidgets.QGridLayout):
 				
 	
         self.addWidget(self.lProduct_Table, 2, 1, 1, 1)	
-        self.addWidget(self.tProduct_Table, 3, 1, 4, 5)			
+        self.addWidget(self.tProduct_Table, 3, 1, 4, 3)			
         
         
-        self.addWidget(self.lAddProduct, 2, 6, 1, 1)
+        self.addWidget(self.lAddProduct, 2, 4, 1, 2, QtCore.Qt.AlignCenter)
 
-        self.addWidget(self.lProduct, 3, 6, 1, 1)
-        self.addWidget(self.tProduct, 3, 7, 1, 1)
+        self.addWidget(self.lProduct, 3, 4, 1, 1)
+        self.addWidget(self.tProduct, 3, 5, 1, 1)
 		
-        self.addWidget(self.lQuantity, 4, 6, 1, 1)
-        self.addWidget(self.tQuantity, 4, 7, 1, 1)
+        self.addWidget(self.lQuantity, 4, 4, 1, 1)
+        self.addWidget(self.tQuantity, 4, 5, 1, 1)
 
-        self.addWidget(self.lUnit, 5, 6, 1, 1)
-        self.addWidget(self.tUnit, 5, 7, 1, 1)
+        self.addWidget(self.lUnit, 5, 4, 1, 1)
+        self.addWidget(self.tUnit, 5, 5, 1, 1)
 
-        self.addWidget(self.lUnitPrice, 6, 6, 1, 1)
-        self.addWidget(self.tUnitPrice, 6, 7, 1, 1)
+        self.addWidget(self.lUnitPrice, 6, 4, 1, 1)
+        self.addWidget(self.tUnitPrice, 6, 5, 1, 1)
         
         #self.addWidget(self.lProduct_Code, 1, 1, 1, 1)
-        self.addWidget(self.bDelete, 7, 6, 1, 1)
-        self.addWidget(self.bAdd, 7, 7, 1, 1)
+        self.addWidget(self.bDelete, 2, 3, 1, 2, QtCore.Qt.AlignCenter)
+        self.addWidget(self.bAdd, 7, 4, 1, 2, QtCore.Qt.AlignCenter)
 
         
         #self.addWidget(self.lProduct_Code, 1, 1, 1, 1)
-        self.addWidget(self.bBack, 10, 3, 1, 1)
-        self.addWidget(self.bSubmit, 10, 4, 1, 1)
+        self.addWidget(self.bBack, 10, 2, 1, 1, QtCore.Qt.AlignRight)
+        self.addWidget(self.bSubmit, 10, 3, 1, 1)
         
