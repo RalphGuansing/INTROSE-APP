@@ -78,6 +78,11 @@ class AccountsReceivable_MonthlyView(QtWidgets.QGridLayout):
 #        self.account_receivable_Box()
         self.label_balances()
         
+#        self.setColumnStretch(1,1)
+#        self.setColumnStretch(2,1)
+#        self.setColumnStretch(3,3)
+#        self.setColumnStretch(4,1)
+#        self.setColumnStretch(5,1)
 #        self.setRowStretch(1,9)
 #        self.setRowStretch(12,1)
         
