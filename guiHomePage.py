@@ -15,10 +15,10 @@ class MainWindow(QtWidgets.QMainWindow):
         
     def homepage_tab(self):
         self.setWindowTitle("Home Page")
-        self.widgetFrame = WindowFrame(HomePage)
+        self.widgetFrame = Tabs(self)
 
-        self.widgetFrame.layout.bAddInventory.clicked.connect(self.add_inventory_tab)
-        self.widgetFrame.layout.bViewInventory.clicked.connect(self.view_inventory_list_tab)
+        # self.widgetFrame.layout.bAddInventory.clicked.connect(self.add_inventory_tab)
+        # self.widgetFrame.layout.bViewInventory.clicked.connect(self.view_inventory_list_tab)
 
         self.setCentralWidget(self.widgetFrame)
     
@@ -46,7 +46,19 @@ class WindowFrame(QtWidgets.QWidget):
         self.setWindowTitle("Window")
         self.layout = layout(self)
         self.setLayout(self.layout)
-        
+
+
+class Tabs(QtWidgets.QWidget):
+
+    def __init__(self, parent):   
+        super(QtWidgets.QWidget, self).__init__(parent)
+        self.layout = QtWidgets.QGridLayout(self)
+        self.tabs = QtWidgets.QTabWidget()
+        self.add_inventory_tab = WindowFrame(AddInventoryView)
+        self.view_inventory_tab = WindowFrame(ViewInventoryList)
+        self.tabs.addTab(self.add_inventory_tab,"Add Inventory")
+        self.tabs.addTab(self.view_inventory_tab,"View Inventory")
+        self.layout.addWidget(self.tabs)
         
 if __name__ == "__main__":    
     app = QtWidgets.QApplication(sys.argv)

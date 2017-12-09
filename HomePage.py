@@ -15,16 +15,14 @@ class HomePage(QtWidgets.QGridLayout):
         #self.lInvoice_Details.setStyleSheet('QLabel { font-size: 12pt; padding: 10px;}')	
             
         self.bAddInventory = QtWidgets.QPushButton("Add Inventory")
-        self.bAddInventory.setStyleSheet('QPushButton { font-size: 12pt; padding: 10px;}')
+        #self.bAddInventory.setStyleSheet('QPushButton { font-size: 12pt; padding: 10px;}')
+        self.bAddInventory.setStyleSheet('QPushButton {color: white;background-color: #1db6d1;border-style: outset;border-width: 2px;border-radius: 10px;border-color: beige;font: bold 12px;min-width: 10em;padding: 4px;}')
         self.bAddInventory.setFixedWidth(200)
         
         
-        self.bDeleteInventory = QtWidgets.QPushButton("Delete Inventory")
-        self.bDeleteInventory.setStyleSheet('QPushButton { font-size: 12pt; padding: 10px;}')
-        self.bDeleteInventory.setFixedWidth(200)
-        
         self.bViewInventory = QtWidgets.QPushButton("View Inventory")
-        self.bViewInventory.setStyleSheet('QPushButton { font-size: 12pt; padding: 10px;}')
+        #self.bViewInventory.setStyleSheet('QPushButton { font-size: 12pt; padding: 10px;}')
+        self.bViewInventory.setStyleSheet('QPushButton {color: white;background-color: #1db6d1;border-style: outset;border-width: 2px;border-radius: 10px;border-color: beige;font: bold 12px;min-width: 10em;padding: 4px;}')
         self.bViewInventory.setFixedWidth(200)
         
 
@@ -35,7 +33,6 @@ class HomePage(QtWidgets.QGridLayout):
         #Add Widgets
         self.addWidget(self.lInvoice_Details, 0, 1, 1, 1)
         
-        self.addWidget(self.bAddInventory, 2, 1, 1, 1)  
-        self.addWidget(self.bDeleteInventory, 3, 1, 1, 1) 
-        self.addWidget(self.bViewInventory, 4, 1, 1, 1) 
+        self.addWidget(self.bAddInventory, 2, 1, 1, 1, QtCore.Qt.AlignCenter)  
+        self.addWidget(self.bViewInventory, 3, 1, 1, 1, QtCore.Qt.AlignCenter) 
         
