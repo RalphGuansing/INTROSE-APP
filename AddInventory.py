@@ -1,6 +1,7 @@
 import sys
 from PyQt5 import QtWidgets,QtCore,QtGui,Qt
 from InventoryView import *
+from AddInventoryConfirm import ConfirmWindow
 
 class AddInventoryView(QtWidgets.QGridLayout):
     def __init__(self, frame):
@@ -50,6 +51,18 @@ class AddInventoryView(QtWidgets.QGridLayout):
         self.current_row = 0
         db_connection.close_connection()
         self.tProduct_Table.clearContents()
+        self.confirm_window.close()
+
+    def confirm_submit(self):
+        self.confirm_window = ConfirmWindow()
+        self.confirm_window.show()
+        self.confirm_window.layout.layout.bAddInventory.clicked.connect(self.submit_products)
+        for x in range(self.current_row):
+            self.confirm_window.layout.layout.add_to_table(x,0,self.tProduct_Table.item(x,0).text())
+            self.confirm_window.layout.layout.add_to_table(x,1,self.tProduct_Table.item(x,1).text())
+            self.confirm_window.layout.layout.add_to_table(x,2,self.tProduct_Table.item(x,2).text())
+            self.confirm_window.layout.layout.add_to_table(x,3,self.tProduct_Table.item(x,3).text())
+            self.confirm_window.layout.layout.add_to_table(x,4,self.tProduct_Table.item(x,4).text())
 
 
     def delete_entry(self):
@@ -146,7 +159,7 @@ class AddInventoryView(QtWidgets.QGridLayout):
         self.bSubmit = QtWidgets.QPushButton("Submit")
         self.bSubmit.setStyleSheet('QPushButton {color: white;background-color: #47c468;border-style: outset;border-width: 2px;border-radius: 10px;border-color: beige;font: bold 14px;min-width: 10em;padding: 6px;}')
         self.bSubmit.setFixedWidth(200)
-        self.bSubmit.clicked.connect(self.submit_products)
+        self.bSubmit.clicked.connect(self.confirm_submit)
 
 
         self.setColumnStretch(7,1)
