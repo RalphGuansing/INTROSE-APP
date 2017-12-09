@@ -194,7 +194,7 @@ class Component:
 		if self.taxable == 0:
 			self.profit = 0
 		else:
-			self.profit = self.taxable - self.origprice
+			self.profit = round(self.taxable - self.origprice, 2)
 
 	def cancelled(self):
 		"""Method for cancellation of purchase, replaces all attributes to None except innumber
@@ -221,7 +221,7 @@ class Component:
 		if self.taxable == 0:
 			self.profit = 0
 		else:
-			self.profit = self.taxable - self.origprice
+			self.profit = round(self.taxable - self.origprice, 2)
 
 	def get_total(self):
 		"""Method for returning the total invoice, nonvat, taxble, output tax and commission.
