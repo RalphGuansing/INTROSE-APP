@@ -284,6 +284,7 @@ class AccountingDB:
 		self.cursor.execute(update_statement)
 
 	#MONTHLY RECEIVABLES
+
 	def del_payment_ar(self, invoice_number):
 
 		update_statement = "UPDATE accounts_receivable SET date_paid = null, pr_id= null,payment= null WHERE inv_id= " + str(invoice_number) + ";"
@@ -300,7 +301,6 @@ class AccountingDB:
 		self.cursor.execute(select_statement)
 		temp = self.cursor.fetchall()
 		return temp
-
 
 	def get_customer_beg_monthly(self, customer_name, month, year):
 
@@ -322,8 +322,6 @@ class AccountingDB:
 		# print(select_statement)
 		return temp
 
-	# self.widgetFrame.layout.input_ar_table(temp)
-
 	def get_customer_end_monthly(self, customer_name, month, year):
 
 		select_statement = """select IFNULL(sum(amount), 0) - IFNULL(sum(payment), 0) as balance
@@ -335,7 +333,6 @@ class AccountingDB:
 		temp = self.cursor.fetchone()
 
 		return temp
-
 
 	#PAYABLES
 
@@ -359,6 +356,17 @@ class AccountingDB:
 
 		return temp
 
+	def get_apv_details(self, id_apv):
+		select_statement = "select DATE_FORMAT(date,'%M %e, %Y') as Date, name, id_apv, amount from accounts_payable where id_apv =" +str(id_apv)
+		self.cursor.execute(select_statement)
+		return self.cursor.fetchone()
+
+	def get_apv_columns(self, id_apv):
+		select_statement = "select type_name, type_value from credit_type where id_apv =" + str(
+			id_apv)
+		self.cursor.execute(select_statement)
+		return self.cursor.fetchall()
+	
 	#ADD PAYABLES
 	def checkAPV_id(self, id_apv):
 

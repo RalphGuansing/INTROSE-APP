@@ -8,7 +8,7 @@ from HomeView import HomeView
 from Accounting.AccountingView import AccountingDB as adb
 from Accounting.Accounting_Home import Accounting_HomeView
 from Accounting.DialogView import *
-from Accounting.Payable.ViewAPV import AccountsPayable_MonthlyView
+from Accounting.Payable.ViewAPV import APVView,AccountsPayable_MonthlyView
 from Accounting.Payable.AddAPV import AddAPVView
 from Accounting.Payable.AddColumn import AddColumnView
 from Accounting.Payable.NewColumn import NewColumnView
@@ -30,7 +30,8 @@ class MainWindow(QtWidgets.QMainWindow):
         
         self.adb = adb()
         
-        self.login_tab()
+        self.view_details_payable_tab()
+        #self.login_tab()
         #self.accounting_home_view()
         #self.view_receivable_tab()
     
@@ -41,7 +42,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.dialog_monthly.layout.bCancel.clicked.connect(self.dialog_monthly.close)
         self.dialog_monthly.layout.bSubmit.clicked.connect(func)
         self.dialog_monthly.exec()
-    
+        
     def cust_payment_dia(self, func):
         ar_Table = self.widgetFrame.layout.ar_Table
         try:
@@ -132,8 +133,35 @@ class MainWindow(QtWidgets.QMainWindow):
         self.widgetFrame = WindowFrame(AccountsPayable_MonthlyView, {"month":month, "year":year})
         self.setCentralWidget(self.widgetFrame)
         self.init_navbar()
+        #self.widgetFrame.layout.bDetails.clicked.connect(self.view_details_payable_tab)
+        self.widgetFrame.layout.bDetails.clicked.connect(self.set_view_payable)
         self.widgetFrame.layout.input_ap_table(self.adb.get_apv_monthly( month, year))
         self.widgetFrame.layout.input_monthly_total(self.adb.get_apv_monthly_total( month, year))
+    
+    def view_details_payable_tab(self):
+        self.setWindowTitle("Accounts Payable Details")
+        self.widgetFrame = WindowFrame(APVView)
+        self.setCentralWidget(self.widgetFrame)
+        self.init_navbar()
+        
+        
+        
+    def set_view_payable(self):
+        ap_Table = self.widgetFrame.layout.ap_Table
+        try:
+            id_apv = ap_Table.item(ap_Table.currentRow(), 2).text()
+            
+            print(id_apv)
+            self.view_details_payable_tab()
+            print(self.adb.get_apv_details(id_apv))
+            self.widgetFrame.layout.set_Details(self.adb.get_apv_details(id_apv))
+            self.widgetFrame.layout.set_Columns(self.adb.get_apv_columns(id_apv))
+
+        except:
+            if ap_Table.rowCount() != 0:
+                self.showMessage('Error Input', "Please select a payable")
+            else:
+                self.showMessage('Error', "No payable to be checked")
     
     pass#ADD PAYABLES
     def add_apv_tab(self):
