@@ -2,6 +2,7 @@ import sys
 from PyQt5 import QtWidgets,QtCore,QtGui,Qt
 from Inventory.InventoryView import *
 from Inventory.AddInventoryConfirm import ConfirmWindow
+from Accounting.AccountingView import *
 import datetime
 
 class AddInventoryView(QtWidgets.QGridLayout):
@@ -42,16 +43,21 @@ class AddInventoryView(QtWidgets.QGridLayout):
         self.current_row += 1
 
     def submit_products(self):
-        print(self.tQuantity.value())
-        db_connection = InventoryDatabase()
+        db_connection_inv = InventoryDatabase()
+        db_connection_apv = AccountingDB()
+        apv_list = []
         for x in range(self.current_row):
             try:
-                db_connection.update_product(self.tProduct_Table.item(x,2).text(),self.tProduct_Table.item(x,1).text(),self.tProduct_Table.item(x,3).text())
-                db_connection.add_product_quantity(self.tProduct_Table.item(x,2).text(),int(self.tProduct_Table.item(x,0).text()))
+                db_connection_inv.update_product(self.tProduct_Table.item(x,2).text(),self.tProduct_Table.item(x,1).text(),self.tProduct_Table.item(x,3).text())
+                db_connection_inv.add_product_quantity(self.tProduct_Table.item(x,2).text(),int(self.tProduct_Table.item(x,0).text()))
+                apv_list.append(AccountsPayable(datetime.datetime.now(),self.tProduct_Table.item(x,2).text(),db_connection_apv.get_id_apv(),self.tProduct_Table.item(x,4).text()))
             except BaseException:
                 print('Error')
+        for apv in apv_list:
+            db_connection_apv.add_accountspayable(apv)
         self.current_row = 0
-        db_connection.close_connection()
+        db_connection_inv.close_connection()
+        db_connection_apv.close_connection()
         self.tProduct_Table.clearContents()
         self.confirm_window.close()
 

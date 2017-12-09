@@ -156,6 +156,10 @@ class AccountingDB:
 		self.connect = sql.connect('localhost','root','root','introse',autocommit=True) # change for final db
 		self.cursor = self.connect.cursor(sql.cursors.DictCursor)
 
+	def get_id_apv(self):
+		self.cursor.execute('SELECT MAX(id_apv) FROM introse.accounts_payable;')
+		return self.cursor.fetchone()['MAX(id_apv)'] + 1
+
 	def add_accountsreceivable(self, accountsreceivable):
 		"""Method for adding accounts receivable to the database.
 		Args:
@@ -242,7 +246,7 @@ class AccountingDB:
 					credit_statement += ";"
 
 			print(credit_statement)
-			self.cursor.execute(credit_statement)  # Execute
+			#self.cursor.execute(credit_statement)  # Execute
 
 		else:
 			print("ap exists")
