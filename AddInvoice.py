@@ -31,7 +31,7 @@ class AddInvoiceView(QtWidgets.QGridLayout):
             print('Value Error: Wrong input type')
 
         component_item = Component(name, origpricce, unitprice, quantity, unit, id_comp, nonvat)
-        component_item.name = self.tProduct[self.tProduct.currentIndex()].currentText())
+        component_item.name = self.tProduct[self.tProduct.currentIndex()].currentText()
         component_item.unitprice = int(self.tUnitPrice.text())
         component_item.quantity = int(self.tQuantity.value())
         component_item.unit = str(self.tUnit.currentText())
