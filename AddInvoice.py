@@ -11,6 +11,7 @@ class AddInvoiceView(QtWidgets.QGridLayout):
         self.frame.setWindowTitle("Invoice")
         self.added_products = []
         self.current_row = 0
+        self.components = []
         #self.component_item1 = Component(name, origprice, unitprice, quantity, unit, nonvat)
         #self.component_item2 = Component(name, origprice, unitprice, quantity, unit, nonvat)
         #self.component_item3 = Component(name, origprice, unitprice, quantity, unit, nonvat)
@@ -23,12 +24,17 @@ class AddInvoiceView(QtWidgets.QGridLayout):
         try:
             self.tProduct_Table.setItem(self.current_row,0,QtWidgets.QTableWidgetItem(str(self.tQuantity.value())))
             self.tProduct_Table.setItem(self.current_row,1,QtWidgets.QTableWidgetItem(str(self.tUnit.currentText())))
-            self.tProduct_Table.setItem(self.current_row,2,QtWidgets.QTableWidgetItem(self.tProduct[self.tProduct.currentIndex()].currentText())
-            self.tProduct_Table.setItem(self.current_row,3,QtWidgets.QTableWidgetItem(str(self.tUnitPrice.text)
+            self.tProduct_Table.setItem(self.current_row,2,QtWidgets.QTableWidgetItem(self.tProduct[self.tProduct.currentIndex()].currentText()))
+            self.tProduct_Table.setItem(self.current_row,3,QtWidgets.QTableWidgetItem(str(self.tUnitPrice.text)))
             self.tProduct_Table.setItem(self.current_row,4,QtWidgets.QTableWidgetItem(str(int(self.tUnitPrice.text()) * int(self.tQuantity.value()))))
         except ValueError:
             print('Value Error: Wrong input type')
 
+        component_item = Component(name, origpricce, unitprice, quantity, unit, id_comp, nonvat)
+        component_item.name = self.tProduct[self.tProduct.currentIndex()].currentText())
+        component_item.unitprice = int(self.tUnitPrice.text())
+        component_item.quantity = int(self.tQuantity.value())
+        component_item.unit = str(self.tUnit.currentText())
 
         self.tQuantity.setValue(0)
         self.tUnit.setText('')
@@ -54,6 +60,8 @@ class AddInvoiceView(QtWidgets.QGridLayout):
         self.termsList = ("30 days", "60 days", "90 days", "1 year")
         self.unitList = ("Tetrapack", "Sachet", "Pack", "Buy 1 Take 1")
         self.productsList = ("Yakult", "Milo", "Hotdog")
+        self.origPriceList = [900, 1000, 1100]
+        self.unitPriceList = [1000, 1100, 1200]
         #Quantity, Unit, Articles, Unit Price, Amount
         
         self.lInvoice_Details = QtWidgets.QLabel("INVOICE DETAILS")
