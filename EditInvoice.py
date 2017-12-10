@@ -2,7 +2,7 @@ import sys
 from PyQt5 import QtWidgets,QtCore
 from InventoryView import *
 
-class AddInventoryView(QtWidgets.QGridLayout):
+class EditInvoice(QtWidgets.QGridLayout):
     def __init__(self, frame):
         super().__init__()
         self.frame = frame
