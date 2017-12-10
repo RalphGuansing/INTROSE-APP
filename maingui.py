@@ -5,6 +5,8 @@ from ViewInvoice import ViewInvoice
 from HomeInvoice import HomeInvoice
 from ViewInvoiceList import ViewInvoice as InvList
 from AddInvoiceConfirm import AddInvoiceConfirm
+from DeleteInvoiceConfirm import DeleteInvoiceConfirm
+from EditInvoice import EditInvoice
 
 class MainWindow(QtWidgets.QMainWindow):
     
@@ -65,9 +67,28 @@ class MainWindow(QtWidgets.QMainWindow):
         self.widgetFrame = WindowFrame(InvList)
 
         self.widgetFrame.layout.bBack.clicked.connect(self.home_invoice_tab)
+        self.widgetFrame.layout.bEditInvoice.clicked.connect(self.edit_invoice_tab)
+        self.widgetFrame.layout.bDelInvoice.clicked.connect(self.delete_confirm_tab)
 
         self.setCentralWidget(self.widgetFrame)    
 
+    def delete_confirm_tab(self):
+        self.setWindowTitle("Invoice")
+        self.widgetFrame = WindowFrame(DeleteInvoiceConfirm)
+
+        self.widgetFrame.layout.bBack.clicked.connect(self.view_list_tab)
+        self.widgetFrame.layout.bConfirm.clicked.connect(self.view_list_tab)
+
+        self.setCentralWidget(self.widgetFrame)
+
+    def edit_invoice_tab(self):
+        self.setWindowTitle("Invoice")
+        self.widgetFrame = WindowFrame(EditInvoice)
+
+        self.widgetFrame.layout.bBack.clicked.connect(self.view_list_tab)
+        self.widgetFrame.layout.bSubmit.clicked.connect(self.view_list_tab)
+
+        self.setCentralWidget(self.widgetFrame)
 
 class WindowFrame(QtWidgets.QWidget):
     

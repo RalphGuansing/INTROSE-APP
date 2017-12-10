@@ -2,7 +2,7 @@ import sys
 from PyQt5 import QtWidgets,QtCore
 
 
-class AddInvoiceConfirm(QtWidgets.QGridLayout):
+class DeleteInvoiceConfirm(QtWidgets.QGridLayout):
     def __init__(self, frame):
         super().__init__()
         self.frame = frame
@@ -91,9 +91,9 @@ class AddInvoiceConfirm(QtWidgets.QGridLayout):
         self.bBack.setStyleSheet('QPushButton { font-size: 14px; border-radius:10px ;padding: 10px;}')
         self.bBack.setFixedWidth(80)
         
-        self.bAddInvoice = QtWidgets.QPushButton("Confirm")
-        self.bAddInvoice.setStyleSheet('QPushButton {color: white;background-color: #47c468;border-style: outset;border-width: 2px;border-radius: 10px;border-color: beige;font: bold 14px;min-width: 10em;padding: 6px;}')
-        self.bAddInvoice.setFixedWidth(200)
+        self.bConfirm = QtWidgets.QPushButton("Confirm")
+        self.bConfirm.setStyleSheet('QPushButton {color: white;background-color: #47c468;border-style: outset;border-width: 2px;border-radius: 10px;border-color: beige;font: bold 14px;min-width: 10em;padding: 6px;}')
+        self.bConfirm.setFixedWidth(200)
 
 
         self.setColumnStretch(6,1)
@@ -125,7 +125,7 @@ class AddInvoiceConfirm(QtWidgets.QGridLayout):
         
         self.addWidget(self.bBack, 15, 2, 1, 1)
         
-        self.addWidget(self.bAddInvoice, 15, 3, 1, 1)
+        self.addWidget(self.bConfirm, 15, 3, 1, 1)
 
 class WindowFrame(QtWidgets.QWidget):
     def __init__(self, layout):
