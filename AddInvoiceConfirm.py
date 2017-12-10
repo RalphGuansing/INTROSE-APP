@@ -1,6 +1,6 @@
 import sys
 from PyQt5 import QtWidgets,QtCore
-
+from InvoiceView import *
 
 class AddInvoiceConfirm(QtWidgets.QGridLayout):
     def __init__(self, frame):
@@ -22,6 +22,23 @@ class AddInvoiceConfirm(QtWidgets.QGridLayout):
         self.lTerms.setText("Terms: " + str(info["term"]))
         self.lAddress.setText("Address: " + str(info["Address"]))
 
+    def delete_info(self, invoice_number):
+        invo_db = InvoiceDB()
+
+        invoice_query = []
+        invoice_query = invo_db.get_query(invoice_number)
+        user_info = {'invoice_id': invoice_query[0], 'buyer': invoice_query[1][0], 'date': invoice_query[3], 'seller': invoice_query[2], 'term': invoice_query[4], 'Address': invoice_query[1][1]}
+        self.checkout_info(invoice_query[6], invoice_query[8], invoice_query[9], invoice_query[10], user_info)
+
+        for row in range(len(invoice_query[11])):
+
+            self.add_to_table(row,0, str(invoice_query[11][row][4]))
+            self.add_to_table(row,1, invoice_query[11][row][3])
+            self.add_to_table(row,2, invoice_query[11][row][2])
+            self.add_to_table(row,3, str(invoice_query[11][row][6]))
+            self.add_to_table(row,4, str(invoice_query[11][row][7]))
+
+        invo_db.close_connection()
 
     def add_to_table(self, row, column, text):
         self.tProduct_Table.setItem(row,column,QtWidgets.QTableWidgetItem(text))

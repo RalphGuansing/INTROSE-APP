@@ -1,7 +1,7 @@
 import sys
 from PyQt5 import QtWidgets,QtCore
 from InvoiceView import *
-
+from AddInvoiceConfirm import *
 
 class ViewInvoice(QtWidgets.QGridLayout):
     def __init__(self, frame):
@@ -11,7 +11,8 @@ class ViewInvoice(QtWidgets.QGridLayout):
         self.init_ui()
 
 
-
+    def edit_invoice(self):
+        self.edit_window = 
     def get_all_invoice(self):
         invo_db = InvoiceDB()
         all_invoice_list = invo_db.get_all_invoice()
@@ -32,6 +33,17 @@ class ViewInvoice(QtWidgets.QGridLayout):
 
         invo_db.close_connection()
 
+    def delete_invoice_confirm(self):
+        indices = self.tProduct_Table.selectionModel().selectedRows()
+        try:
+            for index in sorted(indices):
+                self.confirm_window = ConfirmWindow()
+                self.confirm_window.show()
+                self.confirm_window.layout.layout.bAddInvoice.clicked.connect(self.delete_invoice)
+                self.confirm_window.layout.layout.delete_info(self.tProduct_Table.item(index.row(),0).text())
+        except IndexError:
+            pass
+
     def delete_invoice(self):
         print(self.tProduct_Table.item(0,0).text())
         print(self.tProduct_Table.selectionModel().selectedRows())
@@ -39,13 +51,12 @@ class ViewInvoice(QtWidgets.QGridLayout):
         model = self.tProduct_Table
         total_temp = []
         indices = self.tProduct_Table.selectionModel().selectedRows()
-        try:
-            for index in indices:
-                invo_db.delete_row(invoice_number=self.tProduct_Table.item(index.row(),0).text())
-                model.removeRow(index.row())
 
-        except IndexError:
-            pass
+        for index in sorted(indices):
+            invo_db.delete_row(invoice_number=self.tProduct_Table.item(index.row(),0).text())
+            model.removeRow(index.row())
+
+        self.confirm_window.close()
         total = []
         total = invo_db.get_total()
         self.lamountTotal.setText("Total amount: " + str(total[0]))
@@ -54,7 +65,6 @@ class ViewInvoice(QtWidgets.QGridLayout):
         self.lprofitTotal.setText("Total profit: "  + str(total[4]))
 
         invo_db.close_connection()
-
 
     def init_ui(self):
         #Create Widgets
@@ -70,7 +80,7 @@ class ViewInvoice(QtWidgets.QGridLayout):
         self.bDelInvoice = QtWidgets.QPushButton("Delete Invoice")
         self.bDelInvoice.setStyleSheet('QPushButton { font-size: 12pt; padding: 10px;}')
         self.bDelInvoice.setFixedWidth(200)
-        self.bDelInvoice.clicked.connect(self.delete_invoice)
+        self.bDelInvoice.clicked.connect(self.delete_invoice_confirm)
 
 		#Product Table#
         self.tProduct_Table = QtWidgets.QTableWidget()
