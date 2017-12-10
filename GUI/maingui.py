@@ -22,6 +22,11 @@ from Inventory.guiHomePage import *
 from Inventory.HomePage import *
 from Inventory.InventoryView import *
 from Inventory.ViewInventoryList import *
+from Invoice.AddInvoice import AddInvoiceView
+from Invoice.ViewInvoice import ViewInvoice
+from Invoice.HomeInvoice import HomeInvoice
+from Invoice.ViewInvoiceList import ViewInvoice as InvList
+from Invoice.AddInvoiceConfirm import AddInvoiceConfirm
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -29,7 +34,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
         #self.setFixedSize(1024,720)
-        self.resize(1024,720)
+        self.resize(1366,768)
 
 #        self.db = pymysql.connect("localhost","root","p@ssword","introse",autocommit=True)
 #        self.cursor = self.db.cursor(pymysql.cursors.DictCursor)
@@ -42,10 +47,59 @@ class MainWindow(QtWidgets.QMainWindow):
         #self.view_receivable_tab()
     
     def inventory_view(self):
+        self.setWindowTitle("Inventory") 
         self.widgetFrame = WindowFrame(Tabs)
         self.setCentralWidget(self.widgetFrame)
         self.init_navbar()
+    #JAROLD
+    pass #INVOICING
+    def add_invoice_tab(self):
+        self.setWindowTitle("Invoice")       
+        self.widgetFrame = WindowFrame(AddInvoiceView)
 
+        self.widgetFrame.layout.bBack.clicked.connect(self.home_invoice_tab)
+        	
+        self.setCentralWidget(self.widgetFrame)
+        self.init_navbar()
+        
+    def view_invoice_tab(self):
+        self.setWindowTitle("Invoice")
+        self.widgetFrame = WindowFrame(ViewInvoice)
+
+        self.Dialog = QtWidgets.QInputDialog.getInt(self, "Invoice number", "Please enter the invoice number", 1,)
+        try:
+            self.widgetFrame.layout.get_invoice(self.Dialog[0])
+            self.widgetFrame.layout.bBack.clicked.connect(self.home_invoice_tab)
+            self.widgetFrame.layout.bAddInvoice.clicked.connect(self.add_invoice_tab)
+        except IndexError:
+            self.home_invoice_tab()
+
+        
+
+        self.setCentralWidget(self.widgetFrame)
+        self.init_navbar()
+        
+    def home_invoice_tab(self):
+        self.setWindowTitle("Invoice")
+        self.widgetFrame = WindowFrame(HomeInvoice)
+
+        self.widgetFrame.layout.bAddInvoice.clicked.connect(self.add_invoice_tab)
+        self.widgetFrame.layout.bViewInvoice.clicked.connect(self.view_invoice_tab)
+        self.widgetFrame.layout.bInvoiceList.clicked.connect(self.view_list_tab)
+
+        self.setCentralWidget(self.widgetFrame)
+        self.init_navbar()
+
+    def view_list_tab(self):
+        self.setWindowTitle("Invoice")
+        self.widgetFrame = WindowFrame(InvList)
+
+        self.widgetFrame.layout.bBack.clicked.connect(self.home_invoice_tab)
+
+        self.setCentralWidget(self.widgetFrame)
+        self.init_navbar()
+        
+    pass #END OF INVOICING
     #RALPH
     def cust_monthly_dia(self, func):
         self.dialog_monthly = DialogFrame("Input",input_month_year,self)
@@ -56,9 +110,13 @@ class MainWindow(QtWidgets.QMainWindow):
         
     def cust_payment_dia(self, func):
         ar_Table = self.widgetFrame.layout.ar_Table
+        items ={}
+        pr_id = self.adb.get_latest_pr()
+        items["pr_id"] = pr_id
         try:
             cost = ar_Table.item(ar_Table.currentRow(), 2).text()
-            self.dialog_payment = DialogFrame("Input",input_payment,self, cost)
+            items["cost"] = cost
+            self.dialog_payment = DialogFrame("Input",input_payment,self, items)
             self.dialog_payment.layout.bSubmit.clicked.connect(self.dialog_payment.close)
             self.dialog_payment.layout.bCancel.clicked.connect(self.dialog_payment.close)
             self.dialog_payment.layout.bSubmit.clicked.connect(partial(func, self.dialog_payment.layout, self.widgetFrame.layout))
@@ -263,6 +321,7 @@ class MainWindow(QtWidgets.QMainWindow):
         #TEMPORARY
         self.widgetFrame.bAccounting.clicked.connect(self.accounting_home_view)
         self.widgetFrame.bInventory.clicked.connect(self.inventory_view)
+        self.widgetFrame.bInvoice.clicked.connect(self.home_invoice_tab)
         self.widgetFrame.bLogo.clicked.connect(self.home_tab)
         self.widgetFrame.bLogout.clicked.connect(self.login_tab)
     
