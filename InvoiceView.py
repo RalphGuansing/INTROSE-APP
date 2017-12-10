@@ -34,7 +34,7 @@ class InvoiceDB:
 		self.connect = sql.connect('localhost','root','p@ssword','lcg_db',autocommit=True) # change for final db
 		self.cursor = self.connect.cursor()
 
-	def add_invoice(self, cust, issue_date, terms, ddate, seller, components):
+	def add_invoice(self, cust, issue_date, terms, ddate, seller, components, inv_id):
 		"""Method for adding invoice to the database.
 		Args:
 			cust (:obj: 'str'): The first parameter, name of Customer.
@@ -43,6 +43,7 @@ class InvoiceDB:
 			ddate (:obj:, 'datetime'): The fourth parameter, due date of purchase.
 			seller (:obj:, 'str'): The fifth parameter, name of employee that handled purchase.
 			components (:obj:, 'list'): The sixth parameter, list of components.
+			inv_id (int): The seventh parameter, invoice ID.
 		"""
 		total_amount = total_nonvat = total_vat = total_taxable = total_profit = 0
 		sql_statement = pd.read_sql("SELECT idclient FROM lcg_db.client WHERE client_name = '" + cust + "' ;",self.connect)
@@ -55,7 +56,7 @@ class InvoiceDB:
 			total_vat += component.vat
 			total_taxable += component.taxable
 			total_profit += component.profit
-		sql_statement = "INSERT INTO `lcg_db`.`invoice` (`invoice_buyer`, `invoice_seller`, `invoice_date`, `invoice_term`, `invoice_ddate`,`invoice_amount`, `invoice_nonvat`, `invoice_vat`, `invoice_taxable`, `invoice_profit`) VALUES ('" + str(client_id) + "', '" + str(seller_id) + "', '" + str(issue_date) + "', '" + terms + "', '" + str(ddate) + "', '" + str(total_amount) + "', '" + str(total_nonvat) + "', '" + str(total_vat) + "', '" + str(total_taxable) + "', '" + str(total_profit) + "');"
+		sql_statement = "INSERT INTO `lcg_db`.`invoice` (`idinvoice`, `invoice_buyer`, `invoice_seller`, `invoice_date`, `invoice_term`, `invoice_ddate`,`invoice_amount`, `invoice_nonvat`, `invoice_vat`, `invoice_taxable`, `invoice_profit`) VALUES ('" + str(inv_id) + "', '" + str(client_id) + "', '" + str(seller_id) + "', '" + str(issue_date) + "', '" + terms + "', '" + str(ddate) + "', '" + str(total_amount) + "', '" + str(total_nonvat) + "', '" + str(total_vat) + "', '" + str(total_taxable) + "', '" + str(total_profit) + "');"
 		self.cursor.execute(sql_statement)
 		l_id = InvoiceDB.get_last_id(self)
 		for component in components:

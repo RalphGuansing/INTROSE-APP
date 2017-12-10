@@ -35,24 +35,25 @@ class ViewInvoice(QtWidgets.QGridLayout):
     def delete_invoice(self):
         print(self.tProduct_Table.item(0,0).text())
         print(self.tProduct_Table.selectionModel().selectedRows())
-        # invo_db = InvoiceDB()
-        # model = self.tProduct_Table
-        # total_temp = []
-        # indices = self.tProduct_Table.selectionModel().selectedRows()
+        invo_db = InvoiceDB()
+        model = self.tProduct_Table
+        total_temp = []
+        indices = self.tProduct_Table.selectionModel().selectedRows()
+        try:
+            for index in indices:
+                invo_db.delete_row(invoice_number=self.tProduct_Table.item(index.row(),0).text())
+                model.removeRow(index.row())
 
-        # for index in indices:
-        #     model.removeRow(index.row())
+        except IndexError:
+            pass
+        total = []
+        total = invo_db.get_total()
+        self.lamountTotal.setText("Total amount: " + str(total[0]))
+        self.ltaxedTotal.setText("Total taxable: "  + str(total[2]))
+        self.ltaxTotal.setText("Total tax: "  + str(total[3]))
+        self.lprofitTotal.setText("Total profit: "  + str(total[4]))
 
-        #     invo_db.delete_row(invoice_number=self.tProduct_Table.item(index.row(),0).text())
-        
-        # total = []
-        # total = invo_db.get_total()
-        # self.lamountTotal.setText("Total amount: " + str(total[0]))
-        # self.ltaxedTotal.setText("Total taxable: "  + str(total[2]))
-        # self.ltaxTotal.setText("Total tax: "  + str(total[3]))
-        # self.lprofitTotal.setText("Total profit: "  + str(total[4]))
-
-        # invo_db.close_connection()
+        invo_db.close_connection()
 
 
     def init_ui(self):
