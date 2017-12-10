@@ -13,20 +13,43 @@ class ViewInvoice(QtWidgets.QGridLayout):
         self.init_ui()
 
     def get_invoice(self, invoice_number):
+        total_amount = 0
+        total_nonvat = 0
+        total_vat = 0
+        total_taxable = 0
+        total_profit = 0
         invo_db = InvoiceDB()
         self.invoice_query = []
         invoice_query = invo_db.get_query(invoice_number)
-        print(invoice_query[0])
+
+        for total_temp in invoice_query[11]:
+
+            total_amount += total_temp[7]
+            total_nonvat += total_temp[8]
+            total_vat += total_temp[9]
+            total_taxable += total_temp[10]
+            total_profit += total_temp[11]
+
+        for row in range(len(invoice_query[11])):
+            self.tProduct_Table.setItem(row,0,QtWidgets.QTableWidgetItem(str(invoice_query[11][row][4])))
+            self.tProduct_Table.setItem(row,1,QtWidgets.QTableWidgetItem(invoice_query[11][row][3]))
+            self.tProduct_Table.setItem(row,2,QtWidgets.QTableWidgetItem(invoice_query[11][row][2]))
+            self.tProduct_Table.setItem(row,3,QtWidgets.QTableWidgetItem(str(invoice_query[11][row][6])))
+            self.tProduct_Table.setItem(row,4,QtWidgets.QTableWidgetItem(str(invoice_query[11][row][7])))
+
+        self.lamountTotal.setText("Total amount: " + str(total_amount))
+        self.ltaxedTotal.setText("Total taxable: "  + str(total_taxable))
+        self.ltaxTotal.setText("Total tax: "  + str(total_vat))
+        self.lprofitTotal.setText("Total profit: "  + str(total_profit))
+
+        self.lInvNum.setText("Invoice No.  " + str(invoice_query[0]))
+        self.lChargedTo.setText("Charged to: " + str(invoice_query[1][0]))
+        self.lDate.setText("Date: " + str(invoice_query[3]))
+        self.lSeller.setText("Seller: " + str(invoice_query[2]))
+        self.lTerms.setText("Terms: " + str(invoice_query[4]))
+        self.lAddress.setText("Address: " + str(invoice_query[1][1]))
+
         invo_db.close_connection()
-
-        # self.lInvNum.setText("Invoice No.  " + str(info["invoice_id"]))
-        # self.lChargedTo.setText("Charged to: " + str(info["buyer"]))
-        # self.lDate.setText("Date: " + str(info["date"]))
-        # self.lSeller.setText("Seller: " + str(info["seller"]))
-        # self.lTerms.setText("Terms: " + str(info["term"]))
-        # self.lAddress.setText("Address: " + str(info["Address"]))
-
-        
     
     def add_to_table(self, row, column, text):
         self.tProduct_Table.setItem(row,column,QtWidgets.QTableWidgetItem(text))

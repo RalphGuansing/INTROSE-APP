@@ -20,7 +20,7 @@ class ViewInvoice(QtWidgets.QGridLayout):
             buyer_name = invo_db.get_client_name(all_invoice_list[row][1])
             self.tProduct_Table.setItem(row,0,QtWidgets.QTableWidgetItem(str(all_invoice_list[row][0])))
             self.tProduct_Table.setItem(row,1,QtWidgets.QTableWidgetItem(str(all_invoice_list[row][6])))
-            self.tProduct_Table.setItem(row,2,QtWidgets.QTableWidgetItem(buyer_name))
+            self.tProduct_Table.setItem(row,2,QtWidgets.QTableWidgetItem(buyer_name[0]))
             self.tProduct_Table.setItem(row,3,QtWidgets.QTableWidgetItem(all_invoice_list[row][3]))
 
         total = []

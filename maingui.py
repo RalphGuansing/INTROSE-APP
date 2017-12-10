@@ -39,10 +39,14 @@ class MainWindow(QtWidgets.QMainWindow):
         self.widgetFrame = WindowFrame(ViewInvoice)
 
         self.Dialog = QtWidgets.QInputDialog.getInt(self, "Invoice number", "Please enter the invoice number", 1,)
-        self.widgetFrame.get_invoice(self.Dialog.intValue())
-        self.widgetFrame.layout.bBack.clicked.connect(self.home_invoice_tab)
-        self.widgetFrame.layout.bAddInvoice.clicked.connect(self.add_invoice_tab)
-        self.home_invoice_tab
+        try:
+            self.widgetFrame.layout.get_invoice(self.Dialog[0])
+            self.widgetFrame.layout.bBack.clicked.connect(self.home_invoice_tab)
+            self.widgetFrame.layout.bAddInvoice.clicked.connect(self.add_invoice_tab)
+        except IndexError:
+            self.home_invoice_tab()
+
+        
 
         self.setCentralWidget(self.widgetFrame)
         
