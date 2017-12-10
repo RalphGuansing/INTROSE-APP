@@ -1,8 +1,8 @@
 import sys
 from PyQt5 import QtWidgets,QtCore
-from InvoiceView import *
-from AddInvoiceConfirm import *
-from EditInvoice import *
+from Invoice.InvoiceView import *
+from Invoice.AddInvoiceConfirm import *
+from Invoice.EditInvoice import *
 
 class ViewInvoice(QtWidgets.QGridLayout):
     def __init__(self, frame):

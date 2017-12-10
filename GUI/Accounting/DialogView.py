@@ -68,9 +68,10 @@ class input_month_year(QtWidgets.QGridLayout):
       
     
 class input_payment(QtWidgets.QGridLayout):
-    def __init__(self, frame, cost):
+    def __init__(self, frame, items):
         super().__init__()
-        self.cost = cost
+        self.cost = items["cost"]
+        self.pr_id = items["pr_id"]
         self.frame = frame
         self.init_ui()
     
@@ -105,6 +106,7 @@ class input_payment(QtWidgets.QGridLayout):
         self.lPR.setStyleSheet(self.labelStyle)
         self.tPR = QtWidgets.QLineEdit(self.frame)
         self.tPR.setStyleSheet(textboxStyle)
+        self.tPR.setText(str(self.pr_id["pr_id"]+1))
         #self.tId.textChanged.connect(self.preview_items)
         #self.tId.setFixedWidth(textboxSize)
         

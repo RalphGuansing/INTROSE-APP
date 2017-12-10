@@ -1,6 +1,7 @@
 import datetime
 import pandas as pd
 import pymysql as sql
+from Invoice.AccountingView import *
 
 class Invoice:
 	"""This Module is responsible for keeping track of purchases of clients."""
@@ -46,8 +47,8 @@ class InvoiceDB:
 			inv_id (int): The seventh parameter, invoice ID.
 		"""
 		total_amount = total_nonvat = total_vat = total_taxable = total_profit = 0
-		sql_statement = pd.read_sql("SELECT idclient FROM introse.client WHERE client_name = '" + cust + "' ;",self.connect)
-		client_id = sql_statement.idclient[0]
+		sql_statement = pd.read_sql("SELECT customer_id FROM introse.customer WHERE customer_name = '" + cust + "' ;",self.connect)
+		client_id = sql_statement.customer_id[0]
 		sql_statement = pd.read_sql("SELECT idagent FROM introse.agent WHERE agent_name = '" + seller + "' ;",self.connect)
 		seller_id = sql_statement.idagent[0]
 		for component in components:
@@ -62,6 +63,11 @@ class InvoiceDB:
 		for component in components:
 			sql_statement = "INSERT INTO `introse`.`component` (`component_invoicenum`, `component_name`, `component_unit`, `component_quantity`, `component_origprice`, `component_unitprice`, `component_amount`, `component_nonvat`, `component_vat`, `component_taxable`, `component_profit`) VALUES ('" + str(l_id) + "', '" + str(component.name) + "', '" + str(component.unit) + "', '" + str(component.quantity) + "', '"+ str(component.origprice) +"', '" + str(component.unitprice) + "', '" + str(component.amount) + "', '" + str(component.nonvat) + "', '" + str(component.vat) + "', '" + str(component.taxable) + "', '" + str(component.profit) + "');"
 			self.cursor.execute(sql_statement)
+
+		arDB = AccountingDB()
+		ar = AccountsReceivable(client_id, str(ddate), inv_id, total_amount, date_paid=None, pr_no=None, payment=None)
+		arDB.add_accountsreceivable(ar)
+		arDB.close_connection()
 
 	def update_value(self, invoice_number, components):
 		"""Method for updating entries in the database.
@@ -88,7 +94,7 @@ class InvoiceDB:
 
 		sql_statement = "UPDATE `introse`.`invoice` SET `invoice_amount`='" + str(total_amount) + "', `invoice_nonvat`= '" + str(total_nonvat) + "',`invoice_vat`= '" + str(total_vat) + "',`invoice_taxable`='" + str(total_taxable) + "',`invoice_profit`='" + str(total_profit) + "' WHERE `idinvoice`='" + str(invoice_number) + "';"
 		self.cursor.execute(sql_statement)
-	
+
 	def delete_row(self, invoice_number=0, component_number=0):
 		"""Method for deleting an entire row in the database.
 		Args:
@@ -120,10 +126,10 @@ class InvoiceDB:
 				client_name, if otherwise
 		"""
 		if client_id == None:
-			sql_statement = pd.read_sql("SELECT client_name, client_address FROM introse.client ORDER BY client_name;",self.connect)
+			sql_statement = pd.read_sql("SELECT customer_name, address FROM introse.customer ORDER BY customer_name;",self.connect)
 			return [(row[1][0], row[1][1]) for row in sql_statement.iterrows()]
 		else:
-			sql_statement = pd.read_sql("SELECT client_name, client_address FROM introse.client WHERE idclient = '" + str(client_id) + "';",self.connect)
+			sql_statement = pd.read_sql("SELECT customer_name, address FROM introse.customer WHERE customer_id = '" + str(client_id) + "';",self.connect)
 			return (sql_statement.client_name[0], sql_statement.client_address[0])
 
 	def get_seller_name(self, seller_id=None):

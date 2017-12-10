@@ -1,7 +1,7 @@
 import sys
 from PyQt5 import QtWidgets,QtCore
 
-from InvoiceView import *
+from Invoice.InvoiceView import *
 
 
 
