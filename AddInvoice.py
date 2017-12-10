@@ -165,7 +165,7 @@ class AddInvoiceView(QtWidgets.QGridLayout):
         invo_db = InvoiceDB()
         invo_entry = Invoice(self.tBuyer.currentText(),self.tDate.text(), self.tTerms.currentText(), self.tSeller.currentText())
         print(self.check_info["buyer"])
-        invo_db.add_invoice(self.check_info["buyer"], self.check_info["date"], self.check_info["term"],self.check_info["date"],self.check_info["seller"], self.components)
+        invo_db.add_invoice(self.check_info["buyer"], self.check_info["date"], self.check_info["term"],self.check_info["date"],self.check_info["seller"], self.components, self.check_info["invoice_id"])
         print(invo_entry)
         self.confirm_window.close()
         invo_db.close_connection()
