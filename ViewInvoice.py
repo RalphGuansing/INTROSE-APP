@@ -12,6 +12,13 @@ class ViewInvoice(QtWidgets.QGridLayout):
         self.frame.setWindowTitle("View Invoice")
         self.init_ui()
 
+    def get_invoice(self, invoice_number):
+        invo_db = InvoiceDB()
+        invoice_query = []
+        invoice_query = invo_db.get_query(invoice_number)
+        print(invoice_query[0])
+        invo_db.close_connection()
+
     def init_ui(self):
 
         #Create Widgets

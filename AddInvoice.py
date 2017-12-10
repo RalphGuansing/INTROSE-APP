@@ -18,7 +18,7 @@ class AddInvoiceView(QtWidgets.QGridLayout):
     
 
     def add_products(self):
-        self.add_product_to_table(self.tProduct.currentText(), self.tQuantity.value(), self.tUnit.currentText(), self.tUnitPrice.text(), self.tQuantity.value())
+        self.add_product_to_table(self.tProduct.currentText(), self.tQuantity.value(), self.tUnit.currentText(), self.tUnitPrice.text(), self.origPriceList[0], self.tQuantity.value())
 
     def change_address_tag(self):
         self.tAdd.setText(str(self.client_list[self.tBuyer.currentIndex()][1]))
@@ -73,35 +73,38 @@ class AddInvoiceView(QtWidgets.QGridLayout):
         for i,buyer in enumerate(buyer_list):
             self.tBuyer.insertItem(i,buyer)
     
-    def add_product_to_table(self, product_name, quantity, unit, unit_price, amount):
+    def add_product_to_table(self, product_name, quantity, unit, unit_price, orig_price, nonvat):
         """This method adds a product to the products table"""
+        try:
+            self.tProduct_Table.insertRow(self.tProduct_Table.rowCount())
+            self.tProduct_Table.setItem(self.tProduct_Table.rowCount()-1,0,QtWidgets.QTableWidgetItem(str(quantity)))
+            self.tProduct_Table.setItem(self.tProduct_Table.rowCount()-1,1,QtWidgets.QTableWidgetItem(unit))
+            self.tProduct_Table.setItem(self.tProduct_Table.rowCount()-1,2,QtWidgets.QTableWidgetItem(product_name))
+            self.tProduct_Table.setItem(self.tProduct_Table.rowCount()-1,3,QtWidgets.QTableWidgetItem(str(unit_price)))
+            self.tProduct_Table.setItem(self.tProduct_Table.rowCount()-1,4,QtWidgets.QTableWidgetItem(str(int(unit_price) * quantity)))
+            print(type(product_name))
+            print(type(self.origPriceList[0]))
+            print(unit_price)
+            print(type(quantity))
+            print(type(unit))
+            print(orig_price)
+            comp = Component(product_name, orig_price, int(unit_price), quantity, unit, nonvat=0)
+            self.components.append(comp)
 
-        self.tProduct_Table.insertRow(self.tProduct_Table.rowCount())
-        self.tProduct_Table.setItem(self.tProduct_Table.rowCount()-1,0,QtWidgets.QTableWidgetItem(str(quantity)))
-        self.tProduct_Table.setItem(self.tProduct_Table.rowCount()-1,1,QtWidgets.QTableWidgetItem(unit))
-        self.tProduct_Table.setItem(self.tProduct_Table.rowCount()-1,2,QtWidgets.QTableWidgetItem(product_name))
-        self.tProduct_Table.setItem(self.tProduct_Table.rowCount()-1,3,QtWidgets.QTableWidgetItem(str(unit_price)))
-        self.tProduct_Table.setItem(self.tProduct_Table.rowCount()-1,4,QtWidgets.QTableWidgetItem(str(int(unit_price) * quantity)))
-        print(type(product_name))
-        print(type(self.origPriceList[0]))
-        print(unit_price)
-        print(type(quantity))
-        print(type(unit))
+            total_temp = comp.get_total()
+            self.total_amount += total_temp[0]
+            self.total_nonvat += total_temp[1]
+            self.total_vat += total_temp[3]
+            self.total_taxable += total_temp[2]
+            self.total_profit += total_temp[4]
+
+            self.lamountTotal.setText("Total amount: " + str(self.total_amount))
+            self.ltaxedTotal.setText("Total taxable: "  + str(self.total_taxable))
+            self.ltaxTotal.setText("Total tax: "  + str(self.total_vat))
+            self.lprofitTotal.setText("Total profit: "  + str(self.total_profit))
         
-        comp = Component(product_name, self.origPriceList[0], int(unit_price), quantity, unit)
-        self.components.append(comp)
-
-        total_temp = comp.get_total()
-        self.total_amount += total_temp[0]
-        self.total_nonvat += total_temp[1]
-        self.total_vat += total_temp[3]
-        self.total_taxable += total_temp[2]
-        self.total_profit += total_temp[4]
-
-        self.lamountTotal.setText("Total amount: " + str(self.total_amount))
-        self.ltaxedTotal.setText("Total taxable: "  + str(self.total_taxable))
-        self.ltaxTotal.setText("Total tax: "  + str(self.total_vat))
-        self.lprofitTotal.setText("Total profit: "  + str(self.total_profit))
+        except ValueError:
+            pass
 
     
     #GETTERS
@@ -135,15 +138,37 @@ class AddInvoiceView(QtWidgets.QGridLayout):
         return items
                 
     def delete_entry(self):
-        print(self.components)
-        print(self.total)
+        model = self.tProduct_Table
+        total_temp = []
+        indices = self.tProduct_Table.selectionModel().selectedRows() 
+        
+        for index in sorted(indices):
+            print(index.row())
+            model.removeRow(index.row())
+            try:
+                total_temp = self.components[index.row()].get_total()
+                del self.components[index.row()]
+            except IndexError:
+                pass
+        try:
+            self.total_amount -= total_temp[0]
+            self.total_nonvat -= total_temp[1]
+            self.total_vat -= total_temp[3]
+            self.total_taxable -= total_temp[2]
+            self.total_profit -= total_temp[4]
+        except IndexError:
+            pass
+        
+        self.lamountTotal.setText("Total amount: " + str(self.total_amount))
+        self.ltaxedTotal.setText("Total taxable: "  + str(self.total_taxable))
+        self.ltaxTotal.setText("Total tax: "  + str(self.total_vat))
+        self.lprofitTotal.setText("Total profit: "  + str(self.total_profit))
 
     def submit_invoice(self):
         invo_db = InvoiceDB()
         invo_entry = Invoice(self.tBuyer.currentText(),self.tDate.text(), self.tTerms.currentText(), self.tSeller.currentText())
         print(self.check_info["buyer"])
         invo_db.add_invoice(self.check_info["buyer"], self.check_info["date"], self.check_info["term"],self.check_info["date"],self.check_info["seller"], self.components)
-        # cust, issue_date, terms, ddate, seller, components
         print(invo_entry)
         self.confirm_window.close()
         invo_db.close_connection()
