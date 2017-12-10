@@ -1,5 +1,6 @@
 import sys
 from PyQt5 import QtWidgets,QtCore
+from InvoiceView import *
 
 
 class ViewInvoice(QtWidgets.QGridLayout):
@@ -9,11 +10,56 @@ class ViewInvoice(QtWidgets.QGridLayout):
         self.frame.setWindowTitle("View Invoice")
         self.init_ui()
 
+
+
+    def get_all_invoice(self):
+        invo_db = InvoiceDB()
+        all_invoice_list = invo_db.get_all_invoice()
+        
+        for row in range(len(all_invoice_list)):
+            buyer_name = invo_db.get_client_name(all_invoice_list[row][1])
+            self.tProduct_Table.setItem(row,0,QtWidgets.QTableWidgetItem(str(all_invoice_list[row][0])))
+            self.tProduct_Table.setItem(row,1,QtWidgets.QTableWidgetItem(str(all_invoice_list[row][6])))
+            self.tProduct_Table.setItem(row,2,QtWidgets.QTableWidgetItem(buyer_name))
+            self.tProduct_Table.setItem(row,3,QtWidgets.QTableWidgetItem(all_invoice_list[row][3]))
+
+        total = []
+        total = invo_db.get_total()
+        self.lamountTotal.setText("Total amount: " + str(total[0]))
+        self.ltaxedTotal.setText("Total taxable: "  + str(total[2]))
+        self.ltaxTotal.setText("Total tax: "  + str(total[3]))
+        self.lprofitTotal.setText("Total profit: "  + str(total[4]))
+
+        invo_db.close_connection()
+
+    def delete_invoice(self):
+        print(self.tProduct_Table.item(0,0).text())
+        print(self.tProduct_Table.selectionModel().selectedRows())
+        # invo_db = InvoiceDB()
+        # model = self.tProduct_Table
+        # total_temp = []
+        # indices = self.tProduct_Table.selectionModel().selectedRows()
+
+        # for index in indices:
+        #     model.removeRow(index.row())
+
+        #     invo_db.delete_row(invoice_number=self.tProduct_Table.item(index.row(),0).text())
+        
+        # total = []
+        # total = invo_db.get_total()
+        # self.lamountTotal.setText("Total amount: " + str(total[0]))
+        # self.ltaxedTotal.setText("Total taxable: "  + str(total[2]))
+        # self.ltaxTotal.setText("Total tax: "  + str(total[3]))
+        # self.lprofitTotal.setText("Total profit: "  + str(total[4]))
+
+        # invo_db.close_connection()
+
+
     def init_ui(self):
         #Create Widgets
         self.lInvoice_Details = QtWidgets.QLabel("INVOICE LIST")
         self.lInvoice_Details.setStyleSheet('QLabel { font-size: 12pt; padding: 10px;}')
-
+        
 
         self.bEditInvoice = QtWidgets.QPushButton("Edit Invoice")
         self.bEditInvoice.setStyleSheet('QPushButton { font-size: 12pt; padding: 10px;}')
@@ -23,6 +69,7 @@ class ViewInvoice(QtWidgets.QGridLayout):
         self.bDelInvoice = QtWidgets.QPushButton("Delete Invoice")
         self.bDelInvoice.setStyleSheet('QPushButton { font-size: 12pt; padding: 10px;}')
         self.bDelInvoice.setFixedWidth(200)
+        self.bDelInvoice.clicked.connect(self.delete_invoice)
 
 		#Product Table#
         self.tProduct_Table = QtWidgets.QTableWidget()
@@ -76,6 +123,8 @@ class ViewInvoice(QtWidgets.QGridLayout):
         self.bBack.setStyleSheet('QPushButton { font-size: 12pt; padding: 10px;}')
         self.bBack.setFixedWidth(200)
 
+
+        self.get_all_invoice()
 
         self.setColumnStretch(6,1)
         self.setColumnStretch(1,1)

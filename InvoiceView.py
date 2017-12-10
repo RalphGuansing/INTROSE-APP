@@ -162,6 +162,14 @@ class InvoiceDB:
 		client_name = InvoiceDB.get_client_name(self, invoice_query[0][1])
 		seller_name = InvoiceDB.get_seller_name(self, invoice_query[0][2])
 		return [invoice_query[0][0], client_name, seller_name, invoice_query[0][3], invoice_query[0][4], invoice_query[0][5], invoice_query[0][6], invoice_query[0][7], invoice_query[0][8], invoice_query[0][9], invoice_query[0][10], invoice_query2]
+	
+	def get_all_invoice(self):
+		"""Method for getting all the query of invoice from the database.
+		Returns:
+				(idinvoice, invoice_buyer, invoice_seller, invoice_date, invoice_term, invoice_ddate, invoice_amount, invoice_nonvat, invoice_vat, invoice_taxable, invoice_profit)
+		"""
+		sql_statement = pd.read_sql("SELECT * FROM lcg_db.invoice;", self.connect)
+		return [(row[1][0], row[1][1], row[1][2], row[1][3], row[1][4], row[1][5], row[1][6], row[1][7], row[1][8], row[1][9], row[1][10]) for row in sql_statement.iterrows()]
 
 	def close_connection(self):
 		"""Method for closing the database."""

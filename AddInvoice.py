@@ -140,24 +140,21 @@ class AddInvoiceView(QtWidgets.QGridLayout):
     def delete_entry(self):
         model = self.tProduct_Table
         total_temp = []
-        indices = self.tProduct_Table.selectionModel().selectedRows() 
+        indices = self.tProduct_Table.selectionModel().selectedRows()
         
-        for index in sorted(indices):
-            print(index.row())
+        for index in indices:
             model.removeRow(index.row())
             try:
                 total_temp = self.components[index.row()].get_total()
                 del self.components[index.row()]
+                self.total_amount -= total_temp[0]
+                self.total_nonvat -= total_temp[1]
+                self.total_vat -= total_temp[3]
+                self.total_taxable -= total_temp[2]
+                self.total_profit -= total_temp[4]
             except IndexError:
                 pass
-        try:
-            self.total_amount -= total_temp[0]
-            self.total_nonvat -= total_temp[1]
-            self.total_vat -= total_temp[3]
-            self.total_taxable -= total_temp[2]
-            self.total_profit -= total_temp[4]
-        except IndexError:
-            pass
+
         
         self.lamountTotal.setText("Total amount: " + str(self.total_amount))
         self.ltaxedTotal.setText("Total taxable: "  + str(self.total_taxable))

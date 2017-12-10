@@ -14,10 +14,22 @@ class ViewInvoice(QtWidgets.QGridLayout):
 
     def get_invoice(self, invoice_number):
         invo_db = InvoiceDB()
-        invoice_query = []
+        self.invoice_query = []
         invoice_query = invo_db.get_query(invoice_number)
         print(invoice_query[0])
         invo_db.close_connection()
+
+        # self.lInvNum.setText("Invoice No.  " + str(info["invoice_id"]))
+        # self.lChargedTo.setText("Charged to: " + str(info["buyer"]))
+        # self.lDate.setText("Date: " + str(info["date"]))
+        # self.lSeller.setText("Seller: " + str(info["seller"]))
+        # self.lTerms.setText("Terms: " + str(info["term"]))
+        # self.lAddress.setText("Address: " + str(info["Address"]))
+
+        
+    
+    def add_to_table(self, row, column, text):
+        self.tProduct_Table.setItem(row,column,QtWidgets.QTableWidgetItem(text))
 
     def init_ui(self):
 
