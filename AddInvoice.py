@@ -187,7 +187,10 @@ class AddInvoiceView(QtWidgets.QGridLayout):
         self.components = []
         self.client_list = invo_db.get_client_name()
         self.seller_list = invo_db.get_seller_name()
-        last_id = invo_db.get_last_id()
+        try:
+            last_id = invo_db.get_last_id()
+        except IndexError:
+            last_id = 0
         invo_db.close_connection()
         self.invnum = last_id + 1
         self.termsList = ("30 days", "60 days", "90 days", "1 year")
