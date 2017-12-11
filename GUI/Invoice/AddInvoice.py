@@ -1,6 +1,12 @@
 import sys
 from PyQt5 import QtWidgets,QtCore
 
+from Inventory.AddInventory import *
+from Inventory.AddInventoryConfirm import *
+from Inventory.guiHomePage import *
+from Inventory.HomePage import *
+from Inventory.InventoryView import *
+from Inventory.ViewInventoryList import *
 from Invoice.InvoiceView import *
 from Invoice.AddInvoiceConfirm import *
 
@@ -13,7 +19,7 @@ class AddInvoiceView(QtWidgets.QGridLayout):
         self.added_products = []
         self.current_row = 0
         self.components = []
-
+        self.origPriceList = []
         self.init_ui()
     
 
@@ -37,9 +43,6 @@ class AddInvoiceView(QtWidgets.QGridLayout):
         """This method sets the unit list for invoice
             unit_list(['str']): contains an array of strings for units
         """ 
-        self.tUnit.clear()
-        for i,unit in enumerate(unit_list):
-            self.tUnit.insertItem(i,unit)
             
     def confirm_submit(self):
         self.confirm_window = ConfirmWindow()
@@ -161,6 +164,15 @@ class AddInvoiceView(QtWidgets.QGridLayout):
         self.ltaxTotal.setText("Total tax: "  + str(self.total_vat))
         self.lprofitTotal.setText("Total profit: "  + str(self.total_profit))
 
+    def add_product_list(self):
+        db_inventory = InventoryDatabase()
+        product_list = db_inventory.get_product_list()
+        for x in range(len(product_list)):
+            self.tProduct.insertItem(x,product_list[x].name)
+            self.tUnit.insertItem(x,product_list[x].packaging)
+            self.origPriceList.append(product_list[x].per_unit_price)
+        db_inventory.close_connection()
+
     def submit_invoice(self):
         invo_db = InvoiceDB()
         invo_entry = Invoice(self.tBuyer.currentText(),self.tDate.text(), self.tTerms.currentText(), self.tSeller.currentText())
@@ -168,7 +180,12 @@ class AddInvoiceView(QtWidgets.QGridLayout):
         invo_db.add_invoice(self.check_info["buyer"], self.check_info["date"], self.check_info["term"],self.check_info["date"],self.check_info["seller"], self.components, self.check_info["invoice_id"])
         print(invo_entry)
         self.confirm_window.close()
+        self.tProduct_Table.clearContents()
+        self.tQuantity.setValue(0)
+        self.tUnitPrice.setText('')
+        invo_db.connect.begin()
         invo_db.close_connection()
+
 
         
     def init_ui(self):
@@ -194,10 +211,6 @@ class AddInvoiceView(QtWidgets.QGridLayout):
         invo_db.close_connection()
         self.invnum = last_id + 1
         self.termsList = ("30 days", "60 days", "90 days", "1 year")
-        self.unitList = ("Tetrapack", "Sachet", "Pack", "Buy 1 Take 1")
-        self.productsList = ("Yakult", "Milo", "Hotdog")
-        self.origPriceList = [900, 1000, 1100]
-        self.unitPriceList = [1000, 1100, 1200]
         #Quantity, Unit, Articles, Unit Price, Amount
         
         self.lInvoice_Details = QtWidgets.QLabel("INVOICE DETAILS")
@@ -336,10 +349,6 @@ class AddInvoiceView(QtWidgets.QGridLayout):
 
         self.tUnit = QtWidgets.QComboBox(self.frame)
         self.tUnit.setFixedWidth(70)	
-        self.tUnit.insertItem(0,self.unitList[0])
-        self.tUnit.insertItem(1,self.unitList[1])
-        self.tUnit.insertItem(2,self.unitList[2])
-        self.tUnit.insertItem(3,self.unitList[3])
 		
         #Label#
         self.lProduct = QtWidgets.QLabel("Product:")
@@ -348,9 +357,7 @@ class AddInvoiceView(QtWidgets.QGridLayout):
         #TEXT INPUT#
         self.tProduct = QtWidgets.QComboBox(self.frame)
         self.tProduct.setFixedWidth(200)		
-        self.tProduct.insertItem(0,self.productsList[0])
-        self.tProduct.insertItem(1,self.productsList[1])
-        self.tProduct.insertItem(2,self.productsList[2])
+        self.add_product_list()
 
         #Label#
         self.lUnitPrice = QtWidgets.QLabel("Unit Price: ")

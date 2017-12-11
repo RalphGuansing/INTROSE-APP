@@ -130,7 +130,7 @@ class InvoiceDB:
 			return [(row[1][0], row[1][1]) for row in sql_statement.iterrows()]
 		else:
 			sql_statement = pd.read_sql("SELECT customer_name, address FROM introse.customer WHERE customer_id = '" + str(client_id) + "';",self.connect)
-			return (sql_statement.client_name[0], sql_statement.client_address[0])
+			return (sql_statement.customer_name[0], sql_statement.address[0])
 
 	def get_seller_name(self, seller_id=None):
 		"""Method for getting the client names from the database.

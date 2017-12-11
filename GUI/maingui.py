@@ -48,11 +48,12 @@ class MainWindow(QtWidgets.QMainWindow):
     
     def inventory_view(self):
         self.setWindowTitle("Inventory") 
-        self.widgetFrame = WindowFrame(Tabs)
+        self.widgetFrame = WindowFrame(InventoryTabs)
         self.setCentralWidget(self.widgetFrame)
         self.init_navbar()
     #JAROLD
-    pass #INVOICING
+    #INVOICING
+
     def add_invoice_tab(self):
         self.setWindowTitle("Invoice")       
         self.widgetFrame = WindowFrame(AddInvoiceView)
@@ -81,11 +82,11 @@ class MainWindow(QtWidgets.QMainWindow):
         
     def home_invoice_tab(self):
         self.setWindowTitle("Invoice")
-        self.widgetFrame = WindowFrame(HomeInvoice)
+        self.widgetFrame = WindowFrame(InvoiceTabs)
 
-        self.widgetFrame.layout.bAddInvoice.clicked.connect(self.add_invoice_tab)
-        self.widgetFrame.layout.bViewInvoice.clicked.connect(self.view_invoice_tab)
-        self.widgetFrame.layout.bInvoiceList.clicked.connect(self.view_list_tab)
+        # self.widgetFrame.layout.bAddInvoice.clicked.connect(self.add_invoice_tab)
+        # self.widgetFrame.layout.bViewInvoice.clicked.connect(self.view_invoice_tab)
+        # self.widgetFrame.layout.bInvoiceList.clicked.connect(self.view_list_tab)
 
         self.setCentralWidget(self.widgetFrame)
         self.init_navbar()
@@ -595,6 +596,35 @@ class WindowFrame(QtWidgets.QWidget):
         navGrid.addWidget(self.bLogout,1,7)
         
         self.navbar.setLayout(navGrid)
+
+class InvoiceTabs(QtWidgets.QGridLayout):
+
+    def __init__(self, parent=None):   
+        super(QtWidgets.QGridLayout, self).__init__(parent)
+        #self.layout = QtWidgets.QGridLayout(self)
+        self.tabs = QtWidgets.QTabWidget()
+        self.add_invoice_tab = SubWindowFrame(AddInvoiceView)
+        self.view_invoice_tab = SubWindowFrame(ViewInvoice)
+        self.view_list_tab = SubWindowFrame(InvList)
+        self.tabs.addTab(self.add_invoice_tab,"Add Invoice")
+        self.tabs.addTab(self.view_invoice_tab,"View Invoice")
+        self.tabs.addTab(self.view_list_tab,"View Invoice List")
+        #self.layout.addWidget(self.tabs)
+        self.addWidget(self.tabs)
+
+
+class InventoryTabs(QtWidgets.QGridLayout):
+
+    def __init__(self, parent=None):   
+        super(QtWidgets.QGridLayout, self).__init__(parent)
+        #self.layout = QtWidgets.QGridLayout(self)
+        self.tabs = QtWidgets.QTabWidget()
+        self.add_inventory_tab = SubWindowFrame(AddInventoryView)
+        self.view_inventory_tab = SubWindowFrame(ViewInventoryList)
+        self.tabs.addTab(self.add_inventory_tab,"Add Inventory")
+        self.tabs.addTab(self.view_inventory_tab,"View Inventory")
+        #self.layout.addWidget(self.tabs)
+        self.addWidget(self.tabs)
 
         
 if __name__ == "__main__":    
