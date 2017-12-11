@@ -33,18 +33,10 @@ class MainWindow(QtWidgets.QMainWindow):
     
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
-        #self.setFixedSize(1024,720)
         self.resize(1366,768)
-
-#        self.db = pymysql.connect("localhost","root","p@ssword","introse",autocommit=True)
-#        self.cursor = self.db.cursor(pymysql.cursors.DictCursor)
-        
         self.adb = adb()
-        
-        #self.view_details_payable_tab()
+        self.setWindowIcon(QtGui.QIcon('Resources/LCG_logo.png'))
         self.login_tab()
-        #self.accounting_home_view()
-        #self.view_receivable_tab()
     
     def inventory_view(self):
         self.setWindowTitle("Inventory") 
