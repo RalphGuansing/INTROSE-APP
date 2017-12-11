@@ -85,12 +85,7 @@ class AddInvoiceView(QtWidgets.QGridLayout):
             self.tProduct_Table.setItem(self.tProduct_Table.rowCount()-1,2,QtWidgets.QTableWidgetItem(product_name))
             self.tProduct_Table.setItem(self.tProduct_Table.rowCount()-1,3,QtWidgets.QTableWidgetItem(str(unit_price)))
             self.tProduct_Table.setItem(self.tProduct_Table.rowCount()-1,4,QtWidgets.QTableWidgetItem(str(int(unit_price) * quantity)))
-            print(type(product_name))
-            print(type(self.origPriceList[0]))
-            print(unit_price)
-            print(type(quantity))
-            print(type(unit))
-            print(orig_price)
+
             comp = Component(product_name, orig_price, int(unit_price), quantity, unit, nonvat=0)
             self.components.append(comp)
 
