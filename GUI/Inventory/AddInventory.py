@@ -30,33 +30,33 @@ class AddInventoryView(QtWidgets.QGridLayout):
             self.tProduct.addItem(product.name)
         db_connection.close_connection()
 
+    def add_product_unit(self):
+        unit_list = ['plastic','bottle','tetrapack','yakult-sized']
+        for unit in unit_list:
+            self.tUnit.addItem(unit)
+
     def add_new_product(self):
         db_connection = InventoryDatabase()
         #db_connection.add_product()
         db_connection.close_connection()        
 
     def add_product_table(self):
-        if self.tQuantity.value != 0 and self.tUnit.text() != '' and self.tUnitPrice.text() != '':
-            try:
-                int(self.tUnitPrice.text())
-            except ValueError:
-                self.error_message('Wrong Value!')
-            else:
+        if self.tUnit.text() != '':
                 self.tProduct_Table.insertRow(self.current_row)
                 self.tProduct_Table.setItem(self.current_row,0,QtWidgets.QTableWidgetItem(str(self.tQuantity.value())))
                 self.tProduct_Table.setItem(self.current_row,1,QtWidgets.QTableWidgetItem(str(self.tUnit.text())))
                 self.tProduct_Table.setItem(self.current_row,2,QtWidgets.QTableWidgetItem(self.products[self.tProduct.currentIndex()].name))
-                self.tProduct_Table.setItem(self.current_row,3,QtWidgets.QTableWidgetItem(str(self.tUnitPrice.text())))
-                self.tProduct_Table.setItem(self.current_row,4,QtWidgets.QTableWidgetItem(str(int(self.tUnitPrice.text()) * int(self.tQuantity.value()))))
+                self.tProduct_Table.setItem(self.current_row,3,QtWidgets.QTableWidgetItem(str(self.tUnitPrice.value())))
+                self.tProduct_Table.setItem(self.current_row,4,QtWidgets.QTableWidgetItem(str(int(self.tUnitPrice.value()) * int(self.tQuantity.value()))))
                 self.current_row += 1
         else:
             self.tQuantity.setValue(0)
             self.tUnit.setText('')
-            self.tUnitPrice.setText('')
+            self.tUnitPrice.setValue(0)
             self.error_message('Fill up all Information!')       
         self.tQuantity.setValue(0)
         self.tUnit.setText('')
-        self.tUnitPrice.setText('')
+        self.tUnitPrice.setValue(0)
 
     def submit_products(self):
         db_connection_inv = InventoryDatabase()
@@ -151,8 +151,9 @@ class AddInventoryView(QtWidgets.QGridLayout):
         self.lUnit = QtWidgets.QLabel("Unit: ")
         self.lUnit.setStyleSheet('QLabel { font-size: 12pt; padding: 10px;}')
 
-        self.tUnit = QtWidgets.QLineEdit(self.frame)
-        self.tUnit.setFixedWidth(200)	
+        self.tUnit = QtWidgets.QComboBox(self.frame)
+        self.tUnit.setFixedWidth(200)
+        self.add_product_unit()
 		
         #Label#
         self.lProduct = QtWidgets.QLabel("Product:")
@@ -167,7 +168,8 @@ class AddInventoryView(QtWidgets.QGridLayout):
         self.lUnitPrice = QtWidgets.QLabel("Unit Price: ")
         self.lUnitPrice.setStyleSheet('QLabel { font-size: 12pt; padding: 10px;}')
 
-        self.tUnitPrice = QtWidgets.QLineEdit(self.frame)
+        self.tUnitPrice = QtWidgets.QSpinBox(self.frame)
+        self.tUnitPrice.setMinimum(1)
         self.tUnitPrice.setFixedWidth(200)	
 
         self.bAdd = QtWidgets.QPushButton("Add")
