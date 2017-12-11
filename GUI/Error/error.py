@@ -1,7 +1,7 @@
 import sys
 from PyQt5 import QtWidgets,QtCore
 
-class errorMessage(QtWidgets.QtWidget):
+class errorMessage(QtWidgets.QWidget):
 	def __init__(self, frame=None):
 		self.QInputDialog()
 
