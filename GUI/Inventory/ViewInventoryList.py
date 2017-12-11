@@ -10,6 +10,11 @@ class ViewInventoryList(QtWidgets.QGridLayout):
         self.frame.setWindowTitle("View Inventory")
         self.init_ui()
 
+    def re_init(self):
+        for i in reversed(range(self.count())): 
+            self.itemAt(i).widget().setParent(None)
+        self.init_ui()
+
     def add_table_entries(self):
         db_connection = InventoryDatabase()
         products = db_connection.get_product_list()

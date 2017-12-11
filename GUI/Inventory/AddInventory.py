@@ -14,6 +14,11 @@ class AddInventoryView(QtWidgets.QGridLayout):
         self.current_row = 0
         self.init_ui()
 
+    def re_init(self):
+        for i in reversed(range(self.count())): 
+            self.itemAt(i).widget().setParent(None)
+        self.init_ui()
+
     def error_message(self, message):
         infoBox = QtWidgets.QMessageBox()
         infoBox.setIcon(QtWidgets.QMessageBox.Warning)
@@ -31,8 +36,8 @@ class AddInventoryView(QtWidgets.QGridLayout):
         db_connection.close_connection()
 
     def add_product_unit(self):
-        unit_list = ['plastic','bottle','tetrapack','yakult-sized']
-        for unit in unit_list:
+        self.unit_list = ['plastic','bottle','tetrapack','yakult-sized']
+        for unit in self.unit_list:
             self.tUnit.addItem(unit)
 
     def add_new_product(self):
@@ -41,21 +46,15 @@ class AddInventoryView(QtWidgets.QGridLayout):
         db_connection.close_connection()        
 
     def add_product_table(self):
-        if self.tUnit.text() != '':
-                self.tProduct_Table.insertRow(self.current_row)
-                self.tProduct_Table.setItem(self.current_row,0,QtWidgets.QTableWidgetItem(str(self.tQuantity.value())))
-                self.tProduct_Table.setItem(self.current_row,1,QtWidgets.QTableWidgetItem(str(self.tUnit.text())))
-                self.tProduct_Table.setItem(self.current_row,2,QtWidgets.QTableWidgetItem(self.products[self.tProduct.currentIndex()].name))
-                self.tProduct_Table.setItem(self.current_row,3,QtWidgets.QTableWidgetItem(str(self.tUnitPrice.value())))
-                self.tProduct_Table.setItem(self.current_row,4,QtWidgets.QTableWidgetItem(str(int(self.tUnitPrice.value()) * int(self.tQuantity.value()))))
-                self.current_row += 1
-        else:
-            self.tQuantity.setValue(0)
-            self.tUnit.setText('')
-            self.tUnitPrice.setValue(0)
-            self.error_message('Fill up all Information!')       
+        self.tProduct_Table.insertRow(self.current_row)
+        self.tProduct_Table.setItem(self.current_row,0,QtWidgets.QTableWidgetItem(str(self.tQuantity.value())))
+        self.tProduct_Table.setItem(self.current_row,1,QtWidgets.QTableWidgetItem(str(self.unit_list[self.tUnit.currentIndex()])))
+        self.tProduct_Table.setItem(self.current_row,2,QtWidgets.QTableWidgetItem(self.products[self.tProduct.currentIndex()].name))
+        self.tProduct_Table.setItem(self.current_row,3,QtWidgets.QTableWidgetItem(str(self.tUnitPrice.value())))
+        self.tProduct_Table.setItem(self.current_row,4,QtWidgets.QTableWidgetItem(str(int(self.tUnitPrice.value()) * int(self.tQuantity.value()))))
+        self.current_row += 1
+   
         self.tQuantity.setValue(0)
-        self.tUnit.setText('')
         self.tUnitPrice.setValue(0)
 
     def submit_products(self):
@@ -75,6 +74,7 @@ class AddInventoryView(QtWidgets.QGridLayout):
         db_connection_inv.close_connection()
         db_connection_apv.close_connection()
         self.tProduct_Table.clearContents()
+        self.tProduct_Table.setRowCount(0)
         self.confirm_window.close()
 
     def confirm_submit(self):
@@ -94,6 +94,7 @@ class AddInventoryView(QtWidgets.QGridLayout):
 
     def delete_entry(self):
         self.tProduct_Table.removeRow(self.tProduct_Table.currentRow())
+        self.current_row -= 1
 
     def init_ui(self):
         #Create Widgets

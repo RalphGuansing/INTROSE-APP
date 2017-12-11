@@ -620,7 +620,15 @@ class InventoryTabs(QtWidgets.QGridLayout):
         self.tabs.addTab(self.add_product_tab,"Add New Product")
         #self.layout.addWidget(self.tabs)
         self.addWidget(self.tabs)
+        self.init_ui()
 
+    def sample_print(self):
+        self.view_inventory_tab.layout.re_init()
+        self.add_inventory_tab.layout.re_init()
+
+
+    def init_ui(self):
+        self.tabs.currentChanged.connect(self.sample_print)
         
 if __name__ == "__main__":    
     app = QtWidgets.QApplication(sys.argv)
