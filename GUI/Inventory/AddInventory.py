@@ -143,7 +143,7 @@ class AddInventoryView(QtWidgets.QGridLayout):
         self.lQuantity.setStyleSheet('QLabel { font-size: 12pt; padding: 10px;}')
 
         self.tQuantity = QtWidgets.QSpinBox(self.frame)
-        self.tQuantity.setFixedWidth(50)		
+        self.tQuantity.setFixedWidth(200)		
         self.tQuantity.setMinimum(1)
         self.tQuantity.setMaximum(999999999)
 
@@ -152,7 +152,7 @@ class AddInventoryView(QtWidgets.QGridLayout):
         self.lUnit.setStyleSheet('QLabel { font-size: 12pt; padding: 10px;}')
 
         self.tUnit = QtWidgets.QLineEdit(self.frame)
-        self.tUnit.setFixedWidth(70)	
+        self.tUnit.setFixedWidth(200)	
 		
         #Label#
         self.lProduct = QtWidgets.QLabel("Product:")
@@ -168,7 +168,7 @@ class AddInventoryView(QtWidgets.QGridLayout):
         self.lUnitPrice.setStyleSheet('QLabel { font-size: 12pt; padding: 10px;}')
 
         self.tUnitPrice = QtWidgets.QLineEdit(self.frame)
-        self.tUnitPrice.setFixedWidth(70)	
+        self.tUnitPrice.setFixedWidth(200)	
 
         self.bAdd = QtWidgets.QPushButton("Add")
         self.bAdd.setStyleSheet('QPushButton {color: white;background-color: #1db6d1;border-style: outset;border-width: 2px;border-radius: 10px;border-color: beige;font: bold 12px;min-width: 10em;padding: 4px;}')
@@ -188,43 +188,38 @@ class AddInventoryView(QtWidgets.QGridLayout):
         self.bSubmit.setFixedWidth(200)
         self.bSubmit.clicked.connect(self.confirm_submit)
 
-
         self.setColumnStretch(7,1)
         self.setColumnStretch(1,1)
         self.setRowStretch(11,1)
 
         #Add Widgets
         
-        self.addWidget(self.lInventory_Details, 0, 1, 1, 1)
+        self.addWidget(self.lInventory_Details, 0, 2, 1, 1)
 		
-        self.addWidget(self.lDate, 1, 1, 1, 1)
-        self.addWidget(self.tDate, 1, 2, 1, 1)
+        self.addWidget(self.lDate, 1, 2, 1, 1)
+        self.addWidget(self.tDate, 1, 3, 1, 1)
 				
 	
-        self.addWidget(self.lProduct_Table, 2, 1, 1, 1)	
-        self.addWidget(self.tProduct_Table, 3, 1, 4, 3)			
+        self.addWidget(self.lProduct_Table, 2, 4, 1, 1)	
+        self.addWidget(self.tProduct_Table, 3, 4, 4, 3)			
         
         
-        self.addWidget(self.lAddProduct, 2, 4, 1, 2, QtCore.Qt.AlignCenter)
+        self.addWidget(self.lAddProduct, 2, 2, 1, 2, QtCore.Qt.AlignCenter)
 
-        self.addWidget(self.lProduct, 3, 4, 1, 1)
-        self.addWidget(self.tProduct, 3, 5, 1, 1)
+        self.addWidget(self.lProduct, 3, 2, 1, 1)
+        self.addWidget(self.tProduct, 3, 3, 1, 1)
 		
-        self.addWidget(self.lQuantity, 4, 4, 1, 1)
-        self.addWidget(self.tQuantity, 4, 5, 1, 1)
+        self.addWidget(self.lQuantity, 4, 2, 1, 1)
+        self.addWidget(self.tQuantity, 4, 3, 1, 1)
 
-        self.addWidget(self.lUnit, 5, 4, 1, 1)
-        self.addWidget(self.tUnit, 5, 5, 1, 1)
+        self.addWidget(self.lUnit, 5, 2, 1, 1)
+        self.addWidget(self.tUnit, 5, 3, 1, 1)
 
-        self.addWidget(self.lUnitPrice, 6, 4, 1, 1)
-        self.addWidget(self.tUnitPrice, 6, 5, 1, 1)
+        self.addWidget(self.lUnitPrice, 6, 2, 1, 1)
+        self.addWidget(self.tUnitPrice, 6, 3, 1, 1)
         
         #self.addWidget(self.lProduct_Code, 1, 1, 1, 1)
-        self.addWidget(self.bDelete, 2, 3, 1, 2, QtCore.Qt.AlignCenter)
-        self.addWidget(self.bAdd, 7, 4, 1, 2, QtCore.Qt.AlignCenter)
-
-        
-        #self.addWidget(self.lProduct_Code, 1, 1, 1, 1)
-        #self.addWidget(self.bBack, 10, 2, 1, 1, QtCore.Qt.AlignRight)
-        self.addWidget(self.bSubmit, 10, 3, 1, 1)
+        self.addWidget(self.bDelete, 2, 6, 1, 2, QtCore.Qt.AlignCenter)
+        self.addWidget(self.bAdd, 7, 2, 1, 2, QtCore.Qt.AlignCenter)
+        self.addWidget(self.bSubmit, 10, 5, 1, 1)
         
