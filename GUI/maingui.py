@@ -22,6 +22,7 @@ from Inventory.guiHomePage import *
 from Inventory.HomePage import *
 from Inventory.InventoryView import *
 from Inventory.ViewInventoryList import *
+from Inventory.AddNewProduct import *
 from Invoice.AddInvoice import AddInvoiceView
 from Invoice.ViewInvoice import ViewInvoice
 from Invoice.HomeInvoice import HomeInvoice
@@ -613,8 +614,10 @@ class InventoryTabs(QtWidgets.QGridLayout):
         self.tabs = QtWidgets.QTabWidget()
         self.add_inventory_tab = SubWindowFrame(AddInventoryView)
         self.view_inventory_tab = SubWindowFrame(ViewInventoryList)
+        self.add_product_tab = SubWindowFrame(AddNewProduct)
         self.tabs.addTab(self.add_inventory_tab,"Add Inventory")
         self.tabs.addTab(self.view_inventory_tab,"View Inventory")
+        self.tabs.addTab(self.add_product_tab,"Add New Product")
         #self.layout.addWidget(self.tabs)
         self.addWidget(self.tabs)
 
