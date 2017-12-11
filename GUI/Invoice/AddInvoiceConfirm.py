@@ -103,10 +103,6 @@ class AddInvoiceConfirm(QtWidgets.QGridLayout):
         self.lConfirmation = QtWidgets.QLabel("Please confirm if these values are correct")
         self.lTerms.setStyleSheet('QLabel { font-size: 12pt; padding: 10px;}')
 
-
-        self.bBack = QtWidgets.QPushButton("Go back")
-        self.bBack.setStyleSheet('QPushButton { font-size: 14px; border-radius:10px ;padding: 10px;}')
-        self.bBack.setFixedWidth(80)
         
         self.bAddInvoice = QtWidgets.QPushButton("Confirm")
         self.bAddInvoice.setStyleSheet('QPushButton {color: white;background-color: #47c468;border-style: outset;border-width: 2px;border-radius: 10px;border-color: beige;font: bold 14px;min-width: 10em;padding: 6px;}')
@@ -127,8 +123,9 @@ class AddInvoiceConfirm(QtWidgets.QGridLayout):
         self.addWidget(self.lSeller, 2, 4, 1, 1)		
         self.addWidget(self.lAddress, 3, 2, 1, 1)			
         self.addWidget(self.lTerms, 3, 4, 1, 1)	
-        self.addWidget(self.lProduct_Table, 4, 2, 1, 1)	        
-        self.addWidget(self.tProduct_Table, 5, 2, 3, 3)
+        self.addWidget(self.lProduct_Table, 4, 2, 1, 1)
+        self.addWidget(self.lConfirmation, 5, 2, 1, 1)	        
+        self.addWidget(self.tProduct_Table, 6, 2, 3, 3)
         
         self.addWidget(self.ltaxedTotal, 9, 4, 1, 1)
 
@@ -137,10 +134,6 @@ class AddInvoiceConfirm(QtWidgets.QGridLayout):
         self.addWidget(self.lamountTotal, 11, 4, 1, 1)
 		
         self.addWidget(self.lprofitTotal, 12, 4, 1, 1)
-
-        self.addWidget(self.lConfirmation, 14, 2, 1, 1)
-        
-        self.addWidget(self.bBack, 15, 2, 1, 1)
         
         self.addWidget(self.bAddInvoice, 15, 3, 1, 1)
 
@@ -154,7 +147,7 @@ class WindowFrame(QtWidgets.QWidget):
 class ConfirmWindow(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
         super(ConfirmWindow, self).__init__(parent)
-        self.resize(420,420)
+        self.resize(800,600)
         self.layout = WindowFrame(AddInvoiceConfirm)
         self.setCentralWidget(self.layout)        
         

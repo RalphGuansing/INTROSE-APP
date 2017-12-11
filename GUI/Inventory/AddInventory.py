@@ -14,6 +14,15 @@ class AddInventoryView(QtWidgets.QGridLayout):
         self.current_row = 0
         self.init_ui()
 
+    def error_message(self, message):
+        infoBox = QtWidgets.QMessageBox()
+        infoBox.setIcon(QtWidgets.QMessageBox.Warning)
+        infoBox.setWindowTitle('Error')
+        infoBox.setText(message)
+        infoBox.setStandardButtons(QtWidgets.QMessageBox.Ok)
+        infoBox.setEscapeButton(QtWidgets.QMessageBox.Close) 
+        infoBox.exec_()
+
     def add_product_list(self):
         db_connection = InventoryDatabase()
         self.products = db_connection.get_product_list()
@@ -27,22 +36,24 @@ class AddInventoryView(QtWidgets.QGridLayout):
         db_connection.close_connection()        
 
     def add_product_table(self):
-        try:
-            int(self.tUnitPrice.text())
-        except ValueError:
-            print('Value Error: Wrong input type')
-        else:
-            if self.tQuantity.value != 0 and self.tUnit.text() != '' and self.tUnitPrice.text() != '':
+        if self.tQuantity.value != 0 and self.tUnit.text() != '' and self.tUnitPrice.text() != '':
+            try:
+                int(self.tUnitPrice.text())
+            except ValueError:
+                self.error_message('Wrong Value!')
+            else:
+                self.tProduct_Table.insertRow(self.current_row)
                 self.tProduct_Table.setItem(self.current_row,0,QtWidgets.QTableWidgetItem(str(self.tQuantity.value())))
                 self.tProduct_Table.setItem(self.current_row,1,QtWidgets.QTableWidgetItem(str(self.tUnit.text())))
                 self.tProduct_Table.setItem(self.current_row,2,QtWidgets.QTableWidgetItem(self.products[self.tProduct.currentIndex()].name))
                 self.tProduct_Table.setItem(self.current_row,3,QtWidgets.QTableWidgetItem(str(self.tUnitPrice.text())))
                 self.tProduct_Table.setItem(self.current_row,4,QtWidgets.QTableWidgetItem(str(int(self.tUnitPrice.text()) * int(self.tQuantity.value()))))
                 self.current_row += 1
-            else:
-                self.tQuantity.setValue(0)
-                self.tUnit.setText('')
-                self.tUnitPrice.setText('')        
+        else:
+            self.tQuantity.setValue(0)
+            self.tUnit.setText('')
+            self.tUnitPrice.setText('')
+            self.error_message('Fill up all Information!')       
         self.tQuantity.setValue(0)
         self.tUnit.setText('')
         self.tUnitPrice.setText('')
@@ -57,7 +68,7 @@ class AddInventoryView(QtWidgets.QGridLayout):
                 db_connection_inv.add_product_quantity(self.tProduct_Table.item(x,2).text(),int(self.tProduct_Table.item(x,0).text()))
                 apv_list.append(AccountsPayable(datetime.datetime.now(),self.tProduct_Table.item(x,2).text(),db_connection_apv.get_id_apv(),self.tProduct_Table.item(x,4).text()))
             except BaseException:
-                print('Error')
+                self.error_message('Error in Submit!')
         for apv in apv_list:
             db_connection_apv.add_accountspayable(apv)
         self.current_row = 0
@@ -67,20 +78,22 @@ class AddInventoryView(QtWidgets.QGridLayout):
         self.confirm_window.close()
 
     def confirm_submit(self):
-        self.confirm_window = ConfirmWindow()
-        self.confirm_window.show()
-        self.confirm_window.layout.layout.bAddInventory.clicked.connect(self.submit_products)
-        for x in range(self.current_row):
-            self.confirm_window.layout.layout.add_to_table(x,0,self.tProduct_Table.item(x,0).text())
-            self.confirm_window.layout.layout.add_to_table(x,1,self.tProduct_Table.item(x,1).text())
-            self.confirm_window.layout.layout.add_to_table(x,2,self.tProduct_Table.item(x,2).text())
-            self.confirm_window.layout.layout.add_to_table(x,3,self.tProduct_Table.item(x,3).text())
-            self.confirm_window.layout.layout.add_to_table(x,4,self.tProduct_Table.item(x,4).text())
+        if self.current_row != 0:
+            self.confirm_window = ConfirmWindow()
+            self.confirm_window.show()
+            self.confirm_window.layout.layout.bAddInventory.clicked.connect(self.submit_products)
+            for x in range(self.current_row):
+                self.confirm_window.layout.layout.add_to_table(x,0,self.tProduct_Table.item(x,0).text())
+                self.confirm_window.layout.layout.add_to_table(x,1,self.tProduct_Table.item(x,1).text())
+                self.confirm_window.layout.layout.add_to_table(x,2,self.tProduct_Table.item(x,2).text())
+                self.confirm_window.layout.layout.add_to_table(x,3,self.tProduct_Table.item(x,3).text())
+                self.confirm_window.layout.layout.add_to_table(x,4,self.tProduct_Table.item(x,4).text())
+        else:
+            self.error_message('No Products to Update!')
 
 
     def delete_entry(self):
         self.tProduct_Table.removeRow(self.tProduct_Table.currentRow())
-        self.tProduct_Table.setRowCount(5)
 
     def init_ui(self):
         #Create Widgets
@@ -107,7 +120,6 @@ class AddInventoryView(QtWidgets.QGridLayout):
 		
 		#Product Table#
         self.tProduct_Table = QtWidgets.QTableWidget()
-        self.tProduct_Table.setRowCount(5)
         self.tProduct_Table.setColumnCount(5)
         self.tProduct_Table.setHorizontalHeaderLabels(["Quantity", "Unit", "Articles", "Unit Price", "Amount"])
         self.tProduct_Table.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
@@ -132,7 +144,7 @@ class AddInventoryView(QtWidgets.QGridLayout):
 
         self.tQuantity = QtWidgets.QSpinBox(self.frame)
         self.tQuantity.setFixedWidth(50)		
-        self.tQuantity.setMinimum(0)
+        self.tQuantity.setMinimum(1)
         self.tQuantity.setMaximum(999999999)
 
 		#Label#
@@ -166,13 +178,10 @@ class AddInventoryView(QtWidgets.QGridLayout):
         self.bDelete = QtWidgets.QPushButton("")
         #self.bDelete.setStyleSheet('QPushButton {color: white;background-color: #6017a5;border-style: outset;border-width: 2px;border-radius: 10px;border-color: beige;font: bold 12px;min-width: 10em;padding: 4px;}')        
         self.bDelete.setFixedWidth(50)
-        self.bDelete.setIcon(QtGui.QIcon('Inventory/delete_button.png'))
+        self.bDelete.setIcon(QtGui.QIcon('Resources/delete_button.png'))
         self.bDelete.setIconSize(QtCore.QSize(24,24))
         self.bDelete.clicked.connect(self.delete_entry)
 
-        self.bBack = QtWidgets.QPushButton("Back")
-        self.bBack.setStyleSheet('QPushButton {color: white;background-color: #d62f2f;border-style: outset;border-width: 2px;border-radius: 10px;border-color: beige;font: bold 14px;min-width: 10em;padding: 6px;}')
-        self.bBack.setFixedWidth(80)
         
         self.bSubmit = QtWidgets.QPushButton("Submit")
         self.bSubmit.setStyleSheet('QPushButton {color: white;background-color: #47c468;border-style: outset;border-width: 2px;border-radius: 10px;border-color: beige;font: bold 14px;min-width: 10em;padding: 6px;}')
@@ -216,6 +225,6 @@ class AddInventoryView(QtWidgets.QGridLayout):
 
         
         #self.addWidget(self.lProduct_Code, 1, 1, 1, 1)
-        self.addWidget(self.bBack, 10, 2, 1, 1, QtCore.Qt.AlignRight)
+        #self.addWidget(self.bBack, 10, 2, 1, 1, QtCore.Qt.AlignRight)
         self.addWidget(self.bSubmit, 10, 3, 1, 1)
         

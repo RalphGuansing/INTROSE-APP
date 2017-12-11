@@ -55,22 +55,22 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setCentralWidget(self.widgetFrame)
         self.init_navbar()
         
-    def view_invoice_tab(self):
-        self.setWindowTitle("Invoice")
-        self.widgetFrame = WindowFrame(ViewInvoice)
+    #def view_invoice_tab(self):
+        #self.setWindowTitle("Invoice")
+        #self.widgetFrame = WindowFrame(ViewInvoice)
 
-        self.Dialog = QtWidgets.QInputDialog.getInt(self, "Invoice number", "Please enter the invoice number", 1,)
-        try:
-            self.widgetFrame.layout.get_invoice(self.Dialog[0])
-            self.widgetFrame.layout.bBack.clicked.connect(self.home_invoice_tab)
-            self.widgetFrame.layout.bAddInvoice.clicked.connect(self.add_invoice_tab)
-        except IndexError:
-            self.home_invoice_tab()
+        #self.Dialog = QtWidgets.QInputDialog.getInt(self, "Invoice number", "Please enter the invoice number", 1,)
+        #try:
+            #self.widgetFrame.layout.get_invoice(self.Dialog[0])
+            #self.widgetFrame.layout.bBack.clicked.connect(self.home_invoice_tab)
+            #self.widgetFrame.layout.bAddInvoice.clicked.connect(self.add_invoice_tab)
+        #except IndexError:
+            #self.home_invoice_tab()
 
         
 
-        self.setCentralWidget(self.widgetFrame)
-        self.init_navbar()
+        #self.setCentralWidget(self.widgetFrame)
+        #self.init_navbar()
         
     def home_invoice_tab(self):
         self.setWindowTitle("Invoice")
@@ -584,7 +584,7 @@ class WindowFrame(QtWidgets.QWidget):
         navGrid.addWidget(self.bInvoice, 1,2)
         navGrid.addWidget(self.bInventory,1,3)
         navGrid.addWidget(self.bAccounting,1,4)
-        navGrid.addWidget(self.bAdmin,1,6)
+        #navGrid.addWidget(self.bAdmin,1,6)
         navGrid.addWidget(self.bLogout,1,7)
         
         self.navbar.setLayout(navGrid)
@@ -596,10 +596,10 @@ class InvoiceTabs(QtWidgets.QGridLayout):
         #self.layout = QtWidgets.QGridLayout(self)
         self.tabs = QtWidgets.QTabWidget()
         self.add_invoice_tab = SubWindowFrame(AddInvoiceView)
-        self.view_invoice_tab = SubWindowFrame(ViewInvoice)
+        #self.view_invoice_tab = SubWindowFrame(ViewInvoice)
         self.view_list_tab = SubWindowFrame(InvList)
         self.tabs.addTab(self.add_invoice_tab,"Add Invoice")
-        self.tabs.addTab(self.view_invoice_tab,"View Invoice")
+        #self.tabs.addTab(self.view_invoice_tab,"View Invoice")
         self.tabs.addTab(self.view_list_tab,"View Invoice List")
         #self.layout.addWidget(self.tabs)
         self.addWidget(self.tabs)

@@ -11,6 +11,14 @@ class ViewInvoice(QtWidgets.QGridLayout):
         self.frame.setWindowTitle("View Invoice")
         self.init_ui()
 
+    def error_message(self, message):
+        infoBox = QtWidgets.QMessageBox()
+        infoBox.setIcon(QtWidgets.QMessageBox.Warning)
+        infoBox.setWindowTitle('Error')
+        infoBox.setText(message)
+        infoBox.setStandardButtons(QtWidgets.QMessageBox.Ok)
+        infoBox.setEscapeButton(QtWidgets.QMessageBox.Close) 
+        infoBox.exec_()
 
     def edit_invoice(self):
         self.edit_window = EditWindow()
@@ -44,8 +52,8 @@ class ViewInvoice(QtWidgets.QGridLayout):
                 self.confirm_window.show()
                 self.confirm_window.layout.layout.bAddInvoice.clicked.connect(self.delete_invoice)
                 self.confirm_window.layout.layout.delete_info(self.tProduct_Table.item(index.row(),0).text())
-        except IndexError:
-            pass
+        except (IndexError,AttributeError):
+            self.error_message('Invalid Row')
 
     def delete_invoice(self):
         print(self.tProduct_Table.item(0,0).text())
@@ -80,10 +88,10 @@ class ViewInvoice(QtWidgets.QGridLayout):
         # self.bEditInvoice.setFixedWidth(200)
         # self.bEditInvoice.clicked.connect(self.edit_invoice)
 
-        self.bDelInvoice = QtWidgets.QPushButton("Delete Invoice")
-        self.bDelInvoice.setStyleSheet('QPushButton { font-size: 12pt; padding: 10px;}')
-        self.bDelInvoice.setFixedWidth(200)
-        self.bDelInvoice.clicked.connect(self.delete_invoice_confirm)
+        #self.bDelInvoice = QtWidgets.QPushButton("Delete Invoice")
+        #self.bDelInvoice.setStyleSheet('QPushButton { font-size: 12pt; padding: 10px;}')
+        #self.bDelInvoice.setFixedWidth(200)
+        #self.bDelInvoice.clicked.connect(self.delete_invoice_confirm)
 
 		#Product Table#
         self.tProduct_Table = QtWidgets.QTableWidget()
@@ -95,7 +103,8 @@ class ViewInvoice(QtWidgets.QGridLayout):
         self.tProduct_Table.setColumnWidth(0, tablewidth / 6)
         self.tProduct_Table.setColumnWidth(1, tablewidth / 6)
         self.tProduct_Table.setColumnWidth(2, tablewidth / 2)
-        self.tProduct_Table.setColumnWidth(3, tablewidth / 6)					
+        self.tProduct_Table.setColumnWidth(3, tablewidth / 6)
+        self.tProduct_Table.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)					
 
         self.Add_Product_Table = QtWidgets.QPushButton("Add Product")
         self.Add_Product_Table.setStyleSheet('QPushButton { font-size: 12pt; padding: 10px;}')
@@ -148,7 +157,7 @@ class ViewInvoice(QtWidgets.QGridLayout):
         
         self.addWidget(self.lInvoice_Details, 0, 2, 1, 1)
         # self.addWidget(self.bEditInvoice, 2, 6, 1, 1)
-        self.addWidget(self.bDelInvoice, 3, 6, 1, 1)
+        #self.addWidget(self.bDelInvoice, 3, 6, 1, 1)
 
 		
         self.addWidget(self.tProduct_Table, 1, 2, 10, 3)
@@ -170,5 +179,5 @@ class ViewInvoice(QtWidgets.QGridLayout):
 		
         self.addWidget(self.lprofitTotal, 14, 4, 1, 1)
 
-        self.addWidget(self.bBack, 15, 4, 1, 1)        
+        #self.addWidget(self.bBack, 15, 4, 1, 1)        
         

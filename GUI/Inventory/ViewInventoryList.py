@@ -16,8 +16,9 @@ class ViewInventoryList(QtWidgets.QGridLayout):
         for x in range(len(products)):
             self.tInventory_Table.setItem(x,0,QtWidgets.QTableWidgetItem(str(products[x].id)))
             self.tInventory_Table.setItem(x,1,QtWidgets.QTableWidgetItem(str(products[x].quantity)))
-            self.tInventory_Table.setItem(x,2,QtWidgets.QTableWidgetItem(products[x].supplier))
-            self.tInventory_Table.setItem(x,3,QtWidgets.QTableWidgetItem(str(products[x].last_updated)))
+            self.tInventory_Table.setItem(x,2,QtWidgets.QTableWidgetItem(products[x].name))
+            self.tInventory_Table.setItem(x,3,QtWidgets.QTableWidgetItem(products[x].supplier))
+            self.tInventory_Table.setItem(x,4,QtWidgets.QTableWidgetItem(str(products[x].last_updated)))
         db_connection.close_connection()
 
     def init_ui(self):
@@ -29,8 +30,8 @@ class ViewInventoryList(QtWidgets.QGridLayout):
 		#Inventory Table#
         self.tInventory_Table = QtWidgets.QTableWidget()
         self.tInventory_Table.setRowCount(10)
-        self.tInventory_Table.setColumnCount(4)
-        self.tInventory_Table.setHorizontalHeaderLabels(["Inventory Number", "Amount", "Buyer", "Date"])
+        self.tInventory_Table.setColumnCount(5)
+        self.tInventory_Table.setHorizontalHeaderLabels(["Inventory Number", "Amount", "Product Name", "Supplier", "Date"])
         self.tInventory_Table.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
         tablewidth = self.tInventory_Table.width() + 4
         self.tInventory_Table.setColumnWidth(0, tablewidth / 6)
@@ -45,10 +46,6 @@ class ViewInventoryList(QtWidgets.QGridLayout):
         ###backend function
         self.add_table_entries()
 
-        self.bBack = QtWidgets.QPushButton("Back")
-        self.bBack.setStyleSheet('QPushButton { font-size: 12pt; padding: 10px;}')
-        self.bBack.setFixedWidth(200)
-
 
         self.setColumnStretch(6,1)
         self.setColumnStretch(1,1)
@@ -56,7 +53,6 @@ class ViewInventoryList(QtWidgets.QGridLayout):
 
         #Add Widgets
         self.addWidget(self.lInventory_Details, 0, 2, 1, 1)
-        self.addWidget(self.tInventory_Table, 1, 2, 10, 3)
-        self.addWidget(self.bBack, 15, 4, 1, 1)        
+        self.addWidget(self.tInventory_Table, 1, 2, 10, 3)     
         
         

@@ -58,14 +58,11 @@ class AddInventoryConfirm(QtWidgets.QGridLayout):
         
         self.addWidget(self.lInvoice_Details, 0, 2, 1, 1)
 
-        self.addWidget(self.lProduct_Table, 4, 2, 1, 1)         
-        self.addWidget(self.tProduct_Table, 5, 2, 3, 3)
-
-        self.addWidget(self.lConfirmation, 14, 2, 1, 1)
+        self.addWidget(self.lProduct_Table, 4, 2, 1, 1)
+        self.addWidget(self.lConfirmation, 5, 2, 1, 1)         
+        self.addWidget(self.tProduct_Table, 6, 2, 3, 3)
         
-        self.addWidget(self.bBack, 15, 2, 1, 1)
-        
-        self.addWidget(self.bAddInventory, 15, 3, 1, 1)        
+        self.addWidget(self.bAddInventory, 11, 3, 1, 1, QtCore.Qt.AlignLeft)        
 
         
 class WindowFrame(QtWidgets.QWidget):
@@ -78,6 +75,6 @@ class WindowFrame(QtWidgets.QWidget):
 class ConfirmWindow(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
         super(ConfirmWindow, self).__init__(parent)
-        self.resize(420,420)
+        self.resize(800,600)
         self.layout = WindowFrame(AddInventoryConfirm)
         self.setCentralWidget(self.layout)

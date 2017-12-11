@@ -22,6 +22,14 @@ class AddInvoiceView(QtWidgets.QGridLayout):
         self.origPriceList = []
         self.init_ui()
     
+    def error_message(self, message):
+        infoBox = QtWidgets.QMessageBox()
+        infoBox.setIcon(QtWidgets.QMessageBox.Warning)
+        infoBox.setWindowTitle('Error')
+        infoBox.setText(message)
+        infoBox.setStandardButtons(QtWidgets.QMessageBox.Ok)
+        infoBox.setEscapeButton(QtWidgets.QMessageBox.Close) 
+        infoBox.exec_()
 
     def add_products(self):
         self.add_product_to_table(self.tProduct.currentText(), self.tQuantity.value(), self.tUnit.currentText(), self.tUnitPrice.text(), self.origPriceList[0], self.tQuantity.value())
@@ -45,20 +53,24 @@ class AddInvoiceView(QtWidgets.QGridLayout):
         """ 
             
     def confirm_submit(self):
-        self.confirm_window = ConfirmWindow()
-        self.confirm_window.show()
-        self.confirm_window.layout.layout.bAddInvoice.clicked.connect(self.submit_invoice)
-        # self.confirm_window.layout.layout.bAddInvoice.clicked.connect(self.home_invoice_tab)
-        for x in range(self.tProduct_Table.rowCount()):
-            self.confirm_window.layout.layout.add_to_table(x,0,self.tProduct_Table.item(x,0).text())
-            self.confirm_window.layout.layout.add_to_table(x,1,self.tProduct_Table.item(x,1).text())
-            self.confirm_window.layout.layout.add_to_table(x,2,self.tProduct_Table.item(x,2).text())
-            self.confirm_window.layout.layout.add_to_table(x,3,self.tProduct_Table.item(x,3).text())
-            self.confirm_window.layout.layout.add_to_table(x,4,self.tProduct_Table.item(x,4).text())
+        print('{}'.format(self.current_row))
+        if self.current_row != 0:
+            self.confirm_window = ConfirmWindow()
+            self.confirm_window.show()
+            self.confirm_window.layout.layout.bAddInvoice.clicked.connect(self.submit_invoice)
+            # self.confirm_window.layout.layout.bAddInvoice.clicked.connect(self.home_invoice_tab)
+            for x in range(self.tProduct_Table.rowCount()):
+                self.confirm_window.layout.layout.add_to_table(x,0,self.tProduct_Table.item(x,0).text())
+                self.confirm_window.layout.layout.add_to_table(x,1,self.tProduct_Table.item(x,1).text())
+                self.confirm_window.layout.layout.add_to_table(x,2,self.tProduct_Table.item(x,2).text())
+                self.confirm_window.layout.layout.add_to_table(x,3,self.tProduct_Table.item(x,3).text())
+                self.confirm_window.layout.layout.add_to_table(x,4,self.tProduct_Table.item(x,4).text())
 
-        self.check_info = self.get_items()
+            self.check_info = self.get_items()
 
-        self.confirm_window.layout.layout.checkout_info(self.total_amount,self.total_vat,self.total_taxable,self.total_profit,self.check_info)
+            self.confirm_window.layout.layout.checkout_info(self.total_amount,self.total_vat,self.total_taxable,self.total_profit,self.check_info)
+        else:
+            self.error_message('No Products Added!')
 
     def set_product_list(self, product_list):
         """This method sets the product list for invoice
@@ -78,31 +90,38 @@ class AddInvoiceView(QtWidgets.QGridLayout):
     
     def add_product_to_table(self, product_name, quantity, unit, unit_price, orig_price, nonvat):
         """This method adds a product to the products table"""
-        try:
-            self.tProduct_Table.insertRow(self.tProduct_Table.rowCount())
-            self.tProduct_Table.setItem(self.tProduct_Table.rowCount()-1,0,QtWidgets.QTableWidgetItem(str(quantity)))
-            self.tProduct_Table.setItem(self.tProduct_Table.rowCount()-1,1,QtWidgets.QTableWidgetItem(unit))
-            self.tProduct_Table.setItem(self.tProduct_Table.rowCount()-1,2,QtWidgets.QTableWidgetItem(product_name))
-            self.tProduct_Table.setItem(self.tProduct_Table.rowCount()-1,3,QtWidgets.QTableWidgetItem(str(unit_price)))
-            self.tProduct_Table.setItem(self.tProduct_Table.rowCount()-1,4,QtWidgets.QTableWidgetItem(str(int(unit_price) * quantity)))
+        if self.tUnitPrice.text() != '':
+            try:
+                int(self.tUnitPrice.text())
+            except (ValueError,TypeError):
+                self.error_message('Wrong Input Value!')
+                self.tUnitPrice.setText('')
+                self.tQuantity.setValue(0)
+            else:
+                self.tProduct_Table.insertRow(self.tProduct_Table.rowCount())
+                self.tProduct_Table.setItem(self.tProduct_Table.rowCount()-1,0,QtWidgets.QTableWidgetItem(str(quantity)))
+                self.tProduct_Table.setItem(self.tProduct_Table.rowCount()-1,1,QtWidgets.QTableWidgetItem(unit))
+                self.tProduct_Table.setItem(self.tProduct_Table.rowCount()-1,2,QtWidgets.QTableWidgetItem(product_name))
+                self.tProduct_Table.setItem(self.tProduct_Table.rowCount()-1,3,QtWidgets.QTableWidgetItem(str(unit_price)))
+                self.tProduct_Table.setItem(self.tProduct_Table.rowCount()-1,4,QtWidgets.QTableWidgetItem(str(int(unit_price) * quantity)))
 
-            comp = Component(product_name, orig_price, int(unit_price), quantity, unit, nonvat=0)
-            self.components.append(comp)
+                comp = Component(product_name, orig_price, int(unit_price), quantity, unit, nonvat=0)
+                self.components.append(comp)
 
-            total_temp = comp.get_total()
-            self.total_amount += total_temp[0]
-            self.total_nonvat += total_temp[1]
-            self.total_vat += total_temp[3]
-            self.total_taxable += total_temp[2]
-            self.total_profit += total_temp[4]
+                total_temp = comp.get_total()
+                self.total_amount += total_temp[0]
+                self.total_nonvat += total_temp[1]
+                self.total_vat += total_temp[3]
+                self.total_taxable += total_temp[2]
+                self.total_profit += total_temp[4]
 
-            self.lamountTotal.setText("Total amount: " + str(self.total_amount))
-            self.ltaxedTotal.setText("Total taxable: "  + str(self.total_taxable))
-            self.ltaxTotal.setText("Total tax: "  + str(self.total_vat))
-            self.lprofitTotal.setText("Total profit: "  + str(self.total_profit))
-        
-        except ValueError:
-            pass
+                self.lamountTotal.setText("Total amount: " + str(self.total_amount))
+                self.ltaxedTotal.setText("Total taxable: "  + str(self.total_taxable))
+                self.ltaxTotal.setText("Total tax: "  + str(self.total_vat))
+                self.lprofitTotal.setText("Total profit: "  + str(self.total_profit))
+                self.current_row += 1
+        else:
+            self.error_message('Enter a Unit Price!')
 
     
     #GETTERS
@@ -180,7 +199,7 @@ class AddInvoiceView(QtWidgets.QGridLayout):
         self.tUnitPrice.setText('')
         invo_db.connect.begin()
         invo_db.close_connection()
-
+        self.current_row = 0
 
         
     def init_ui(self):
@@ -336,7 +355,9 @@ class AddInvoiceView(QtWidgets.QGridLayout):
         self.lQuantity.setStyleSheet('QLabel { font-size: 12pt; padding: 10px;}')
 
         self.tQuantity = QtWidgets.QSpinBox(self.frame)
-        self.tQuantity.setFixedWidth(50)		
+        self.tQuantity.setFixedWidth(50)
+        self.tQuantity.setMinimum(1)
+        self.tQuantity.setMaximum(99999)		
 
 		#Label#
         self.lUnit = QtWidgets.QLabel("Unit: ")
@@ -369,9 +390,9 @@ class AddInvoiceView(QtWidgets.QGridLayout):
         self.bAdd.clicked.connect(self.add_products)
 
         
-        self.bDelete = QtWidgets.QPushButton("Delete")
-        self.bDelete.setStyleSheet('QPushButton {color: white;background-color: #6017a5;border-style: outset;border-width: 2px;border-radius: 10px;border-color: beige;font: bold 12px;min-width: 10em;padding: 4px;}')        
-        self.bDelete.setFixedWidth(200)
+        self.bDelete = QtWidgets.QPushButton("")        
+        self.bDelete.setFixedWidth(50)
+        self.bDelete.setIcon(QtGui.QIcon('Resources/delete_button.png'))
         self.bDelete.clicked.connect(self.delete_entry)
 
         self.bBack = QtWidgets.QPushButton("Back")
@@ -440,7 +461,7 @@ class AddInvoiceView(QtWidgets.QGridLayout):
         self.addWidget(self.tUnitPrice, 12, 4, 1, 1)
         
         #self.addWidget(self.lProduct_Code, 1, 1, 1, 1)
-        self.addWidget(self.bDelete, 13, 3, 1, 1)
+        self.addWidget(self.bDelete, 8, 6, 1, 2, QtCore.Qt.AlignCenter)
         self.addWidget(self.bAdd, 13, 4, 1, 1)
 
         
