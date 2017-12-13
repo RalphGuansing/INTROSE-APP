@@ -47,28 +47,41 @@ class AddInventoryView(QtWidgets.QGridLayout):
         db_connection.close_connection()        
 
     def add_product_table(self):
-        self.tProduct_Table.insertRow(self.current_row)
-        self.tProduct_Table.setItem(self.current_row,0,QtWidgets.QTableWidgetItem(str(self.tQuantity.value())))
-        self.tProduct_Table.setItem(self.current_row,1,QtWidgets.QTableWidgetItem(str(self.unit_list[self.tUnit.currentIndex()])))
-        self.tProduct_Table.setItem(self.current_row,2,QtWidgets.QTableWidgetItem(self.products[self.tProduct.currentIndex()].name))
-        self.tProduct_Table.setItem(self.current_row,3,QtWidgets.QTableWidgetItem(str(self.tUnitPrice.value())))
-        self.tProduct_Table.setItem(self.current_row,4,QtWidgets.QTableWidgetItem(str(int(self.tUnitPrice.value()) * int(self.tQuantity.value()))))
-        self.current_row += 1
-   
+        db_connection = InventoryDatabase()
+        if db_connection.is_product_available(self.products[self.tProduct.currentIndex()].name,self.unit_list[self.tUnit.currentIndex()]):
+            exist = False
+            for x in range(self.tProduct_Table.rowCount()):
+                if self.tProduct_Table.item(x,2).text() == self.products[self.tProduct.currentIndex()].name and self.tProduct_Table.item(x,1).text() == self.unit_list[self.tUnit.currentIndex()]:
+                    quantity = self.tQuantity.value() + int(self.tProduct_Table.item(x,0).text())
+                    amount = quantity * self.tUnitPrice.value()
+                    self.tProduct_Table.setItem(x,0,QtWidgets.QTableWidgetItem(str(quantity)))
+                    self.tProduct_Table.setItem(x,3,QtWidgets.QTableWidgetItem(str(self.tUnitPrice.value())))
+                    self.tProduct_Table.setItem(x,4,QtWidgets.QTableWidgetItem(str(amount)))
+                    exist = True
+                    break
+
+            if not exist:        
+                self.tProduct_Table.insertRow(self.current_row)
+                self.tProduct_Table.setItem(self.current_row,0,QtWidgets.QTableWidgetItem(str(self.tQuantity.value())))
+                self.tProduct_Table.setItem(self.current_row,1,QtWidgets.QTableWidgetItem(str(self.unit_list[self.tUnit.currentIndex()])))
+                self.tProduct_Table.setItem(self.current_row,2,QtWidgets.QTableWidgetItem(self.products[self.tProduct.currentIndex()].name))
+                self.tProduct_Table.setItem(self.current_row,3,QtWidgets.QTableWidgetItem(str(self.tUnitPrice.value())))
+                self.tProduct_Table.setItem(self.current_row,4,QtWidgets.QTableWidgetItem(str(int(self.tUnitPrice.value()) * int(self.tQuantity.value()))))
+                self.current_row += 1
+        else:
+            self.error_message("Product doesn't exist!")
         self.tQuantity.setValue(0)
         self.tUnitPrice.setValue(0)
+        db_connection.close_connection()
 
     def submit_products(self):
         db_connection_inv = InventoryDatabase()
         db_connection_apv = AccountingDB()
         apv_list = []
         for x in range(self.current_row):
-            try:
-                db_connection_inv.update_product(self.tProduct_Table.item(x,2).text(),self.tProduct_Table.item(x,1).text(),self.tProduct_Table.item(x,3).text())
-                db_connection_inv.add_product_quantity(self.tProduct_Table.item(x,2).text(),int(self.tProduct_Table.item(x,0).text()))
-                apv_list.append(AccountsPayable(datetime.datetime.now(),self.tProduct_Table.item(x,2).text(),db_connection_apv.get_id_apv(),self.tProduct_Table.item(x,4).text()))
-            except BaseException:
-                self.error_message('Error in Submit!')
+            db_connection_inv.update_product(self.tProduct_Table.item(x,2).text(),self.tProduct_Table.item(x,1).text(),self.tProduct_Table.item(x,3).text())
+            db_connection_inv.add_product_quantity(self.tProduct_Table.item(x,2).text(),int(self.tProduct_Table.item(x,0).text()))
+            apv_list.append(AccountsPayable(datetime.datetime.now(),self.tProduct_Table.item(x,2).text(),db_connection_apv.get_id_apv(),self.tProduct_Table.item(x,4).text()))
         for apv in apv_list:
             db_connection_apv.add_accountspayable(apv)
         self.current_row = 0

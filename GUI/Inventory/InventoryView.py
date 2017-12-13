@@ -101,25 +101,26 @@ class InventoryDatabase:
 			per_unit_price (float): per unit price of the product
 		"""
 
-		if self.is_product_available(name):
-			self.cursor.execute("UPDATE `introse`.`inventory` SET `packagingType`='" + str(packaging) + "',`perunitprice`='" + str(per_unit_price) + "', `lastupdated`='" + str(datetime.datetime.now()) + "' WHERE `productName`='" + str(name) + "';")
+		if self.is_product_available(name,packaging):
+			self.cursor.execute("UPDATE `introse`.`inventory` SET `packagingType`='" + str(packaging) + "',`perunitprice`='" + str(per_unit_price) + "', `lastupdated`='" + str(datetime.datetime.now()) + "' WHERE `productName`='" + str(name) + "' and `packagingType`='" + str(packaging) + "';")
 			self.connect.begin()
+			return True
 		else:
-			print('product does not exist!')		
+			return False	
 
-	def is_product_available(self,name):
+	def is_product_available(self,name,packaging):
 
 		"""checks if the product exists in the database
 		Args:
 			name (string): name of the product
 		"""
 
-		if self.cursor.execute("SELECT * FROM introse.inventory WHERE productName = '" + name + "'") != 0:
+		if self.cursor.execute("SELECT * FROM introse.inventory WHERE productName = '" + name + "' and packagingType = '" + packaging + "'") != 0:
 			return True
 		else:
 			return False		
 
-	def add_product_quantity(self, name, quantity):
+	def add_product_quantity(self, name, packaging, quantity):
 
 		"""add a certain quantity to the product
 		Args:
@@ -128,12 +129,13 @@ class InventoryDatabase:
 
 		"""
 
-		if self.is_product_available(name):
+		if self.is_product_available(name, packaging):
 			temp_product = list(filter(lambda x: x.name == name, self.get_product_list()))
-			self.cursor.execute("UPDATE `introse`.`inventory` SET `quantity`='" + str((temp_product[0].quantity + quantity)) + "', `lastupdated`='" + str(datetime.datetime.now()) + "' WHERE `productName`='" + str(name) + "';")
+			self.cursor.execute("UPDATE `introse`.`inventory` SET `quantity`='" + str((temp_product[0].quantity + quantity)) + "', `lastupdated`='" + str(datetime.datetime.now()) + "' WHERE `productName`='" + str(name) + "' and `packagingType`='" + str(packaging) + "';")
 			self.connect.begin()
+			return True
 		else:
-			print('product does not exist!')
+			return False
 
 
 class Product:
@@ -173,7 +175,7 @@ if __name__ == '__main__':
 	###open database
 	sample = InventoryDatabase()
 	temp = sample.get_product_list()
-	sample.add_product('sky flakes','my sans','plastic',10,10,10,1)
+	print(sample.add_product_quantity('well','plastic',69))
 	sample.close_connection()
 
 

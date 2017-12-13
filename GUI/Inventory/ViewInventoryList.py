@@ -26,8 +26,9 @@ class ViewInventoryList(QtWidgets.QGridLayout):
                 self.tInventory_Table.setItem(x,0,QtWidgets.QTableWidgetItem(str(products[x].id)))
                 self.tInventory_Table.setItem(x,1,QtWidgets.QTableWidgetItem(str(products[x].quantity)))
                 self.tInventory_Table.setItem(x,2,QtWidgets.QTableWidgetItem(products[x].name))
-                self.tInventory_Table.setItem(x,3,QtWidgets.QTableWidgetItem(products[x].supplier))
-                self.tInventory_Table.setItem(x,4,QtWidgets.QTableWidgetItem(str(products[x].last_updated)))
+                self.tInventory_Table.setItem(x,3,QtWidgets.QTableWidgetItem(products[x].packaging))
+                self.tInventory_Table.setItem(x,4,QtWidgets.QTableWidgetItem(products[x].supplier))
+                self.tInventory_Table.setItem(x,5,QtWidgets.QTableWidgetItem(str(products[x].last_updated)))
         else:
             search_products = list(filter(lambda x: self.tSearch.text() in x.name,products))
             for x in range(len(search_products)):
@@ -35,35 +36,37 @@ class ViewInventoryList(QtWidgets.QGridLayout):
                 self.tInventory_Table.setItem(x,0,QtWidgets.QTableWidgetItem(str(search_products[x].id)))
                 self.tInventory_Table.setItem(x,1,QtWidgets.QTableWidgetItem(str(search_products[x].quantity)))
                 self.tInventory_Table.setItem(x,2,QtWidgets.QTableWidgetItem(search_products[x].name))
-                self.tInventory_Table.setItem(x,3,QtWidgets.QTableWidgetItem(search_products[x].supplier))
-                self.tInventory_Table.setItem(x,4,QtWidgets.QTableWidgetItem(str(search_products[x].last_updated)))
+                self.tInventory_Table.setItem(x,3,QtWidgets.QTableWidgetItem(search_products[x].packaging))
+                self.tInventory_Table.setItem(x,4,QtWidgets.QTableWidgetItem(search_products[x].supplier))
+                self.tInventory_Table.setItem(x,5,QtWidgets.QTableWidgetItem(str(search_products[x].last_updated)))
         db_connection.close_connection()
             
 
     def init_ui(self):
         #Create Widgets
         self.lInventory_Details = QtWidgets.QLabel("INVENTORY LIST")
-        self.lInventory_Details.setStyleSheet('QLabel { font-size: 12pt; padding: 10px;}')
+        self.lInventory_Details.setStyleSheet('QLabel {font: bold 50px; font-size: 15pt; padding: 10px; color: red}')
 
         self.tSearch = QtWidgets.QLineEdit(self.frame)
         self.tSearch.setPlaceholderText("Search Products")
+        self.tSearch.setStyleSheet('QLineEdit {border: 3px solid gray; border-radius: 10px; padding: 0 8px; selection-background-color: darkgray;}')
+        self.tSearch.setFixedWidth(825)
         self.tSearch.textChanged.connect(self.add_table_entries)
 
 		#Inventory Table#
         self.tInventory_Table = QtWidgets.QTableWidget()
         self.tInventory_Table.setRowCount(10)
-        self.tInventory_Table.setColumnCount(5)
-        self.tInventory_Table.setHorizontalHeaderLabels(["Inventory Number", "Amount", "Product Name", "Supplier", "Date"])
+        self.tInventory_Table.setColumnCount(6)
+        self.tInventory_Table.setHorizontalHeaderLabels(["Inventory Number", "Amount", "Product Name", "Unit", "Supplier", "Date"])
         self.tInventory_Table.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
-        tablewidth = self.tInventory_Table.width() + 4
+        tablewidth = self.tInventory_Table.width() + 6
         self.tInventory_Table.setColumnWidth(0, tablewidth / 6)
         self.tInventory_Table.setColumnWidth(1, tablewidth / 6)
-        self.tInventory_Table.setColumnWidth(2, tablewidth / 2)
-        self.tInventory_Table.setColumnWidth(3, tablewidth / 6)	
+        self.tInventory_Table.setColumnWidth(2, tablewidth / 3)
+        self.tInventory_Table.setColumnWidth(3, tablewidth / 6)
+        self.tInventory_Table.setColumnWidth(4, tablewidth / 6)
+        self.tInventory_Table.setColumnWidth(5, tablewidth / 4)	
         self.tInventory_Table.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)				
-
-        # self.Add_Inventory_Table = QtWidgets.QPushButton("Add Inventory")
-        # self.Add_Inventory_Table.setStyleSheet('QPushButton { font-size: 12pt; padding: 10px;}')	
 
         self.add_table_entries()
 
