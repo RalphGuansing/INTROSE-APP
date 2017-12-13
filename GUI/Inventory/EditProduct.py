@@ -98,6 +98,13 @@ class EditProduct(QtWidgets.QGridLayout):
 	def __init__(self, frame):
 		super().__init__()
 		self.frame = frame
+		self.index = 0
+		self.init_ui()
+
+	def re_init(self):
+		self.index = self.tProduct_id.currentIndex()
+		for i in reversed(range(self.count())): 
+			self.itemAt(i).widget().setParent(None)
 		self.init_ui()
 
 	def error_message(self, message):
@@ -110,18 +117,21 @@ class EditProduct(QtWidgets.QGridLayout):
 		infoBox.exec_()
 
 	def edit_product(self):
-		# if self.isVatable.isChecked():
-		# 	vatable = 1
-		# else:
-		# 	vatable = 0
-		# db_inventory = InventoryDatabase()
-		# db_inventory.add_product(self.tName.text(),self.suppliers[self.tSupplier.currentIndex()],self.unit_list[self.tUnit.currentIndex()],
-		# 	self.tUnitPrice.value(),self.tRetailPrice.value(),0,vatable)
-		# db_inventory.close_connection()
-		# self.tName.setText('')
-		# self.tUnitPrice.setValue(0)
-		# self.tRetailPrice.setValue(0)
+		if self.isVatable.isChecked():
+			vatable = 1
+		else:
+			vatable = 0
+		db_inventory = InventoryDatabase()
+		db_inventory.edit_product(self.id_list[self.tProduct_id.currentIndex()],
+			self.tName.text(),
+			self.suppliers[self.tSupplier.currentIndex()],
+			self.unit_list[self.tUnit.currentIndex()],
+			self.tUnitPrice.value(),
+			self.tRetailPrice.value(),
+			vatable)
+		db_inventory.close_connection()
 		self.confirm_window.close()
+		self.re_init()
 
 	def set_confirm_table(self):
 		if self.isVatable.isChecked():
@@ -235,6 +245,7 @@ class EditProduct(QtWidgets.QGridLayout):
 		self.tProduct_id = QtWidgets.QComboBox(self.frame)
 		self.tProduct_id.setFixedWidth(200)
 		self.tProduct_id.currentIndexChanged.connect(self.change_information)
+		self.tProduct_id.setCurrentIndex(self.index)
 		self.add_id_list()
 
 		self.setColumnStretch(7,1)
