@@ -46,7 +46,7 @@ class ViewInventoryList(QtWidgets.QGridLayout):
         self.lInventory_Details.setStyleSheet('QLabel { font-size: 12pt; padding: 10px;}')
 
         self.tSearch = QtWidgets.QLineEdit(self.frame)
-        self.tSearch.setPlaceholderText("Search Inventory")
+        self.tSearch.setPlaceholderText("Search Products")
         self.tSearch.textChanged.connect(self.add_table_entries)
 
 		#Inventory Table#
