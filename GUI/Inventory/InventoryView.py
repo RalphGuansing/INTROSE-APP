@@ -62,7 +62,7 @@ class InventoryDatabase:
 			[product_list]
 		"""
 
-		product_list = [Product(row[1][0],row[1][1],row[1][2],row[1][3],row[1][4],row[1][5],row[1][6],row[1][7]) for row in self.df_inv.iterrows()]
+		product_list = [Product(row[1][0],row[1][1],row[1][2],row[1][3],row[1][4],row[1][5],row[1][6],row[1][8],row[1][7]) for row in self.df_inv.iterrows()]
 		return product_list
 
 
@@ -120,6 +120,28 @@ class InventoryDatabase:
 		else:
 			return False		
 
+	def edit_product(self, product_id, name, supplier, packaging, per_unit_price, retail_price, vatable):
+
+		"""edits the current values of the product
+		Args:
+			product_id (int): id of the product
+			name (string): name of the product
+			supplier (string): supplier of the product
+			packaging (string): packaging type
+			per_unit_price (float): unit price
+			retail_price (float): retail price of the product
+			vatable (boolean): is the product vatable
+		"""
+
+		self.cursor.execute("UPDATE `introse`.`inventory` SET `productName`='" + name
+			+ "', `supplier`='" + str(supplier)
+			+ "', `packagingType`='" + str(packaging)
+			+ "', `perunitprice`='" + str(per_unit_price)
+			+ "', `retailprice`='" + str(retail_price)
+			+ "', `vatable`='" + str(vatable) 
+			+ "' WHERE `idinventory`='" 
+			+ str(product_id) + "';")
+
 	def add_product_quantity(self, name, packaging, quantity):
 
 		"""add a certain quantity to the product
@@ -151,7 +173,7 @@ class Product:
 
 	"""Represents the products"""
 
-	def __init__(self, id, name, supplier, packaging, per_unit_price, retail_price, quantity, last_updated):
+	def __init__(self, id, name, supplier, packaging, per_unit_price, retail_price, quantity, vatable, last_updated):
 
 		"""Constructor
 		Args:
@@ -162,6 +184,7 @@ class Product:
 			retailprice (float): retail price of the product
 			quantity (int): amount
 			lastupdated (datetime): when was the quantity updated
+			vatable (boolean): is vatable
 		"""
 
 		self.id = id
@@ -171,6 +194,7 @@ class Product:
 		self.per_unit_price = per_unit_price
 		self.retail_price = retail_price
 		self.quantity = quantity
+		self.vatable = vatable
 		self.last_updated = last_updated
 
 
@@ -184,7 +208,7 @@ if __name__ == '__main__':
 	###open database
 	sample = InventoryDatabase()
 	temp = sample.get_product_list()
-	print(sample.reduce_product_quantity(28,9))
+	print(sample.edit_product(20,'water flakes','nestle','plastic',10,10,1))
 	sample.close_connection()
 
 
