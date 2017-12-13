@@ -30,6 +30,7 @@ class AddInventoryView(QtWidgets.QGridLayout):
 
     def add_product_list(self):
         db_connection = InventoryDatabase()
+        self.tProduct.clear()
         self.products = db_connection.get_product_list()
         for product in self.products:
             self.tProduct.addItem(product.name)

@@ -623,8 +623,8 @@ class InventoryTabs(QtWidgets.QGridLayout):
         self.init_ui()
 
     def sample_print(self):
-        self.view_inventory_tab.layout.re_init()
-        self.add_inventory_tab.layout.re_init()
+        self.view_inventory_tab.layout.add_table_entries()
+        self.add_inventory_tab.layout.add_product_list()
 
 
     def init_ui(self):

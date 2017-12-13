@@ -16,9 +16,12 @@ class ViewInventoryList(QtWidgets.QGridLayout):
         self.init_ui()
 
     def add_table_entries(self):
+        self.tInventory_Table.clearContents()
+        self.tInventory_Table.setRowCount(0)
         db_connection = InventoryDatabase()
         products = db_connection.get_product_list()
         for x in range(len(products)):
+            self.tInventory_Table.insertRow(self.tInventory_Table.rowCount())
             self.tInventory_Table.setItem(x,0,QtWidgets.QTableWidgetItem(str(products[x].id)))
             self.tInventory_Table.setItem(x,1,QtWidgets.QTableWidgetItem(str(products[x].quantity)))
             self.tInventory_Table.setItem(x,2,QtWidgets.QTableWidgetItem(products[x].name))
