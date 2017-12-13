@@ -10,10 +10,10 @@ class AddInvoiceConfirm(QtWidgets.QGridLayout):
         self.init_ui()
 
     def checkout_info(self, amount, vat, taxable, profit, info):
-        self.lamountTotal.setText("Total amount: " + str(round(amount,2)))
-        self.ltaxedTotal.setText("Total taxable: "  + str(round(taxable,2)))
-        self.ltaxTotal.setText("Total tax: "  + str(round(vat,2)))
-        self.lprofitTotal.setText("Total profit: "  + str(round(profit,2)))
+        self.lamountTotal.setText("Total amount: " + str(amount))
+        self.ltaxedTotal.setText("Total taxable: "  + str(taxable))
+        self.ltaxTotal.setText("Total tax: "  + str(vat))
+        self.lprofitTotal.setText("Total profit: "  + str(profit))
 
         self.lInvNum.setText("Invoice No.  " + str(info["invoice_id"]))
         self.lChargedTo.setText("Charged to: " + str(info["buyer"]))
@@ -31,10 +31,11 @@ class AddInvoiceConfirm(QtWidgets.QGridLayout):
         self.checkout_info(invoice_query[6], invoice_query[8], invoice_query[9], invoice_query[10], user_info)
 
         for row in range(len(invoice_query[11])):
-            self.add_to_table(row,0, invoice_query[11][row][2])
+
+            self.add_to_table(row,0, str(invoice_query[11][row][4]))
             self.add_to_table(row,1, invoice_query[11][row][3])
-            self.add_to_table(row,2, str(invoice_query[11][row][6]))
-            self.add_to_table(row,3, str(invoice_query[11][row][4]))
+            self.add_to_table(row,2, invoice_query[11][row][2])
+            self.add_to_table(row,3, str(invoice_query[11][row][6]))
             self.add_to_table(row,4, str(invoice_query[11][row][7]))
 
         invo_db.close_connection()
@@ -75,17 +76,16 @@ class AddInvoiceConfirm(QtWidgets.QGridLayout):
         self.lProduct_Table.setStyleSheet('QLabel {font: bold 50px; font-size: 12pt; padding: 10px;}')        
 		#Product Table#
         self.tProduct_Table = QtWidgets.QTableWidget()
-        # self.tProduct_Table.setRowCount(5)
+        self.tProduct_Table.setRowCount(5)
         self.tProduct_Table.setColumnCount(5)
-        self.tProduct_Table.setHorizontalHeaderLabels(["Articles", "Unit", "Unit Price", "Quantity", "Amount"])
+        self.tProduct_Table.setHorizontalHeaderLabels(["Quantity", "Unit", "Articles", "Unit Price", "Amount"])
         self.tProduct_Table.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
         tablewidth = self.tProduct_Table.width() + 5
-        self.tProduct_Table.setColumnWidth(0, tablewidth / 2)
+        self.tProduct_Table.setColumnWidth(0, tablewidth / 6)
         self.tProduct_Table.setColumnWidth(1, tablewidth / 6)
-        self.tProduct_Table.setColumnWidth(2, tablewidth / 6)
-        self.tProduct_Table.setColumnWidth(3, tablewidth / 6)       
-        self.tProduct_Table.setColumnWidth(4, tablewidth / 6)
-        self.tProduct_Table.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers) 			
+        self.tProduct_Table.setColumnWidth(2, tablewidth / 2)
+        self.tProduct_Table.setColumnWidth(3, tablewidth / 6)		
+        self.tProduct_Table.setColumnWidth(4, tablewidth / 6)			
 
 		
         self.ltaxedTotal = QtWidgets.QLabel("Total taxable: (system generated)")
