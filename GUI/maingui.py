@@ -622,13 +622,14 @@ class InventoryTabs(QtWidgets.QGridLayout):
         self.addWidget(self.tabs)
         self.init_ui()
 
-    def sample_print(self):
+    def re_initialize(self):
+        self.view_inventory_tab.layout.tSearch.setText('')
         self.view_inventory_tab.layout.add_table_entries()
         self.add_inventory_tab.layout.add_product_list()
 
 
     def init_ui(self):
-        self.tabs.currentChanged.connect(self.sample_print)
+        self.tabs.currentChanged.connect(self.re_initialize)
         
 if __name__ == "__main__":    
     app = QtWidgets.QApplication(sys.argv)

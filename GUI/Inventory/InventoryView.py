@@ -167,7 +167,7 @@ class Product:
 		return self.name + '\n' + 'Packaging Type: ' + self.packaging + '\n' + 'Unit Price: ' + str(self.per_unit_price) + '\n' + 'Retail Price: ' + str(self.retail_price)
 
 	def __repr__(self):
-		return self.name + '\n' + 'Packaging Type: ' + self.packaging + '\n' + 'Unit Price: ' + str(self.perunitprice) + '\n' + 'Retail Price: ' + str(self.retailprice)
+		return self.name + '\n' + 'Packaging Type: ' + self.packaging + '\n' + 'Unit Price: ' + str(self.per_unit_price) + '\n' + 'Retail Price: ' + str(self.retail_price)
 
 if __name__ == '__main__':
 	###open database
