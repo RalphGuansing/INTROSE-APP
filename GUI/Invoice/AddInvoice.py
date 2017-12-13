@@ -1,6 +1,5 @@
 import sys
 from PyQt5 import QtWidgets,QtCore
-
 from Inventory.AddInventory import *
 from Inventory.AddInventoryConfirm import *
 from Inventory.guiHomePage import *
@@ -9,7 +8,6 @@ from Inventory.InventoryView import *
 from Inventory.ViewInventoryList import *
 from Invoice.InvoiceView import *
 from Invoice.AddInvoiceConfirm import *
-
 
 class AddInvoiceView(QtWidgets.QGridLayout):
     def __init__(self, frame, mainwindow=None):
@@ -21,6 +19,7 @@ class AddInvoiceView(QtWidgets.QGridLayout):
         self.added_products = []
         self.current_row = 0
         self.components = []
+        self.tProduct_id = []
         self.origPriceList = []
         self.unitPriceList = []
         self.max_stocks = []
@@ -46,7 +45,10 @@ class AddInvoiceView(QtWidgets.QGridLayout):
             elif self.tUnit.currentText() == " ":
                 self.error_message('No Unit selected!')
         else:
-            self.add_product_to_table(self.tProduct.currentText(), self.tQuantity.value(), self.tUnit.currentText(), self.tUnitPrice.text(), self.origPriceList[0], self.tQuantity.value())
+            if self.tQuantity.value() == 0:
+                self.error_message('Product Out of Stock!')
+            else:
+                self.add_product_to_table(self.tProduct.currentText(), self.tQuantity.value(), self.tUnit.currentText(), self.tUnitPrice.text(), self.origPriceList[0], self.tQuantity.value())
 
     def change_address_tag(self):
         self.tAdd.setText(str(self.client_list[self.tBuyer.currentIndex()][1]))
@@ -58,6 +60,7 @@ class AddInvoiceView(QtWidgets.QGridLayout):
         else:
             self.tQuantity.setMaximum(self.max_stocks[self.tProduct.currentIndex() - 1])
             self.tUnitPrice.setText(str(int(self.unitPriceList[self.tProduct.currentIndex() - 1])))
+            self.max_quantity = self.max_stocks[self.tProduct.currentIndex() - 1]
         print(self.tProduct.currentIndex())
         
         
@@ -78,6 +81,8 @@ class AddInvoiceView(QtWidgets.QGridLayout):
     def confirm_submit(self):
 
         if self.current_row != 0:
+            self.product_id = self.tProduct_id[self.tProduct.currentIndex() - 1]
+            print(self.product_id)
             self.confirm_window = ConfirmWindow()
             self.confirm_window.show()
             self.confirm_window.layout.layout.bAddInvoice.clicked.connect(self.submit_invoice)
@@ -134,6 +139,9 @@ class AddInvoiceView(QtWidgets.QGridLayout):
                 comp = Component(product_name, orig_price, int(unit_price), quantity, unit, nonvat=0)
                 self.components.append(comp)
 
+                self.max_quantity -= quantity
+                self.tQuantity.setMaximum(self.max_quantity)
+
                 total_temp = comp.get_total()
                 self.total_amount += total_temp[0]
                 self.total_nonvat += total_temp[1]
@@ -146,7 +154,6 @@ class AddInvoiceView(QtWidgets.QGridLayout):
                 self.ltaxTotal.setText("Total tax: "  + str(round(self.total_vat,2)))
                 self.lprofitTotal.setText("Total profit: "  + str(round(self.total_profit,2)))
                 self.current_row += 1
-                print(self.tBuyer.currentIndex())
         else:
             self.error_message('Enter a Unit Price!')
 
@@ -211,6 +218,7 @@ class AddInvoiceView(QtWidgets.QGridLayout):
         self.tProduct.insertItem(0, " ")
         self.tUnit.insertItem(0, " ")
         for x in range(len(product_list)):
+            self.tProduct_id.append(product_list[x].id)
             self.tProduct.insertItem(x + 1,product_list[x].name)
             self.tUnit.insertItem(x + 1,product_list[x].packaging)
             self.origPriceList.append(product_list[x].per_unit_price)
@@ -218,13 +226,15 @@ class AddInvoiceView(QtWidgets.QGridLayout):
             self.max_stocks.append(product_list[x].quantity)
         db_inventory.close_connection()
 
-        #get max stock here dito
-
     def submit_invoice(self):
         invo_db = InvoiceDB()
+        db_inventory = InventoryDatabase()
         invo_entry = Invoice(self.tBuyer.currentText(),self.tDate.text(), self.tTerms.currentText(), self.tSeller.currentText())
 
         invo_db.add_invoice(self.check_info["buyer"], self.check_info["date"], self.check_info["term"],self.check_info["date"],self.check_info["seller"], self.components, self.check_info["invoice_id"])
+
+        for component in self.components:
+            db_inventory.reduce_product_quantity(self.product_id, component.quantity)
 
         self.confirm_window.close()
         self.tProduct_Table.clearContents()
@@ -232,11 +242,9 @@ class AddInvoiceView(QtWidgets.QGridLayout):
         self.tUnitPrice.setText('')
         invo_db.connect.begin()
         invo_db.close_connection()
+        db_inventory.close_connection()
         self.current_row = 0
 
-        #bawas na nung sttock so inv dito
-
-        
     def init_ui(self):
         #Create Widgets
 
@@ -248,7 +256,7 @@ class AddInvoiceView(QtWidgets.QGridLayout):
         
         invo_db = InvoiceDB()
         components = []
-        client_list = [] # add " " in index 0 dito
+        client_list = []
         seller_list = []
         self.components = []
         self.client_list = invo_db.get_client_name()
@@ -417,7 +425,7 @@ class AddInvoiceView(QtWidgets.QGridLayout):
         self.lUnitPrice.setStyleSheet('QLabel { font-size: 12pt; padding: 10px;}')
 
         self.tUnitPrice = QtWidgets.QLineEdit(self.frame)
-        self.tUnitPrice.setFixedWidth(70)	#set default unit price here dito
+        self.tUnitPrice.setFixedWidth(70)
 
 
         self.tQuantity.setValue(0)
