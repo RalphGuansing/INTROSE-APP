@@ -1,17 +1,22 @@
 import sys
 import datetime
+from decimal import Decimal
 from PyQt5 import QtWidgets
 from PyQt5 import QtGui
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import QHeaderView
 
 
-class AddAPVView(QtWidgets.QGridLayout):
-    def __init__(self, frame):
+class EditAPVView(QtWidgets.QGridLayout):
+    def __init__(self, frame,items):
         super().__init__()
         self.frame = frame
+        self.items = items
         self.init_ui()   
-
+        
+        
+        
+        
     def createColumn_group(self):
         self.column_name_GroupBox = QtWidgets.QGroupBox("")
         self.column_name_GroupBox.setStyleSheet(""" QGroupBox{font-size: 10pt;} """)
@@ -38,13 +43,31 @@ class AddAPVView(QtWidgets.QGridLayout):
         self.column_name_GroupBox.setLayout(Ggrid)
 
     
+    def set_Columns(self, columns):
+        total_val = Decimal(0)
+        for column in columns:
+            self.pColumn_Table.insertRow(self.pColumn_Table.rowCount())#
+            
+            type_name = QtWidgets.QTableWidgetItem(column["type_name"])
+            type_name.setFlags(QtCore.Qt.ItemIsEnabled)
+            self.pColumn_Table.setItem(self.pColumn_Table.rowCount()-1,0,type_name)
+            
+            type_value = QtWidgets.QTableWidgetItem(str(column["type_value"]))
+            type_value.setTextAlignment(QtCore.Qt.AlignRight)
+            #type_value.setFlags(QtCore.Qt.ItemIsEnabled)
+            self.pColumn_Table.setItem(self.pColumn_Table.rowCount()-1,1,type_value)
+            total_val += column["type_value"]
+    
     def add_column(self, column_names):
         for column_name in column_names:
             self.pColumn_Table.insertRow(self.pColumn_Table.rowCount())
             column_item = QtWidgets.QTableWidgetItem(column_name)
             column_item.setFlags(QtCore.Qt.ItemIsEnabled)
             self.pColumn_Table.setItem(self.pColumn_Table.rowCount()-1,0, column_item)
-            self.column_data.append(column_name)
+            val_column_item = QtWidgets.QTableWidgetItem("")
+            val_column_item.setTextAlignment(QtCore.Qt.AlignRight)
+            self.pColumn_Table.setItem(self.pColumn_Table.rowCount()-1,1, val_column_item)
+            #self.column_data.append(column_name)
 
     
     def get_items(self):
@@ -69,7 +92,8 @@ class AddAPVView(QtWidgets.QGridLayout):
         
         
         try:
-            for i in range(len(self.column_data)):
+            for i in range(self.pColumn_Table.rowCount()):
+                self.column_data.append(self.pColumn_Table.item(i,0).text())
                 self.column_data_val.append(self.pColumn_Table.item(i,1).text())
         except:
             pass
@@ -110,14 +134,16 @@ class AddAPVView(QtWidgets.QGridLayout):
         self.tName.setStyleSheet(textboxStyle)
         #self.tName.textChanged.connect(self.preview_items)
         self.tName.setFixedWidth(textboxSize)
+        self.tName.setText(self.items["name"])
         
         self.lId = QtWidgets.QLabel("APV #:")
         #self.lId.setAlignment(QtCore.Qt.AlignRight)
         self.lId.setStyleSheet(labelStyle)
-        self.tId = QtWidgets.QLineEdit(self.frame)
-        self.tId.setStyleSheet(textboxStyle)
+        self.tId = QtWidgets.QLabel(self.frame)
+        self.tId.setStyleSheet(labelStyle)
         #self.tId.textChanged.connect(self.preview_items)
         self.tId.setFixedWidth(textboxSize)
+        self.tId.setText(str(self.items["id_apv"]))
 
         self.lAmount = QtWidgets.QLabel("Vouchers Payable:")
         #self.lAmount.setAlignment(QtCore.Qt.AlignRight)
@@ -126,6 +152,7 @@ class AddAPVView(QtWidgets.QGridLayout):
         self.tAmount.setStyleSheet(textboxStyle)
         #self.tAmount.textChanged.connect(self.preview_items)
         self.tAmount.setFixedWidth(textboxSize)
+        self.tAmount.setText(str(self.items["amount"]))
         
         Ggrid = QtWidgets.QGridLayout()
         Ggrid.addWidget(self.lDate, 1, 1)

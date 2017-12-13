@@ -548,8 +548,8 @@ class AccountingDB:
         """
 
         select_statement = """select DATE_FORMAT(date,'%M %e, %Y') as Date, name, id_apv, amount from accounts_payable where month(date) = """ + str(
-            month) + """ and year(date) = """ + str(year) + """ """
-
+            month) + """ and is_exist = 1 and year(date) = """ + str(year) + """ """
+        print (select_statement)
         self.cursor.execute(select_statement)
         temp = self.cursor.fetchall()
 
@@ -564,7 +564,7 @@ class AccountingDB:
             total vouchers payable
         """
         select_statement = """select sum(amount) as total from accounts_payable where month(date) = """ + str(
-            month) + """ and year(date) = """ + str(year) + """ """
+            month) + """ and is_exist = 1 and year(date) = """ + str(year) + """ """
 
         self.cursor.execute(select_statement)
         temp = self.cursor.fetchone()
@@ -590,11 +590,18 @@ class AccountingDB:
             list of sub columns
         """
 
-        select_statement = "select type_name, type_value from credit_type where id_apv =" + str(
+        select_statement = "select type_name, type_value from credit_type where is_exist = 1 and id_apv =" + str(
             id_apv)
         self.cursor.execute(select_statement)
         return self.cursor.fetchall()
-
+    
+    #delete payables
+    def delete_payable(self, id_apv):
+        """ Sets the value for an APV to non-existent """
+        update_statement = "update accounts_payable set is_exist = 0 where id_apv =" +str(id_apv)
+        
+        self.cursor.execute(update_statement)
+        
     #ADD PAYABLES
     def checkAPV_id(self, id_apv):
 
@@ -605,7 +612,36 @@ class AccountingDB:
         temp = self.cursor.fetchone()
         # print(temp)
         return temp is None
-
+    
+    def db_update_apv(self, ui_):
+        """ Updates the Accounts Payable """
+        items = ui_.widgetFrame.layout.get_items()
+        print(items)
+        
+        if items["id_apv_BOOL"] and items["amount_BOOL"]:
+#            try:
+            column_sum = sum(Decimal(i) for i in items["column_val"])
+            if Decimal(items["amount"]) == column_sum :
+                self.update_apv(items["date"], items["name"], items["id_apv"], items["amount"])
+                self.delete_credit_apv(items["id_apv"])
+                self.apv_credit_execute_statement(items["column_names"], items["column_val"], items["id_apv"])
+                ui_.showMessage("APV Updated", "The APV was updated", None, None, 1)
+            else:
+                ui_.showMessage("Error Input", "Vouchers payable and column values do not match")
+#            except:
+#                ui_.showMessage("Error Input", "Please Input a proper values")
+                
+    def update_apv(self, date, name, id_apv, amount):
+        """ This method for updating the current existing apv """
+#        update_statement = "UPDATE accounts_receivable SET date_paid = null, pr_id= null,payment= null WHERE inv_id= " + str(invoice_number) + ";"
+        update_statement = "update accounts_payable set date = '"+ date +"',name = '"+ name +"', amount = "+ str(amount) +" where id_apv = " +str(id_apv)
+        print(update_statement)
+        self.cursor.execute(update_statement)
+        
+    def delete_credit_apv(self, id_apv):
+        update_statement = "update credit_type set is_exist = 0 where id_apv = " +str(id_apv)
+        print(update_statement)
+        self.cursor.execute(update_statement)
 
     def db_add_apv(self, ui_):
 
@@ -614,13 +650,16 @@ class AccountingDB:
         #items = self.widgetFrame.layout.get_items()
 
         items = ui_.widgetFrame.layout.get_items()
+        
+        cont = True
+        
+        if int(items["id_apv"]) <= 0:
+            cont = False
 
 
-
-        if items["id_apv_BOOL"] and items["amount_BOOL"]:
+        if items["id_apv_BOOL"] and items["amount_BOOL"] and cont:
             try:
                 column_sum = sum(Decimal(i) for i in items["column_val"])
-
                 if Decimal(items["amount"]) == column_sum :
                     if self.checkAPV_id(items["id_apv"]):
                         self.apv_execute_statement(items["date"], items["name"], items["id_apv"], items["amount"])
@@ -636,6 +675,8 @@ class AccountingDB:
                     ui_.showMessage("Error Input", "Vouchers payable and column values do not match")
             except:
                 ui_.showMessage("Error Input", "Please Input a proper values")
+        elif cont == False:
+            ui_.showMessage("Error Input", "Please input non-negative values")
         else:
             ui_.showMessage("Error Input", "PLEASE INPUT A NUMBER")
 
@@ -658,7 +699,9 @@ class AccountingDB:
         credit_statement = """INSERT INTO credit_type (type_name, id_apv, type_value)
                                   Values"""
         tempString1 = ",(SELECT id_apv FROM accounts_payable WHERE id_apv = "
-
+        
+        print(len(column_names))
+        print(len(column_val))
         for i in range(len(column_names)):
             credit_statement += "('" + column_names[i] + "'" + tempString1 + str(id_apv) + "), " + str(
                 column_val[i]) + ")"

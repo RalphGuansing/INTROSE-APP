@@ -65,6 +65,14 @@ class APVView(QtWidgets.QGridLayout):
         self.lTotal.setAlignment(QtCore.Qt.AlignRight)
         self.lTotal.setStyleSheet(self.addressStyle)
         
+        self.bBack = QtWidgets.QPushButton("Back")
+        self.bBack.setStyleSheet("""QPushButton { font-size: 14pt; padding: 10px; color: #fff; 
+        background-color: #d9534f;
+        border-color: #d43f3a;
+                                                    border-radius: 5px;
+                                                    margin-top: 10px;}
+                                        QPushButton:hover {background-color: #d5443f; border-color: #d8504b;}""")
+        
 
         self.Column_Table = QtWidgets.QTableWidget()
         self.Column_Table.setColumnCount(2)
@@ -83,6 +91,7 @@ class APVView(QtWidgets.QGridLayout):
         self.addWidget(self.lAPV_id, 3, 1, 1, 1)
         self.addWidget(self.lVouchers_payable, 4, 1, 1, 1)
         self.addWidget(self.Column_Table, 1, 2, 8, 2)
+        self.addWidget(self.bBack, 9, 1, 1, 1)
         self.addWidget(self.lTotal, 9, 3, 1, 1)
         #self.addWidget(self.lEnding_Balance, 3, 2, 1, 1)
         #self.addWidget(self.bDetails, 3, 1, 1, 1)
@@ -143,6 +152,44 @@ class AccountsPayable_MonthlyView(QtWidgets.QGridLayout):
                                                     margin-top: 10px;}
                                         QPushButton:hover {background-color: #4baa4b; border-color: #409140;}""")
         
+        self.bEdit = QtWidgets.QPushButton("Edit")
+        self.bEdit.setStyleSheet("""
+        QPushButton 
+        { 
+            font-size: 14pt; 
+            padding: 10px; 
+            color: #fff; 
+            background-color: #f0ad4e;
+            border-color: #eea236;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        QPushButton:hover 
+        {
+            background-color: #eb961e; 
+            border-color: #eb961e;
+        }
+        """)
+        
+        self.bDelete = QtWidgets.QPushButton("Delete")
+        self.bDelete.setStyleSheet("""
+        QPushButton 
+        { 
+            font-size: 14pt; 
+            padding: 10px; 
+            color: #fff; 
+            background-color: #d9534f;
+            border-color: #d43f3a;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        QPushButton:hover 
+        {
+            background-color: #d5443f; 
+            border-color: #d8504b;
+        }
+        """)
+        
         self.lMonth_Year = QtWidgets.QLabel(calendar.month_name[self.selectedMonth] + " " + str(self.selectedYear))
         self.lMonth_Year.setStyleSheet(self.labelStyle)
         self.lMonth_Year.setAlignment(QtCore.Qt.AlignCenter)
@@ -170,10 +217,12 @@ class AccountsPayable_MonthlyView(QtWidgets.QGridLayout):
 #        self.addWidget(self.customer_groupbox, 1, 1, 1, 1)
         #self.addWidget(self.lCustomer_name, 1, 1, 1, 1)
         self.addWidget(self.lMonth_Year, 1, 2, 1, 1)
-        self.addWidget(self.ap_Table, 2, 1, 1, 3)
-        self.addWidget(self.lTotal, 3, 3, 1, 1)
+        self.addWidget(self.ap_Table, 2, 1, 1, 6)
+        self.addWidget(self.lTotal, 3, 6, 1, 1)
         #self.addWidget(self.lEnding_Balance, 3, 2, 1, 1)
         self.addWidget(self.bDetails, 3, 1, 1, 1)
+        self.addWidget(self.bEdit, 3, 2, 1, 1)
+        self.addWidget(self.bDelete, 3, 3, 1, 1)
 #        #self.addWidget(self.lUsername, 3, 1, 1, 1)
 #        self.addWidget(self.tUsername, 3, 1, 1, 2)
 #        #self.addWidget(self.lPassword, 4, 1, 1, 1)

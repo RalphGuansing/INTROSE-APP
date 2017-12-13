@@ -64,8 +64,8 @@ class AccountsReceivable_MonthlyView(QtWidgets.QGridLayout):
             self.ar_Table.setItem(self.ar_Table.rowCount()-1,6,status)
             
     def label_balances(self):
-        self.lCustomer_name = QtWidgets.QLabel(self.customer_name)
-        self.lCustomer_name.setStyleSheet(self.labelStyle)
+        self.bCustomer_name = QtWidgets.QPushButton("< "+self.customer_name)
+        self.bCustomer_name.setStyleSheet(self.buttonStyle)
         self.lMonth_Year = QtWidgets.QLabel(calendar.month_name[self.selectedMonth] + " " + str(self.selectedYear))
         self.lMonth_Year.setStyleSheet(self.labelStyle)
         self.lMonth_Year.setAlignment(QtCore.Qt.AlignCenter)
@@ -75,6 +75,16 @@ class AccountsReceivable_MonthlyView(QtWidgets.QGridLayout):
         self.lEnding_Balance.setStyleSheet(self.addressStyle)
         
     def init_ui(self):
+        self.buttonStyle = """QPushButton {
+                         background:none;
+                         color:inherit;
+                         border:none; 
+                         padding:0;
+                         font: inherit;
+                         font-size: 14pt; color: gray; padding: 1px;
+                         }
+                         QPushButton:hover{color:black;}
+                        """
     
         self.labelStyle = """QLabel { font-size: 16pt; color: black; padding: 4px;}"""
         self.addressStyle = """QLabel { font-size: 14pt; color: #666666; padding: 4px;}"""
@@ -119,7 +129,7 @@ class AccountsReceivable_MonthlyView(QtWidgets.QGridLayout):
         self.ar_Table.setStyleSheet( """QTableWidget {font-size: 12pt;} QHeaderView::section{font-size: 12pt; padding: 5px;}""")
 
 #        self.addWidget(self.customer_groupbox, 1, 1, 1, 1)
-        self.addWidget(self.lCustomer_name, 1, 1, 1, 1)
+        self.addWidget(self.bCustomer_name, 1, 1, 1, 1)
         self.addWidget(self.lMonth_Year, 1, 3, 1, 1)
         self.addWidget(self.ar_Table, 2, 1, 1, 5)
         self.addWidget(self.lBeginning_Balance, 3, 1, 1, 1)

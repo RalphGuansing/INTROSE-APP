@@ -57,6 +57,8 @@ class Customer_ListView(QtWidgets.QGridLayout):
         self.setColumnStretch(3,6)
         self.setColumnStretch(4,1)
         self.setColumnStretch(5,1)
+        self.setColumnStretch(0,6)
+        self.setColumnStretch(6,6)
         
         #Add Widgets
         self.addWidget(self.tCustomer, 1,3,1,1)

@@ -10,6 +10,7 @@ from Accounting.Accounting_Home import Accounting_HomeView
 from Accounting.DialogView import *
 from Accounting.Payable.ViewAPV import APVView,AccountsPayable_MonthlyView
 from Accounting.Payable.AddAPV import AddAPVView
+from Accounting.Payable.EditAPV import EditAPVView
 from Accounting.Payable.AddColumn import AddColumnView
 from Accounting.Payable.NewColumn import NewColumnView
 from Accounting.Payable.NewGroup import NewGroupView
@@ -39,6 +40,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.adb = adb()
         self.setWindowIcon(QtGui.QIcon('Resources/LCG_logo.png'))
         self.login_tab()
+        #self.accounting_home_view()
     
     def inventory_view(self):
         self.setWindowTitle("Inventory") 
@@ -114,7 +116,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.dialog_payment = DialogFrame("Input",input_payment,self, items)
             self.dialog_payment.layout.bSubmit.clicked.connect(self.dialog_payment.close)
             self.dialog_payment.layout.bCancel.clicked.connect(self.dialog_payment.close)
-            self.dialog_payment.layout.bSubmit.clicked.connect(partial(func, self.dialog_payment.layout, self.widgetFrame.layout))
+            self.dialog_payment.layout.bSubmit.clicked.connect(partial(func, self.dialog_payment.layout, self))
             self.dialog_payment.exec()
 
         except:
@@ -174,6 +176,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.widgetFrame.layout.bAdd_Payment.clicked.connect(partial(self.cust_payment_dia, self.adb.add_payment_ar))
         self.widgetFrame.layout.bAdd_Payment.clicked.connect(self.refresh_ui)
         self.widgetFrame.layout.bDel_Payment.clicked.connect(partial(self.showMessage, "Deleting Payment", "Are you sure?", None, 1))
+        self.widgetFrame.layout.bCustomer_name.clicked.connect(partial(self.view_receivable_tab, customer_name))
         self.setCentralWidget(self.widgetFrame)
         self.init_navbar()
         
@@ -188,6 +191,9 @@ class MainWindow(QtWidgets.QMainWindow):
         if type(self.widgetFrame.layout) is AccountsReceivable_MonthlyView:
             print(" is AccountsReceivable_MonthlyView")
             self.view_receivable_monthly_tab()
+        if type(self.widgetFrame.layout) is AccountsPayable_MonthlyView:
+            print(" is AccountsPayable_MonthlyView")
+            self.view_payable_tab()
   
     pass#PAYABLES
     def view_payable_tab(self):
@@ -199,6 +205,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.init_navbar()
         #self.widgetFrame.layout.bDetails.clicked.connect(self.view_details_payable_tab)
         self.widgetFrame.layout.bDetails.clicked.connect(self.set_view_payable)
+        self.widgetFrame.layout.bEdit.clicked.connect(self.set_edit_payable)
+        self.widgetFrame.layout.bDelete.clicked.connect(partial(self.showMessage, "Deleting payable", "Are you sure?", None, 2))
         self.widgetFrame.layout.input_ap_table(self.adb.get_apv_monthly( month, year))
         self.widgetFrame.layout.input_monthly_total(self.adb.get_apv_monthly_total( month, year))
     
@@ -208,6 +216,37 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setCentralWidget(self.widgetFrame)
         self.init_navbar()
         
+        self.widgetFrame.layout.bBack.clicked.connect(self.view_payable_tab)
+    
+    def edit_payable_tab(self, id_apv):
+        print("Edit payable")
+        
+        items = self.adb.get_apv_details(id_apv)
+        
+        self.widgetFrame = WindowFrame(EditAPVView, items)
+        self.setCentralWidget(self.widgetFrame)
+        
+        self.widgetFrame.layout.set_Columns(self.adb.get_apv_columns(id_apv))
+        self.init_navbar()
+        
+        self.widgetFrame.layout.bSubmit.clicked.connect(partial(self.adb.db_update_apv, self))
+        self.widgetFrame.layout.bBack.clicked.connect(self.view_payable_tab)
+        self.widgetFrame.layout.bColumn_Add.clicked.connect(self.add_apv_column_window)        
+        self.widgetFrame.layout.bColumn_Delete.clicked.connect(self.edit_delete_row)
+        
+    def set_edit_payable(self):
+        ap_Table = self.widgetFrame.layout.ap_Table
+        try:
+            id_apv = ap_Table.item(ap_Table.currentRow(), 2).text()
+
+            #print(id_apv)
+            self.edit_payable_tab(id_apv)
+            #print(self.adb.get_apv_details(id_apv))
+        except:
+            if ap_Table.rowCount() != 0:
+                self.showMessage('Error Input', "Please select a payable")
+            else:
+                self.showMessage('Error', "No payable to be checked")
         
         
     def set_view_payable(self):
@@ -220,7 +259,6 @@ class MainWindow(QtWidgets.QMainWindow):
             print(self.adb.get_apv_details(id_apv))
             self.widgetFrame.layout.set_Details(self.adb.get_apv_details(id_apv))
             self.widgetFrame.layout.set_Columns(self.adb.get_apv_columns(id_apv))
-
         except:
             if ap_Table.rowCount() != 0:
                 self.showMessage('Error Input', "Please select a payable")
@@ -229,11 +267,12 @@ class MainWindow(QtWidgets.QMainWindow):
     
     pass#ADD PAYABLES
     def add_apv_tab(self):
-        self.setWindowTitle("Add Account Payable Voucher")
+        self.setWindowTitle("Add Accounts Payable Voucher")
         self.widgetFrame = WindowFrame(AddAPVView)
         self.setCentralWidget(self.widgetFrame)
         self.init_navbar()
         self.widgetFrame.layout.bSubmit.clicked.connect(partial(self.adb.db_add_apv, self))
+        self.widgetFrame.layout.bBack.clicked.connect(self.accounting_home_view)
         self.widgetFrame.layout.bColumn_Add.clicked.connect(self.add_apv_column_window)        
         self.widgetFrame.layout.bColumn_Delete.clicked.connect(self.delete_row)
     
@@ -258,6 +297,17 @@ class MainWindow(QtWidgets.QMainWindow):
         print(row_count)
         for i in range(row_count):
             self.widgetFrame.layout.column_data.append(self.widgetFrame.layout.pColumn_Table.item(i,0).text())
+    
+    def edit_delete_row(self):
+        row_num = self.widgetFrame.layout.pColumn_Table.currentRow()
+        self.widgetFrame.layout.pColumn_Table.removeRow(row_num)
+        
+        #UPDATE COLUMN_DATA
+        self.widgetFrame.layout.column_data = []
+        row_count = self.widgetFrame.layout.pColumn_Table.rowCount()
+        print(row_count)
+#        for i in range(row_count):
+#            self.widgetFrame.layout.column_data.append(self.widgetFrame.layout.pColumn_Table.item(i,0).text())
         
 
     pass #END OF ACCOUNTING
@@ -266,7 +316,7 @@ class MainWindow(QtWidgets.QMainWindow):
         
         """ This Method is responsible for Showing Dialogs if there is an error """
         cont = True;
-        if func:
+        if func == 1:
             ar_Table = self.widgetFrame.layout.ar_Table
             try:
                 invoice_number = ar_Table.item(ar_Table.currentRow(), 1).text()
@@ -275,6 +325,17 @@ class MainWindow(QtWidgets.QMainWindow):
                         self.showMessage('Error Input', "Please select a receivable")
                     else:
                         self.showMessage('Error', "No receivable to be paid")
+                    cont= False
+                    
+        if func == 2:
+            ap_Table = self.widgetFrame.layout.ap_Table
+            try:
+                id_apv = ap_Table.item(ap_Table.currentRow(), 2).text()
+            except:
+                    if ar_Table.rowCount() != 0:
+                        self.showMessage('Error Input', "Please select a payable")
+                    else:
+                        self.showMessage('Error', "No payable exists")
                     cont= False
                     
         
@@ -300,15 +361,25 @@ class MainWindow(QtWidgets.QMainWindow):
             
             if messageType == 1:
                 self.accounting_home_view()
-            
-            if func is not None:
+            #receivables
+            if func == 1:
                 if infoBox.clickedButton() == yesbutton:
-                    print("hello")
+                    #print("hello")
                     self.adb.del_payment_ar(invoice_number)
                     self.refresh_ui()
 
                 else:
                     infoBox.close()
+            #payables
+            if func == 2:
+                if infoBox.clickedButton() == yesbutton:
+                    #print("hello")
+                    self.adb.delete_payable(id_apv)
+                    self.refresh_ui()
+
+                else:
+                    infoBox.close()
+                
 
         
     def init_navbar(self):
