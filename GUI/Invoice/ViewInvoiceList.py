@@ -83,15 +83,15 @@ class ViewInvoice(QtWidgets.QGridLayout):
         self.lInvoice_Details.setStyleSheet('QLabel { font-size: 12pt; padding: 10px;}')
         
 
-        # self.bEditInvoice = QtWidgets.QPushButton("Edit Invoice")
-        # self.bEditInvoice.setStyleSheet('QPushButton { font-size: 12pt; padding: 10px;}')
-        # self.bEditInvoice.setFixedWidth(200)
-        # self.bEditInvoice.clicked.connect(self.edit_invoice)
+        self.bEditInvoice = QtWidgets.QPushButton("Edit Invoice")
+        self.bEditInvoice.setStyleSheet('QPushButton { font-size: 12pt; padding: 10px;}')
+        self.bEditInvoice.setFixedWidth(200)
+        self.bEditInvoice.clicked.connect(self.edit_invoice)
 
-        #self.bDelInvoice = QtWidgets.QPushButton("Delete Invoice")
-        #self.bDelInvoice.setStyleSheet('QPushButton { font-size: 12pt; padding: 10px;}')
-        #self.bDelInvoice.setFixedWidth(200)
-        #self.bDelInvoice.clicked.connect(self.delete_invoice_confirm)
+        self.bDelInvoice = QtWidgets.QPushButton("Delete Invoice")
+        self.bDelInvoice.setStyleSheet('QPushButton { font-size: 12pt; padding: 10px;}')
+        self.bDelInvoice.setFixedWidth(200)
+        self.bDelInvoice.clicked.connect(self.delete_invoice_confirm)
 
 		#Product Table#
         self.tProduct_Table = QtWidgets.QTableWidget()
@@ -156,8 +156,8 @@ class ViewInvoice(QtWidgets.QGridLayout):
         #Add Widgets
         
         self.addWidget(self.lInvoice_Details, 0, 2, 1, 1)
-        # self.addWidget(self.bEditInvoice, 2, 6, 1, 1)
-        #self.addWidget(self.bDelInvoice, 3, 6, 1, 1)
+        self.addWidget(self.bEditInvoice, 2, 6, 1, 1)
+        self.addWidget(self.bDelInvoice, 3, 6, 1, 1)
 
 		
         self.addWidget(self.tProduct_Table, 1, 2, 10, 3)
