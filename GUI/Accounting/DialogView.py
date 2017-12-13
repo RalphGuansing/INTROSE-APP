@@ -99,6 +99,7 @@ class input_payment(QtWidgets.QGridLayout):
         self.tDate.setCalendarPopup(True)
         self.tDate.setDisplayFormat("yyyy-MM-dd")
         self.tDate.setDate(datetime.datetime.now())
+        self.tDate.setMaximumDate(datetime.datetime.now())
         self.tDate.setStyleSheet(textboxStyle2)
         
         self.lPR = QtWidgets.QLabel("PR #:")
@@ -111,7 +112,7 @@ class input_payment(QtWidgets.QGridLayout):
         #self.tId.setFixedWidth(textboxSize)
         
         
-        self.lPayment = QtWidgets.QLabel("Payment #:")
+        self.lPayment = QtWidgets.QLabel("Payment:")
         #self.lId.setAlignment(QtCore.Qt.AlignRight)
         self.lPayment.setStyleSheet(self.labelStyle)
         self.tPayment = QtWidgets.QLineEdit(self.frame)

@@ -13,7 +13,7 @@ class Accounting_HomeView(QtWidgets.QGridLayout):
 
     def account_receivable_box(self):
         self.areceivable_Box = QtWidgets.QGroupBox("")
-        self.areceivable_Box.setStyleSheet("QGroupBox{border:0; background-color:#80CBC4;}")
+        self.areceivable_Box.setStyleSheet("QGroupBox{border:0; background-color:#dc8989;}")
         Grid = QtWidgets.QGridLayout()
         Grid.setContentsMargins(0, 0, 0, 0)
         
@@ -42,7 +42,7 @@ class Accounting_HomeView(QtWidgets.QGridLayout):
         
     def account_payable_box(self):
         self.apayable_Box = QtWidgets.QGroupBox("")
-        self.apayable_Box.setStyleSheet("QGroupBox{border:0; background-color:#80CBC4; }")
+        self.apayable_Box.setStyleSheet("QGroupBox{border:0; background-color:#dc8989; }")
         Grid = QtWidgets.QGridLayout()
         
         #Grid.setSpacing(0)
@@ -72,9 +72,9 @@ class Accounting_HomeView(QtWidgets.QGridLayout):
         
     def init_ui(self):
         
-        self.labelStyle = """QLabel { font-size: 12pt; padding: 3px;color:lightgray; font-family:Montserrat; background-color:#26A69A; }"""
+        self.labelStyle = """QLabel { font-size: 14pt; padding: 7px;color:lightgray;  background-color:#d06262; }"""
         self.buttonStyle = """
-        QPushButton { font-size: 10pt; padding: 5px; color: #fff; 
+        QPushButton { font-size: 14pt; padding: 8px; color: white; 
         background-color: darkgray;
         border-color: darkgray;
                                             border-radius: 5px;

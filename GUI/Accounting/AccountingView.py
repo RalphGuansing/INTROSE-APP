@@ -332,11 +332,35 @@ class AccountingDB:
         Returns:
             Customer_Receivables
         """
-        select_statement = """select DATE_FORMAT(date,'%M %e, %Y') AS Date, inv_id,amount 
+        select_statement = """select DATE_FORMAT(date,'%M %e, %Y') AS Date, inv_id,amount, payment
             from accounts_receivable 
-            where customer_id = (select customer_id from customer where customer_name = '""" + customer_name + """') and payment is null"""
+            where customer_id = (select customer_id from customer where customer_name = '""" + customer_name + """')"""
         self.cursor.execute(select_statement)
         Customer_Receivables = self.cursor.fetchall()
+        #print(select_statement)
+        #print(Customer_Receivables)
+        for Customer_Receivable in Customer_Receivables:
+            if Customer_Receivable["payment"] is None:
+                payment = Customer_Receivable["payment"] = 0
+            else:
+                payment = Customer_Receivable["payment"]
+            
+            partial_payment = Customer_Receivable["amount"] - payment
+            
+            if partial_payment == 0:
+                status = "Fully Paid"
+            elif partial_payment == Customer_Receivable["amount"]:
+                status = "Not Paid"
+            elif partial_payment > 0:
+                status = "Partially Paid"
+            
+            Customer_Receivable["status"] = status
+            
+            
+#            print("partial payment: " + str(partial_payment) +" "+status)
+#            print(Customer_Receivable)
+#        print(Customer_Receivables)
+        
         return Customer_Receivables
 
     def get_customer_balance(self, customer_name):
@@ -346,9 +370,9 @@ class AccountingDB:
         Returns:
             balance
         """
-        select_statement = """select sum(amount) as balance 
+        select_statement = """select IFNULL(sum(amount), 0) - IFNULL(sum(payment), 0) as balance
             from accounts_receivable 
-            where customer_id = (select customer_id from customer where customer_name = '""" + customer_name + """') and payment is null"""
+            where customer_id = (select customer_id from customer where customer_name = '""" + customer_name + """')"""
 
         self.cursor.execute(select_statement)
         balance = self.cursor.fetchone()
@@ -360,16 +384,60 @@ class AccountingDB:
             dia(ui_element): The first parameter, contains the dialog elements
             main(ui_element): The second parameter, contains the invoice current;y selected
         """
-        ar_Table = main.ar_Table
+        ar_Table = main.widgetFrame.layout.ar_Table
         invoice_number = ar_Table.item(ar_Table.currentRow(), 1).text()
 
         date = dia.tDate.text()
         pr_id = dia.tPR.text()
         payment = dia.tPayment.text()
-
-        update_statement = "UPDATE accounts_receivable SET date_paid ='" + date + "', pr_id= '" + str(pr_id) + "',payment= '" + str(payment) + "' WHERE inv_id= " + str(invoice_number) + ";"
-        #print(update_statement)
-        self.cursor.execute(update_statement)
+        
+        pr_cont= False
+        errorMessage = ""
+        try:
+            pr_id_num = int(pr_id)
+            if pr_id_num > 0:
+                if self.check_dupe_pr(pr_id):
+                    pr_cont = True
+                else:
+                    errorMessage += "PR no. already exists"
+            else:
+                errorMessage += "Please Input non negative and non zero values in PR #"
+                
+        except:
+            errorMessage += "Please Input proper values in PR #"
+        
+        if pr_cont == False:
+            errorMessage += "\n"
+        
+        payment_cont = False
+        try:
+            payment_num = Decimal(payment)
+            if payment_num > 0:
+                payment_cont = True
+            else: 
+                errorMessage += "Please Input non negative and non zero values in Payment"
+            
+        except:
+            errorMessage += "Please Input proper values in Payment"
+        
+        if pr_cont and payment_cont:
+            update_statement = "UPDATE accounts_receivable SET date_paid ='" + date + "', pr_id= '" + str(pr_id) + "',payment= '" + str(payment) + "' WHERE inv_id= " + str(invoice_number) + ";"
+            #print(update_statement)
+            self.cursor.execute(update_statement)
+        else:
+            main.showMessage("Error Input", errorMessage)
+        
+    def check_dupe_pr(self, pr_id):
+        """Method for checking if pr_id exists in the database
+        Returns:
+                True, or False   
+        """
+        
+        select_statement = "select pr_id from accounts_receivable where pr_id ="+pr_id
+        print("SELECT STATEMENT\n"+select_statement)
+        self.cursor.execute(select_statement)
+        temp = self.cursor.fetchone()
+        return temp is None
 
     #MONTHLY RECEIVABLES
 
@@ -398,8 +466,27 @@ class AccountingDB:
             month) + """ and YEAR(Date) = """ + str(year) + """ """
 
         self.cursor.execute(select_statement)
-        temp = self.cursor.fetchall()
-        return temp
+        Customer_Receivables = self.cursor.fetchall()
+        
+        
+        for Customer_Receivable in Customer_Receivables:
+            if Customer_Receivable["payment"] is None:
+                payment = Customer_Receivable["payment"] = 0
+            else:
+                payment = Customer_Receivable["payment"]
+            
+            partial_payment = Customer_Receivable["amount"] - payment
+            
+            if partial_payment == 0:
+                status = "Fully Paid"
+            elif partial_payment == Customer_Receivable["amount"]:
+                status = "Not Paid"
+            elif partial_payment != 0:
+                status = "Partially Paid"
+            
+            Customer_Receivable["status"] = status
+        
+        return Customer_Receivables
 
     def get_customer_beg_monthly(self, customer_name, month, year):
         """Method for getting the total balance before the current month

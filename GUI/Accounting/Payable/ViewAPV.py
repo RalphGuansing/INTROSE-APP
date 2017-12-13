@@ -1,6 +1,7 @@
 import sys
 import datetime
 import calendar
+from decimal import Decimal
 from PyQt5 import QtWidgets
 from PyQt5 import QtGui
 from PyQt5 import QtCore
@@ -12,18 +13,33 @@ class APVView(QtWidgets.QGridLayout):
         self.init_ui()
         
     def set_Details(self, details):
-        self.lDate.setText("Date: <div style='"+" text-indent: 30px;"+"'>"+details["Date"] +"</div>")
-        self.lParticulars.setText("Particulars: <div style='"+" text-indent: 30px;"+"'>"+ details["name"] +"</div> ")
-        self.lAPV_id.setText("APV #: <div style='"+" text-indent: 30px;"+"'>"+ str(details["id_apv"]) +"</div> ")
-        self.lVouchers_payable.setText("Vouchers Payable #: <div style='"+" text-indent: 30px;"+"'>"+ str(details["amount"]) +"</div> ")
+        self.lDate.setText("Date: "+details["Date"])
+        self.lParticulars.setText("Particulars: "+ details["name"])
+        self.lAPV_id.setText("APV #: "+ str(details["id_apv"]))
+        self.lVouchers_payable.setText("Vouchers Payable: "+ str(details["amount"]))
         
         
         
     def set_Columns(self, columns):
+        total_val = Decimal(0)
         for column in columns:
-            self.Column_Table.insertRow(self.Column_Table.rowCount())
-            self.Column_Table.setItem(self.Column_Table.rowCount()-1,0,QtWidgets.QTableWidgetItem(column["type_name"]))
-            self.Column_Table.setItem(self.Column_Table.rowCount()-1,1,QtWidgets.QTableWidgetItem(str(column["type_value"])))
+            self.Column_Table.insertRow(self.Column_Table.rowCount())#
+            
+            type_name = QtWidgets.QTableWidgetItem(column["type_name"])
+            type_name.setFlags(QtCore.Qt.ItemIsEnabled)
+            self.Column_Table.setItem(self.Column_Table.rowCount()-1,0,type_name)
+            
+            type_value = QtWidgets.QTableWidgetItem(str(column["type_value"]))
+            type_value.setTextAlignment(QtCore.Qt.AlignRight)
+            type_value.setFlags(QtCore.Qt.ItemIsEnabled)
+            self.Column_Table.setItem(self.Column_Table.rowCount()-1,1,type_value)
+            total_val += column["type_value"]
+            
+        
+        self.set_Total(total_val)
+    
+    def set_Total(self, total_val):
+        self.lTotal.setText("Total: "+str(total_val))
 
         
     
@@ -45,6 +61,10 @@ class APVView(QtWidgets.QGridLayout):
         self.lVouchers_payable = QtWidgets.QLabel("Vouchers Payable #: <div class='value'></div> ")
         self.lVouchers_payable.setStyleSheet(self.addressStyle)
         
+        self.lTotal = QtWidgets.QLabel("Total:")
+        self.lTotal.setAlignment(QtCore.Qt.AlignRight)
+        self.lTotal.setStyleSheet(self.addressStyle)
+        
 
         self.Column_Table = QtWidgets.QTableWidget()
         self.Column_Table.setColumnCount(2)
@@ -63,6 +83,7 @@ class APVView(QtWidgets.QGridLayout):
         self.addWidget(self.lAPV_id, 3, 1, 1, 1)
         self.addWidget(self.lVouchers_payable, 4, 1, 1, 1)
         self.addWidget(self.Column_Table, 1, 2, 8, 2)
+        self.addWidget(self.lTotal, 9, 3, 1, 1)
         #self.addWidget(self.lEnding_Balance, 3, 2, 1, 1)
         #self.addWidget(self.bDetails, 3, 1, 1, 1)
     
@@ -88,14 +109,28 @@ class AccountsPayable_MonthlyView(QtWidgets.QGridLayout):
 
     def input_monthly_total(self, total):
         self.lTotal.setText("Total: " + str(total["total"]))
+        self.lTotal.setAlignment(QtCore.Qt.AlignRight)
     
     def input_ap_table(self, ap_results):
         for ap_row in ap_results:
             self.ap_Table.insertRow(self.ap_Table.rowCount())
-            self.ap_Table.setItem(self.ap_Table.rowCount()-1,0,QtWidgets.QTableWidgetItem(ap_row["Date"]))
-            self.ap_Table.setItem(self.ap_Table.rowCount()-1,1,QtWidgets.QTableWidgetItem(ap_row["name"]))
-            self.ap_Table.setItem(self.ap_Table.rowCount()-1,2,QtWidgets.QTableWidgetItem(str(ap_row["id_apv"])))
-            self.ap_Table.setItem(self.ap_Table.rowCount()-1,3,QtWidgets.QTableWidgetItem(str(ap_row["amount"])))
+            #
+            date = QtWidgets.QTableWidgetItem(ap_row["Date"])
+            date.setFlags(QtCore.Qt.ItemIsEnabled)
+            self.ap_Table.setItem(self.ap_Table.rowCount()-1,0,date)
+            
+            name = QtWidgets.QTableWidgetItem(ap_row["name"])
+            name.setFlags(QtCore.Qt.ItemIsEnabled)
+            self.ap_Table.setItem(self.ap_Table.rowCount()-1,1,name)
+            
+            id_apv = QtWidgets.QTableWidgetItem(str(ap_row["id_apv"]))
+            id_apv.setFlags(QtCore.Qt.ItemIsEnabled)
+            self.ap_Table.setItem(self.ap_Table.rowCount()-1,2,id_apv)
+            
+            amount_item = QtWidgets.QTableWidgetItem(str(ap_row["amount"]))
+            amount_item.setTextAlignment(QtCore.Qt.AlignRight)
+            amount_item.setFlags(QtCore.Qt.ItemIsEnabled)
+            self.ap_Table.setItem(self.ap_Table.rowCount()-1,3,amount_item)
         
     def init_ui(self):
     

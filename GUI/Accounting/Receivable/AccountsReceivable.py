@@ -30,9 +30,6 @@ class AccountsReceivableView(QtWidgets.QGridLayout):
         customerGrid.addWidget(self.lCustomer_name,1,1)
         #customerGrid.addWidget(self.lAddress,2,1)
         customerGrid.addWidget(self.lBalance,5,1)
-#        customerGrid.addWidget(QtWidgets.QLabel(""),4,1)
-#        customerGrid.addWidget(QtWidgets.QLabel(""),5,1)
-#        customerGrid.addWidget(QtWidgets.QLabel(""),6,1)
         
         self.customer_groupbox.setLayout(customerGrid)
     def input_balance(self, balance):
@@ -44,29 +41,47 @@ class AccountsReceivableView(QtWidgets.QGridLayout):
     
     def input_ar_table(self, ar_results):
         for ar_row in ar_results:
-            self.ar_Table.insertRow(self.ar_Table.rowCount())
-            self.ar_Table.setItem(self.ar_Table.rowCount()-1,0,QtWidgets.QTableWidgetItem(ar_row["Date"]))
-            self.ar_Table.setItem(self.ar_Table.rowCount()-1,1,QtWidgets.QTableWidgetItem(str(ar_row["inv_id"])))
-            self.ar_Table.setItem(self.ar_Table.rowCount()-1,2,QtWidgets.QTableWidgetItem(str(ar_row["amount"])))
+            if ar_row["status"] != "Fully Paid":
+                self.ar_Table.insertRow(self.ar_Table.rowCount())
+                date = QtWidgets.QTableWidgetItem(ar_row["Date"])
+                date.setFlags(QtCore.Qt.ItemIsEnabled)
+                self.ar_Table.setItem(self.ar_Table.rowCount()-1,0,date)
+                
+                inv_id = QtWidgets.QTableWidgetItem(str(ar_row["inv_id"]))
+                inv_id.setFlags(QtCore.Qt.ItemIsEnabled)
+                self.ar_Table.setItem(self.ar_Table.rowCount()-1,1,inv_id)
+                
+                amount = QtWidgets.QTableWidgetItem(str(ar_row["amount"]))
+                amount.setFlags(QtCore.Qt.ItemIsEnabled)
+                self.ar_Table.setItem(self.ar_Table.rowCount()-1,2,amount)
+                
+                payment = QtWidgets.QTableWidgetItem(str(ar_row["payment"]))
+                payment.setFlags(QtCore.Qt.ItemIsEnabled)
+                self.ar_Table.setItem(self.ar_Table.rowCount()-1,3,payment)
+                
+                status = QtWidgets.QTableWidgetItem(str(ar_row["status"]))
+                status.setFlags(QtCore.Qt.ItemIsEnabled)
+                self.ar_Table.setItem(self.ar_Table.rowCount()-1,4,status)
         
     
     def account_receivable_Box(self):
-        self.ar_groupbox = QtWidgets.QGroupBox("")
+        self.ar_groupbox = QtWidgets.QGroupBox("Partially and Unpaid Receivables")
+        self.ar_groupbox.setStyleSheet("QGroupBox { font-size: 14pt; } ")
         
         arGrid = QtWidgets.QGridLayout()
         
         self.ar_Table = QtWidgets.QTableWidget()
-        #self.ar_Table.setRowCount(10)
-        self.ar_Table.setColumnCount(3)
-        self.ar_Table.setHorizontalHeaderLabels(["Date","Invoice #","Amount"])
+        self.ar_Table.setColumnCount(5)
+        self.ar_Table.setHorizontalHeaderLabels(["Date","Invoice #","Amount","Payment","Status"])
         self.ar_Table.horizontalHeader().setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
         self.ar_Table.horizontalHeader().setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
         self.ar_Table.horizontalHeader().setSectionResizeMode(2, QtWidgets.QHeaderView.Stretch)
+        self.ar_Table.horizontalHeader().setSectionResizeMode(3, QtWidgets.QHeaderView.Stretch)
+        self.ar_Table.horizontalHeader().setSectionResizeMode(4, QtWidgets.QHeaderView.Stretch)
         self.ar_Table.setStyleSheet( """QTableWidget {font-size: 12pt;} QHeaderView::section{font-size: 12pt; padding: 5px;}""")
         
         
         arGrid.addWidget(self.ar_Table,1,1)
-        #arGrid.addWidget(self.lAddress,2,1)
         
         self.ar_groupbox.setLayout(arGrid)
         
@@ -103,14 +118,13 @@ class AccountsReceivableView(QtWidgets.QGridLayout):
         self.customer_Box()
         self.account_receivable_Box()
         
-#        self.setRowStretch(1,9)
-#        self.setRowStretch(12,1)
         
 
         self.addWidget(self.customer_groupbox, 1, 1, 1, 1)
         self.addWidget(self.ar_groupbox, 1, 2, 1, 3)
         self.addWidget(self.bMonthly, 2, 1, 1, 1)
-        self.addWidget(self.bAdd_Payment, 2, 4, 1, 1)
+        self.addWidget(self.bAdd_Payment, 2, 2, 1, 1)
+#        self.addWidget(self.lBalance, 2, 4, 1, 1)
         #self.addWidget(self.bDel_Payment, 2, 4, 1, 1)
 #        #self.addWidget(self.lUsername, 3, 1, 1, 1)
 #        self.addWidget(self.tUsername, 3, 1, 1, 2)

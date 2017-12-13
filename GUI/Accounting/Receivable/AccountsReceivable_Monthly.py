@@ -33,17 +33,36 @@ class AccountsReceivable_MonthlyView(QtWidgets.QGridLayout):
     def input_ar_table(self, ar_results):
         for ar_row in ar_results:
             self.ar_Table.insertRow(self.ar_Table.rowCount())
-            self.ar_Table.setItem(self.ar_Table.rowCount()-1,0,QtWidgets.QTableWidgetItem(ar_row["Date"]))
-            self.ar_Table.setItem(self.ar_Table.rowCount()-1,1,QtWidgets.QTableWidgetItem(str(ar_row["inv_id"])))
-            self.ar_Table.setItem(self.ar_Table.rowCount()-1,2,QtWidgets.QTableWidgetItem(str(ar_row["amount"])))
+            date = QtWidgets.QTableWidgetItem(ar_row["Date"])
+            date.setFlags(QtCore.Qt.ItemIsEnabled)
+            self.ar_Table.setItem(self.ar_Table.rowCount()-1,0,date)
+            inv_id = QtWidgets.QTableWidgetItem(str(ar_row["inv_id"]))
+            inv_id.setFlags(QtCore.Qt.ItemIsEnabled)
+            self.ar_Table.setItem(self.ar_Table.rowCount()-1,1,inv_id)
+            amount = QtWidgets.QTableWidgetItem(str(ar_row["amount"]))
+            amount.setFlags(QtCore.Qt.ItemIsEnabled)
+            self.ar_Table.setItem(self.ar_Table.rowCount()-1,2,amount)
             
-            if ar_row["date_paid"] is not None:
-                self.ar_Table.setItem(self.ar_Table.rowCount()-1,3,QtWidgets.QTableWidgetItem(str(ar_row["date_paid"])))
-            if ar_row["pr_id"] is not None:
-                self.ar_Table.setItem(self.ar_Table.rowCount()-1,4,QtWidgets.QTableWidgetItem(str(ar_row["pr_id"])))
-            if ar_row["payment"] is not None:
-                self.ar_Table.setItem(self.ar_Table.rowCount()-1,5,QtWidgets.QTableWidgetItem(str(ar_row["payment"])))
-        
+            if ar_row["date_paid"] is None:
+                ar_row["date_paid"] = ""
+            date_paid = QtWidgets.QTableWidgetItem(str(ar_row["date_paid"]))
+            date_paid.setFlags(QtCore.Qt.ItemIsEnabled)
+            self.ar_Table.setItem(self.ar_Table.rowCount()-1,3,date_paid)
+            if ar_row["pr_id"] is None:
+                ar_row["pr_id"] = ""
+            pr_id = QtWidgets.QTableWidgetItem(str(ar_row["pr_id"]))  
+            pr_id.setFlags(QtCore.Qt.ItemIsEnabled)  
+            self.ar_Table.setItem(self.ar_Table.rowCount()-1,4,pr_id)
+            if ar_row["payment"] is None:
+                ar_row["payment"] = ""
+            payment = QtWidgets.QTableWidgetItem(str(ar_row["payment"]))
+            payment.setFlags(QtCore.Qt.ItemIsEnabled)
+            self.ar_Table.setItem(self.ar_Table.rowCount()-1,5,payment)
+            
+            status = QtWidgets.QTableWidgetItem(str(ar_row["status"]))
+            status.setFlags(QtCore.Qt.ItemIsEnabled)
+            self.ar_Table.setItem(self.ar_Table.rowCount()-1,6,status)
+            
     def label_balances(self):
         self.lCustomer_name = QtWidgets.QLabel(self.customer_name)
         self.lCustomer_name.setStyleSheet(self.labelStyle)
@@ -88,14 +107,15 @@ class AccountsReceivable_MonthlyView(QtWidgets.QGridLayout):
         
         self.ar_Table = QtWidgets.QTableWidget()
         #self.ar_Table.setRowCount(10)
-        self.ar_Table.setColumnCount(6)
-        self.ar_Table.setHorizontalHeaderLabels(["Date","Invoice #","Amount", "Date Paid","PR no.", "Payment"])
+        self.ar_Table.setColumnCount(7)
+        self.ar_Table.setHorizontalHeaderLabels(["Date","Invoice #","Amount", "Date Paid","PR no.", "Payment", "Status"])
         self.ar_Table.horizontalHeader().setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
         self.ar_Table.horizontalHeader().setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
         self.ar_Table.horizontalHeader().setSectionResizeMode(2, QtWidgets.QHeaderView.Stretch)
         self.ar_Table.horizontalHeader().setSectionResizeMode(3, QtWidgets.QHeaderView.Stretch)
         self.ar_Table.horizontalHeader().setSectionResizeMode(4, QtWidgets.QHeaderView.Stretch)
         self.ar_Table.horizontalHeader().setSectionResizeMode(5, QtWidgets.QHeaderView.Stretch)
+        self.ar_Table.horizontalHeader().setSectionResizeMode(6, QtWidgets.QHeaderView.Stretch)
         self.ar_Table.setStyleSheet( """QTableWidget {font-size: 12pt;} QHeaderView::section{font-size: 12pt; padding: 5px;}""")
 
 #        self.addWidget(self.customer_groupbox, 1, 1, 1, 1)

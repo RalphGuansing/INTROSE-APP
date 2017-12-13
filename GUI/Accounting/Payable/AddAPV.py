@@ -95,6 +95,7 @@ class AddAPVView(QtWidgets.QGridLayout):
         self.lDate.setStyleSheet(labelStyle)
         self.tDate = QtWidgets.QDateEdit(self.frame)
         self.tDate.setCalendarPopup(True)
+        self.tDate.setMaximumDate(datetime.datetime.now())
         self.tDate.setDisplayFormat("yyyy-MM-dd")
         self.tDate.setDate(datetime.datetime.now())
         #self.tDate.setDateEditEnabled(True)
