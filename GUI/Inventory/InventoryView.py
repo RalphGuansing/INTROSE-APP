@@ -137,6 +137,15 @@ class InventoryDatabase:
 		else:
 			return False
 
+	def reduce_product_quantity(self, product_id, decrement):
+		"""reduce the quantity of a product
+		Args:
+			product_id (int): id of the product
+			decrement (int): reduce product quantity by this number
+		"""
+		temp_product = list(filter(lambda x: x.id == product_id, self.get_product_list()))
+		self.cursor.execute("UPDATE `introse`.`inventory` SET `quantity`='" + str((temp_product[0].quantity - decrement)) + "', `lastupdated`='" + str(datetime.datetime.now()) + "' WHERE `idinventory`='" + str(product_id) + "';")
+		self.connect.begin()
 
 class Product:
 
@@ -175,7 +184,7 @@ if __name__ == '__main__':
 	###open database
 	sample = InventoryDatabase()
 	temp = sample.get_product_list()
-	print(sample.add_product_quantity('well','plastic',69))
+	print(sample.reduce_product_quantity(28,9))
 	sample.close_connection()
 
 
