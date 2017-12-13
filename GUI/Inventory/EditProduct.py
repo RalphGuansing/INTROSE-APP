@@ -34,17 +34,8 @@ class EditProduct(QtWidgets.QGridLayout):
 		self.tRetailPrice.setValue(0)
 		self.confirm_window.close()
 
-	def set_confirm_table(self):
-		if self.isVatable.isChecked():
-			vatable = 'Yes'
-		else:
-			vatable = 'No'
-		self.confirm_window.layout.layout.add_to_table(0,0,self.tName.text())
-		self.confirm_window.layout.layout.add_to_table(0,1,self.suppliers[self.tSupplier.currentIndex()])
-		self.confirm_window.layout.layout.add_to_table(0,2,self.unit_list[self.tUnit.currentIndex()])
-		self.confirm_window.layout.layout.add_to_table(0,3,str(self.tUnitPrice.value()))
-		self.confirm_window.layout.layout.add_to_table(0,4,str(self.tRetailPrice.value()))
-		self.confirm_window.layout.layout.add_to_table(0,5,vatable)
+	def change_information(self):
+		print('sample')
 
 	def confirm_add_product(self):
 		if self.tName.text() != '': 
@@ -80,6 +71,7 @@ class EditProduct(QtWidgets.QGridLayout):
 
 		self.tProduct_id = QtWidgets.QComboBox(self.frame)
 		self.tProduct_id.setFixedWidth(200)
+		self.tProduct_id.currentIndexChanged.connect(self.change_information)
 		self.add_id_list()
 
 		self.lName = QtWidgets.QLabel("Name: ")
@@ -140,4 +132,4 @@ class EditProduct(QtWidgets.QGridLayout):
 		self.addWidget(self.lRetailPrice,6,3,1,1)
 		self.addWidget(self.tRetailPrice,6,4,1,1)
 		self.addWidget(self.isVatable,7,3,1,2,QtCore.Qt.AlignCenter)
-		self.addWidget(self.bAdd,8,3,1,2,QtCore.Qt.AlignCenter)
+		self.addWidget(self.bEdit,8,3,1,2,QtCore.Qt.AlignCenter)
