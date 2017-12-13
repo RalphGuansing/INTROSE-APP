@@ -12,8 +12,10 @@ from Invoice.AddInvoiceConfirm import *
 
 
 class AddInvoiceView(QtWidgets.QGridLayout):
-    def __init__(self, frame):
+    def __init__(self, frame, mainwindow=None):
         super().__init__()
+        # if mainwindow != None:
+        self.mainwindow = mainwindow
         self.frame = frame
         self.frame.setWindowTitle("Invoice")
         self.added_products = []
@@ -32,7 +34,17 @@ class AddInvoiceView(QtWidgets.QGridLayout):
         infoBox.exec_()
 
     def add_products(self):
-        self.add_product_to_table(self.tProduct.currentText(), self.tQuantity.value(), self.tUnit.currentText(), self.tUnitPrice.text(), self.origPriceList[0], self.tQuantity.value())
+        if self.tBuyer.currentText() == " " or self.tSeller.currentText() == " " or self.tProduct.currentText() == " " or self.tUnit.currentText() == " ":
+            if self.tBuyer.currentText() == " ":
+                self.error_message('No Buyer selected!')
+            elif self.tSeller.currentText() == " ":
+                self.error_message('No Seller selected!')
+            elif self.tProduct.currentText() == " ":
+                self.error_message('No Products selected!')
+            elif self.tUnit.currentText() == " ":
+                self.error_message('No Unit selected!')
+        else:
+            self.add_product_to_table(self.tProduct.currentText(), self.tQuantity.value(), self.tUnit.currentText(), self.tUnitPrice.text(), self.origPriceList[0], self.tQuantity.value())
 
     def change_address_tag(self):
         self.tAdd.setText(str(self.client_list[self.tBuyer.currentIndex()][1]))
@@ -53,13 +65,16 @@ class AddInvoiceView(QtWidgets.QGridLayout):
         """ 
             
     def confirm_submit(self):
-        print('{}'.format(self.current_row))
+
         if self.current_row != 0:
             self.confirm_window = ConfirmWindow()
             self.confirm_window.show()
             self.confirm_window.layout.layout.bAddInvoice.clicked.connect(self.submit_invoice)
-            # self.confirm_window.layout.layout.bAddInvoice.clicked.connect(self.home_invoice_tab)
+            if self.mainwindow != None:
+            	self.confirm_window.layout.layout.bAddInvoice.clicked.connect(self.mainwindow.home_invoice_tab)
+
             for x in range(self.tProduct_Table.rowCount()):
+                self.confirm_window.layout.layout.tProduct_Table.insertRow(x)
                 self.confirm_window.layout.layout.add_to_table(x,0,self.tProduct_Table.item(x,0).text())
                 self.confirm_window.layout.layout.add_to_table(x,1,self.tProduct_Table.item(x,1).text())
                 self.confirm_window.layout.layout.add_to_table(x,2,self.tProduct_Table.item(x,2).text())
@@ -99,10 +114,10 @@ class AddInvoiceView(QtWidgets.QGridLayout):
                 self.tQuantity.setValue(0)
             else:
                 self.tProduct_Table.insertRow(self.tProduct_Table.rowCount())
-                self.tProduct_Table.setItem(self.tProduct_Table.rowCount()-1,0,QtWidgets.QTableWidgetItem(str(quantity)))
+                self.tProduct_Table.setItem(self.tProduct_Table.rowCount()-1,0,QtWidgets.QTableWidgetItem(product_name))
                 self.tProduct_Table.setItem(self.tProduct_Table.rowCount()-1,1,QtWidgets.QTableWidgetItem(unit))
-                self.tProduct_Table.setItem(self.tProduct_Table.rowCount()-1,2,QtWidgets.QTableWidgetItem(product_name))
-                self.tProduct_Table.setItem(self.tProduct_Table.rowCount()-1,3,QtWidgets.QTableWidgetItem(str(unit_price)))
+                self.tProduct_Table.setItem(self.tProduct_Table.rowCount()-1,2,QtWidgets.QTableWidgetItem(str(unit_price)))
+                self.tProduct_Table.setItem(self.tProduct_Table.rowCount()-1,3,QtWidgets.QTableWidgetItem(str(quantity)))
                 self.tProduct_Table.setItem(self.tProduct_Table.rowCount()-1,4,QtWidgets.QTableWidgetItem(str(int(unit_price) * quantity)))
 
                 comp = Component(product_name, orig_price, int(unit_price), quantity, unit, nonvat=0)
@@ -115,11 +130,12 @@ class AddInvoiceView(QtWidgets.QGridLayout):
                 self.total_taxable += total_temp[2]
                 self.total_profit += total_temp[4]
 
-                self.lamountTotal.setText("Total amount: " + str(self.total_amount))
-                self.ltaxedTotal.setText("Total taxable: "  + str(self.total_taxable))
-                self.ltaxTotal.setText("Total tax: "  + str(self.total_vat))
-                self.lprofitTotal.setText("Total profit: "  + str(self.total_profit))
+                self.lamountTotal.setText("Total amount: " + str(round(self.total_amount,2)))
+                self.ltaxedTotal.setText("Total taxable: "  + str(round(self.total_taxable,2)))
+                self.ltaxTotal.setText("Total tax: "  + str(round(self.total_vat,2)))
+                self.lprofitTotal.setText("Total profit: "  + str(round(self.total_profit,2)))
                 self.current_row += 1
+                print(self.tBuyer.currentIndex())
         else:
             self.error_message('Enter a Unit Price!')
 
@@ -158,8 +174,8 @@ class AddInvoiceView(QtWidgets.QGridLayout):
         model = self.tProduct_Table
         total_temp = []
         indices = self.tProduct_Table.selectionModel().selectedRows()
-        
-        for index in indices:
+
+        for index in sorted(indices, reverse=True):
             model.removeRow(index.row())
             try:
                 total_temp = self.components[index.row()].get_total()
@@ -173,26 +189,30 @@ class AddInvoiceView(QtWidgets.QGridLayout):
                 pass
 
         
-        self.lamountTotal.setText("Total amount: " + str(self.total_amount))
-        self.ltaxedTotal.setText("Total taxable: "  + str(self.total_taxable))
-        self.ltaxTotal.setText("Total tax: "  + str(self.total_vat))
-        self.lprofitTotal.setText("Total profit: "  + str(self.total_profit))
+        self.lamountTotal.setText("Total amount: " + str(round(self.total_amount,2)))
+        self.ltaxedTotal.setText("Total taxable: "  + str(round(self.total_taxable,2)))
+        self.ltaxTotal.setText("Total tax: "  + str(round(self.total_vat,2)))
+        self.lprofitTotal.setText("Total profit: "  + str(round(self.total_profit,2)))
 
     def add_product_list(self):
         db_inventory = InventoryDatabase()
         product_list = db_inventory.get_product_list()
+        self.tProduct.insertItem(0, " ")
+        self.tUnit.insertItem(0, " ")
         for x in range(len(product_list)):
-            self.tProduct.insertItem(x,product_list[x].name)
-            self.tUnit.insertItem(x,product_list[x].packaging)
+            self.tProduct.insertItem(x + 1,product_list[x].name)
+            self.tUnit.insertItem(x + 1,product_list[x].packaging)
             self.origPriceList.append(product_list[x].per_unit_price)
         db_inventory.close_connection()
+
+        #get max stock here dito
 
     def submit_invoice(self):
         invo_db = InvoiceDB()
         invo_entry = Invoice(self.tBuyer.currentText(),self.tDate.text(), self.tTerms.currentText(), self.tSeller.currentText())
-        print(self.check_info["buyer"])
+
         invo_db.add_invoice(self.check_info["buyer"], self.check_info["date"], self.check_info["term"],self.check_info["date"],self.check_info["seller"], self.components, self.check_info["invoice_id"])
-        print(invo_entry)
+
         self.confirm_window.close()
         self.tProduct_Table.clearContents()
         self.tQuantity.setValue(0)
@@ -200,6 +220,8 @@ class AddInvoiceView(QtWidgets.QGridLayout):
         invo_db.connect.begin()
         invo_db.close_connection()
         self.current_row = 0
+
+        #bawas na nung sttock so inv dito
 
         
     def init_ui(self):
@@ -213,10 +235,11 @@ class AddInvoiceView(QtWidgets.QGridLayout):
         
         invo_db = InvoiceDB()
         components = []
-        client_list = []
+        client_list = [] # add " " in index 0 dito
         seller_list = []
         self.components = []
         self.client_list = invo_db.get_client_name()
+        self.client_list.insert(0,(" "," "))
         self.seller_list = invo_db.get_seller_name()
         try:
             last_id = invo_db.get_last_id()
@@ -262,26 +285,26 @@ class AddInvoiceView(QtWidgets.QGridLayout):
         self.tDate.setCalendarPopup(True)
         self.tDate.setDisplayFormat("yyyy-MM-dd")
         self.tDate.setDate(datetime.datetime.now())
+        self.tDate.setMaximumDate(datetime.datetime.now())
 
-		
-		
         #Label#
         self.lSeller = QtWidgets.QLabel("Seller:")
         self.lSeller.setStyleSheet('QLabel { font-size: 12pt; padding: 10px;}')
 
         #TEXT INPUT#
         self.tSeller = QtWidgets.QComboBox(self.frame)
+        self.tSeller.insertItem(0, " ")
         for x in range(len(self.seller_list)):
-            self.tSeller.insertItem(x, self.seller_list[x])
+            self.tSeller.insertItem(x + 1, self.seller_list[x])
         
-		#Label#
+        #Label#
         self.lAdd = QtWidgets.QLabel("Address:")
         self.lAdd.setStyleSheet('QLabel { font-size: 12pt; padding: 10px;}')
 
 
         #TEXT INPUT#
         self.tAdd = QtWidgets.QLabel(str(self.client_list[0][1]))
-		
+
         #Label#
         self.lTerms = QtWidgets.QLabel("Terms:")
         self.lTerms.setStyleSheet('QLabel { font-size: 12pt; padding: 10px;}')
@@ -292,35 +315,35 @@ class AddInvoiceView(QtWidgets.QGridLayout):
         self.tTerms.insertItem(1, self.termsList[1])
         self.tTerms.insertItem(2, self.termsList[2])
         self.tTerms.insertItem(3, self.termsList[3])
-		
-		#Label#
+
+        #Label#
         self.lProduct_Table = QtWidgets.QLabel("PRODUCTS")
         self.lProduct_Table.setStyleSheet('QLabel {font: bold 50px; font-size: 12pt; padding: 10px;}')		
-		
-		#Product Table#
+
+        #Product Table#
         self.tProduct_Table = QtWidgets.QTableWidget()
         #self.tProduct_Table.setRowCount(5)
         self.tProduct_Table.setColumnCount(5)
-        self.tProduct_Table.setHorizontalHeaderLabels(["Quantity", "Unit", "Articles", "Unit Price", "Amount"])
+        self.tProduct_Table.setHorizontalHeaderLabels(["Articles", "Unit", "Unit Price", "Quantity", "Amount"])
         self.tProduct_Table.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
         tablewidth = self.tProduct_Table.width() + 5
-        self.tProduct_Table.setColumnWidth(0, tablewidth / 8)
-        self.tProduct_Table.setColumnWidth(1, tablewidth / 8)
-        self.tProduct_Table.setColumnWidth(2, tablewidth / 2)
-        self.tProduct_Table.setColumnWidth(3, tablewidth / 8)		
-        self.tProduct_Table.setColumnWidth(4, tablewidth / 8)
-        self.tProduct_Table.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)			
+        self.tProduct_Table.setColumnWidth(0, tablewidth / 2)
+        self.tProduct_Table.setColumnWidth(1, tablewidth / 6)
+        self.tProduct_Table.setColumnWidth(2, tablewidth / 6)
+        self.tProduct_Table.setColumnWidth(3, tablewidth / 6)		
+        self.tProduct_Table.setColumnWidth(4, tablewidth / 6)
+        self.tProduct_Table.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)			#no resizable dito , fix buyer client arrangement
 
         self.Add_Product_Table = QtWidgets.QPushButton("Add Product")
         self.Add_Product_Table.setStyleSheet('QPushButton { font-size: 12pt; padding: 10px;}')
-		
+
         #self.lnumProducts = QtWidgets.QLabel("Number of Products:")
         #self.lnumProducts.setStyleSheet('QLabel { font-size: 12pt; padding: 10px;}')
 
         #TEXT INPUT#
         #self.tnumProducts = QtWidgets.QSpinBox(self.frame)
         #self.tnumProducts.setFixedWidth(100)
-		
+
         #self.lProduct = QtWidgets.QLabel("Product:")
         #self.lProduct.setStyleSheet('QLabel { font-size: 12pt; padding: 10px;}')
         
@@ -334,7 +357,7 @@ class AddInvoiceView(QtWidgets.QGridLayout):
         #TEXT INPUT#
         #self.tQuantity = QtWidgets.QSpinBox(self.frame)
         #self.tQuantity.setFixedWidth(100)
-		
+
         self.ltaxedTotal = QtWidgets.QLabel("Total taxable: (system generated)")
         self.ltaxedTotal.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)	
         
@@ -350,22 +373,22 @@ class AddInvoiceView(QtWidgets.QGridLayout):
         self.lAddProduct = QtWidgets.QLabel("PRODUCT DETAILS")
         self.lAddProduct.setStyleSheet('QLabel {font: bold 50px; font-size: 12pt; padding: 10px;}')
         
-		#Label#
+        #Label#
         self.lQuantity = QtWidgets.QLabel("Quantity: ")
         self.lQuantity.setStyleSheet('QLabel { font-size: 12pt; padding: 10px;}')
 
-        self.tQuantity = QtWidgets.QSpinBox(self.frame)
+        self.tQuantity = QtWidgets.QSpinBox(self.frame) 
         self.tQuantity.setFixedWidth(50)
         self.tQuantity.setMinimum(1)
-        self.tQuantity.setMaximum(99999)		
+        self.tQuantity.setMaximum(99999) #set max quantity here
 
-		#Label#
+        #Label#
         self.lUnit = QtWidgets.QLabel("Unit: ")
         self.lUnit.setStyleSheet('QLabel { font-size: 12pt; padding: 10px;}')
 
         self.tUnit = QtWidgets.QComboBox(self.frame)
         self.tUnit.setFixedWidth(70)	
-		
+
         #Label#
         self.lProduct = QtWidgets.QLabel("Product:")
         self.lProduct.setStyleSheet('QLabel { font-size: 12pt; padding: 10px;}')
@@ -380,8 +403,8 @@ class AddInvoiceView(QtWidgets.QGridLayout):
         self.lUnitPrice.setStyleSheet('QLabel { font-size: 12pt; padding: 10px;}')
 
         self.tUnitPrice = QtWidgets.QLineEdit(self.frame)
-        self.tUnitPrice.setFixedWidth(70)	
-		
+        self.tUnitPrice.setFixedWidth(70)	#set default unit price here dito
+
 
         self.tQuantity.setValue(0)
         self.bAdd = QtWidgets.QPushButton("Add")
@@ -415,7 +438,7 @@ class AddInvoiceView(QtWidgets.QGridLayout):
 
         self.addWidget(self.linvoiceNum, 1, 3, 1, 1)
         self.addWidget(self.tinvoiceNum, 1, 4, 1, 1)
-		
+
         self.addWidget(self.lDate, 2, 3, 1, 1)
         self.addWidget(self.tDate, 2, 4, 1, 1)
         
@@ -423,7 +446,7 @@ class AddInvoiceView(QtWidgets.QGridLayout):
 
         self.addWidget(self.lBuyer, 4, 3, 1, 1)
         self.addWidget(self.tBuyer, 4, 4, 1, 1)
-		
+
         self.addWidget(self.lAdd, 5, 3, 1, 1)
         self.addWidget(self.tAdd, 5, 4, 1, 1)
         
@@ -434,7 +457,7 @@ class AddInvoiceView(QtWidgets.QGridLayout):
 
         self.addWidget(self.lTerms, 5, 5, 1, 1)
         self.addWidget(self.tTerms, 5, 6, 1, 1)			
-	
+
         self.addWidget(self.lProduct_Table, 8, 5, 1, 1)	
         self.addWidget(self.tProduct_Table, 9, 5, 5, 2)			
         
@@ -450,7 +473,7 @@ class AddInvoiceView(QtWidgets.QGridLayout):
 
         self.addWidget(self.lProduct, 9, 3, 1, 1)
         self.addWidget(self.tProduct, 9, 4, 1, 1)
-		
+
         self.addWidget(self.lQuantity, 10, 3, 1, 1)
         self.addWidget(self.tQuantity, 10, 4, 1, 1)
 

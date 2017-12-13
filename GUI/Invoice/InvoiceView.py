@@ -69,16 +69,17 @@ class InvoiceDB:
 		arDB.add_accountsreceivable(ar)
 		arDB.close_connection()
 
-	def update_value(self, invoice_number, components):
+	def update_value(self, invoice_number, components, add_component=None):
 		"""Method for updating entries in the database.
 		Args:
 			invoice_number (int): The first parameter, the invoice number of the record to be updated.
 			components (:obj:, 'list'): The second parameter, list of components.
 		"""
-		# if delete elemment all values are 0 to deleter row
-		# loop tru components then update
-
-		# loop agen for total for invoice
+		if add_component != None:
+			for component in components:
+				sql_statement = "INSERT INTO `introse`.`component` (`component_invoicenum`, `component_name`, `component_unit`, `component_quantity`, `component_origprice`, `component_unitprice`, `component_amount`, `component_nonvat`, `component_vat`, `component_taxable`, `component_profit`) VALUES ('" + str(invoice_number) + "', '" + str(component.name) + "', '" + str(component.unit) + "', '" + str(component.quantity) + "', '"+ str(component.origprice) +"', '" + str(component.unitprice) + "', '" + str(component.amount) + "', '" + str(component.nonvat) + "', '" + str(component.vat) + "', '" + str(component.taxable) + "', '" + str(component.profit) + "');"
+				self.cursor.execute(sql_statement)
+		
 		total_amount = total_nonvat = total_vat = total_taxable = total_profit = 0
 		for component in components:
 			total_amount += component.amount
@@ -101,6 +102,7 @@ class InvoiceDB:
 			invoice_number (int): The first parameter, the invoice number of the record to be deleted, defaults to 0.
 			component_number (int): The second parameter, the component number of the record to be deleted, defaults to 0.
 		"""
+		# UPDATE `introse`.`invoice` SET `invoice_deleted`= '" + str(1) + "';
 		if invoice_number != 0:
 			sql_statement = "DELETE FROM `introse`.`invoice` WHERE `idinvoice`='" + str(invoice_number) + "';"
 			self.cursor.execute(sql_statement)
@@ -114,6 +116,7 @@ class InvoiceDB:
 				[total_amount, total_nonvat, total_vat, total_taxable, total_profit]
 
 		"""
+		# where invoice_deleted not True
 		sql_statement = pd.read_sql("SELECT invoice_amount, invoice_nonvat, invoice_vat, invoice_taxable, invoice_profit FROM introse.invoice;",self.connect)
 		return [sql_statement.invoice_amount.sum(), sql_statement.invoice_nonvat.sum(), sql_statement.invoice_vat.sum(), sql_statement.invoice_taxable.sum(), sql_statement.invoice_profit.sum()]
 
@@ -175,6 +178,7 @@ class InvoiceDB:
 		Returns:
 				(idinvoice, invoice_buyer, invoice_seller, invoice_date, invoice_term, invoice_ddate, invoice_amount, invoice_nonvat, invoice_vat, invoice_taxable, invoice_profit)
 		"""
+		# where invoice_deleted not True
 		sql_statement = pd.read_sql("SELECT * FROM introse.invoice;", self.connect)
 		return [(row[1][0], row[1][1], row[1][2], row[1][3], row[1][4], row[1][5], row[1][6], row[1][7], row[1][8], row[1][9], row[1][10]) for row in sql_statement.iterrows()]
 

@@ -49,7 +49,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def add_invoice_tab(self):
         self.setWindowTitle("Invoice")       
-        self.widgetFrame = WindowFrame(AddInvoiceView)
+        self.widgetFrame = WindowFrame(AddInvoiceView, self)
 
         self.widgetFrame.layout.bBack.clicked.connect(self.home_invoice_tab)
         	
@@ -75,7 +75,7 @@ class MainWindow(QtWidgets.QMainWindow):
         
     def home_invoice_tab(self):
         self.setWindowTitle("Invoice")
-        self.widgetFrame = WindowFrame(InvoiceTabs)
+        self.widgetFrame = WindowFrame(InvoiceTabs, self)
 
         # self.widgetFrame.layout.bAddInvoice.clicked.connect(self.add_invoice_tab)
         # self.widgetFrame.layout.bViewInvoice.clicked.connect(self.view_invoice_tab)
@@ -592,11 +592,11 @@ class WindowFrame(QtWidgets.QWidget):
 
 class InvoiceTabs(QtWidgets.QGridLayout):
 
-    def __init__(self, parent=None):   
+    def __init__(self, parent=None, extra=None):   
         super(QtWidgets.QGridLayout, self).__init__(parent)
         #self.layout = QtWidgets.QGridLayout(self)
         self.tabs = QtWidgets.QTabWidget()
-        self.add_invoice_tab = SubWindowFrame(AddInvoiceView)
+        self.add_invoice_tab = SubWindowFrame(AddInvoiceView,extra)
         #self.view_invoice_tab = SubWindowFrame(ViewInvoice)
         self.view_list_tab = SubWindowFrame(InvList)
         self.tabs.addTab(self.add_invoice_tab,"Add Invoice")
@@ -620,15 +620,7 @@ class InventoryTabs(QtWidgets.QGridLayout):
         self.tabs.addTab(self.add_product_tab,"Add New Product")
         #self.layout.addWidget(self.tabs)
         self.addWidget(self.tabs)
-        self.init_ui()
 
-    def sample_print(self):
-        self.view_inventory_tab.layout.re_init()
-        self.add_inventory_tab.layout.re_init()
-
-
-    def init_ui(self):
-        self.tabs.currentChanged.connect(self.sample_print)
         
 if __name__ == "__main__":    
     app = QtWidgets.QApplication(sys.argv)
