@@ -1,1 +1,0 @@
-# INTROSE-APP
