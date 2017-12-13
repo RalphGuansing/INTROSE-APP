@@ -60,12 +60,27 @@ class EditProduct(QtWidgets.QGridLayout):
 		for supplier in self.suppliers:
 			self.tSupplier.addItem(supplier)
 
+	def add_id_list(self):
+		db_inventory = InventoryDatabase()
+		self.product_list = db_inventory.get_product_list()
+		self.id_list = [x.id for x in self.product_list]
+		for x in self.id_list:
+			self.tProduct_id.addItem(str(x))
+		db_inventory.close_connection()
+
 	def add_product_unit(self):
 		self.unit_list = ['plastic','bottle','tetrapack','yakult-sized']
 		for unit in self.unit_list:
 			self.tUnit.addItem(unit)
 
 	def init_ui(self):
+
+		self.lProduct_id = QtWidgets.QLabel("Inventory ID: ") 
+		self.lProduct_id.setStyleSheet('QLabel { font-size: 12pt; padding: 10px;}')
+
+		self.tProduct_id = QtWidgets.QComboBox(self.frame)
+		self.tProduct_id.setFixedWidth(200)
+		self.add_id_list()
 
 		self.lName = QtWidgets.QLabel("Name: ")
 		self.lName.setStyleSheet('QLabel { font-size: 12pt; padding: 10px;}')
@@ -103,24 +118,26 @@ class EditProduct(QtWidgets.QGridLayout):
 
 		self.isVatable = QtWidgets.QCheckBox('Is Vatable',self.frame)
 
-		self.bAdd = QtWidgets.QPushButton("Add")
-		self.bAdd.setStyleSheet('QPushButton {color: white;background-color: #1db6d1;border-style: outset;border-width: 2px;border-radius: 10px;border-color: beige;font: bold 12px;min-width: 10em;padding: 4px;}')
-		self.bAdd.setFixedWidth(200)
-		self.bAdd.clicked.connect(self.confirm_add_product)
+		self.bEdit = QtWidgets.QPushButton("Edit")
+		self.bEdit.setStyleSheet('QPushButton {color: white;background-color: #1db6d1;border-style: outset;border-width: 2px;border-radius: 10px;border-color: beige;font: bold 12px;min-width: 10em;padding: 4px;}')
+		self.bEdit.setFixedWidth(200)
+		#self.bEdit.clicked.connect(self.confirm_add_product)
 
 		self.setColumnStretch(7,1)
 		self.setColumnStretch(1,1)
 		self.setRowStretch(11,1)
 
-		self.addWidget(self.lName,1,3,1,1)
-		self.addWidget(self.tName,1,4,1,1)
-		self.addWidget(self.lSupplier,2,3,1,1)
-		self.addWidget(self.tSupplier,2,4,1,1)
-		self.addWidget(self.lUnit,3,3,1,1)
-		self.addWidget(self.tUnit,3,4,1,1)
-		self.addWidget(self.lUnitPrice,4,3,1,1)
-		self.addWidget(self.tUnitPrice,4,4,1,1)
-		self.addWidget(self.lRetailPrice,5,3,1,1)
-		self.addWidget(self.tRetailPrice,5,4,1,1)
-		self.addWidget(self.isVatable,6,3,1,2,QtCore.Qt.AlignCenter)
-		self.addWidget(self.bAdd,7,3,1,2,QtCore.Qt.AlignCenter)
+		self.addWidget(self.lProduct_id,1,3,1,1)
+		self.addWidget(self.tProduct_id,1,4,1,1)
+		self.addWidget(self.lName,2,3,1,1)
+		self.addWidget(self.tName,2,4,1,1)
+		self.addWidget(self.lSupplier,3,3,1,1)
+		self.addWidget(self.tSupplier,3,4,1,1)
+		self.addWidget(self.lUnit,4,3,1,1)
+		self.addWidget(self.tUnit,4,4,1,1)
+		self.addWidget(self.lUnitPrice,5,3,1,1)
+		self.addWidget(self.tUnitPrice,5,4,1,1)
+		self.addWidget(self.lRetailPrice,6,3,1,1)
+		self.addWidget(self.tRetailPrice,6,4,1,1)
+		self.addWidget(self.isVatable,7,3,1,2,QtCore.Qt.AlignCenter)
+		self.addWidget(self.bAdd,8,3,1,2,QtCore.Qt.AlignCenter)
