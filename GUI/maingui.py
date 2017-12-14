@@ -33,6 +33,9 @@ from Invoice.ViewInvoiceList import ViewInvoice as InvList
 from Invoice.AddInvoiceConfirm import AddInvoiceConfirm
 
 
+employee_role = []
+employee_username = ''
+
 class MainWindow(QtWidgets.QMainWindow):
     
     def __init__(self, parent=None):
@@ -470,6 +473,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
     
     def login(self):
+        global employee_role
+        global employee_username
+        
         username = self.widgetFrame.layout.tUsername.text()
         
         encoded_plaintext = self.widgetFrame.layout.tPassword.text().encode('utf-8')
@@ -480,6 +486,11 @@ class MainWindow(QtWidgets.QMainWindow):
             print("Employee ID: " + str(tempvar["employee_id"]))
             print("Username: " + str(tempvar["username"]))
             print("Full Name: " + str(tempvar["full_name"]))
+            
+            user_info = self.adb.get_user_info(tempvar["employee_id"])
+            
+            employee_username = str(tempvar["username"])
+            employee_role = [i["employee_role"] for i in user_info]
             
             self.username = tempvar["username"]
             self.home_tab()
@@ -701,13 +712,17 @@ class WindowFrame(QtWidgets.QWidget):
         self.bLogout = QtWidgets.QPushButton("Log Out")
         self.bLogout.setStyleSheet(buttonStyle)
         
-        navGrid.setColumnStretch(5,1)
+        self.lUsername = QtWidgets.QLabel("hello, " + employee_username)
+        self.lUsername.setStyleSheet(labelStyle)
+        
+        navGrid.setColumnStretch(5,3)
+        navGrid.setColumnStretch(7,1)
         navGrid.addWidget(self.bLogo, 1,1)
         navGrid.addWidget(self.bInvoice, 1,2)
         navGrid.addWidget(self.bInventory,1,3)
         navGrid.addWidget(self.bAccounting,1,4)
-        navGrid.addWidget(self.bAdmin,1,6)
-        navGrid.addWidget(self.bLogout,1,7)
+        navGrid.addWidget(self.lUsername,1,6)
+        navGrid.addWidget(self.bLogout,1,8)
         
         self.navbar.setLayout(navGrid)
 

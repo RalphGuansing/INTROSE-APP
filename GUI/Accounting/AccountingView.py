@@ -159,6 +159,16 @@ class AccountingDB:
     def get_id_apv(self):
         self.cursor.execute('SELECT MAX(id_apv) FROM introse.accounts_payable;')
         return self.cursor.fetchone()['MAX(id_apv)'] + 1
+    
+    def get_user_info(self, employee_id):
+        select_statement = "select e.username, et.employee_role, e.employee_id from employee as e, employee_type as et where e.employee_id = "+ str(employee_id) +" and et.employee_id = "+ str(employee_id) +""
+        
+        print(select_statement)
+        self.cursor.execute(select_statement)
+        
+        temp = self.cursor.fetchall()
+        print(temp)
+        return temp
 
     def add_accountsreceivable(self, accountsreceivable):
         """Method for adding accounts receivable to the database.
@@ -386,7 +396,8 @@ class AccountingDB:
         """
         ar_Table = main.widgetFrame.layout.ar_Table
         invoice_number = ar_Table.item(ar_Table.currentRow(), 1).text()
-
+        amount = ar_Table.item(ar_Table.currentRow(), 2).text()
+        
         date = dia.tDate.text()
         pr_id = dia.tPR.text()
         payment = dia.tPayment.text()
@@ -410,10 +421,13 @@ class AccountingDB:
             errorMessage += "\n"
         
         payment_cont = False
+        
         try:
             payment_num = Decimal(payment)
-            if payment_num > 0:
+            if payment_num > 0 and payment_num <= Decimal(amount):
                 payment_cont = True
+            elif payment_num > Decimal(amount):
+                errorMessage += "Payment is too much"
             else: 
                 errorMessage += "Please Input non negative and non zero values in Payment"
             
