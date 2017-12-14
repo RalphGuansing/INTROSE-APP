@@ -175,7 +175,8 @@ class AddInventoryView(QtWidgets.QGridLayout):
 
         self.tUnitPrice = QtWidgets.QSpinBox(self.frame)
         self.tUnitPrice.setMinimum(1)
-        self.tUnitPrice.setFixedWidth(200)	
+        self.tUnitPrice.setFixedWidth(200)
+        self.tUnitPrice.setMaximum(9999)
 
         self.bAdd = QtWidgets.QPushButton("Add")
         self.bAdd.setStyleSheet('QPushButton {color: white;background-color: #1db6d1;border-style: outset;border-width: 2px;border-radius: 10px;border-color: beige;font: bold 12px;min-width: 10em;padding: 4px;}')

@@ -325,6 +325,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setCentralWidget(self.widgetFrame)
         self.init_navbar()
         self.widgetFrame.layout.bSubmit.clicked.connect(partial(self.adb.db_add_apv, self))
+        self.widgetFrame.layout.bBack.clicked.connect(self.accounting_home_view)
         self.widgetFrame.layout.bColumn_Add.clicked.connect(self.add_apv_column_window)        
         self.widgetFrame.layout.bColumn_Delete.clicked.connect(self.delete_row)
     
