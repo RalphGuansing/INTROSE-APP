@@ -57,7 +57,7 @@ class ViewInventoryList(QtWidgets.QGridLayout):
         self.tInventory_Table = QtWidgets.QTableWidget()
         self.tInventory_Table.setRowCount(10)
         self.tInventory_Table.setColumnCount(6)
-        self.tInventory_Table.setHorizontalHeaderLabels(["Inventory Number", "Amount", "Product Name", "Unit", "Supplier", "Date"])
+        self.tInventory_Table.setHorizontalHeaderLabels(["Inventory Number", "Quantity", "Product Name", "Unit", "Supplier", "Date"])
         self.tInventory_Table.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
         tablewidth = self.tInventory_Table.width() + 6
         self.tInventory_Table.setColumnWidth(0, tablewidth / 6)
