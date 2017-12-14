@@ -671,7 +671,6 @@ class WindowFrame(QtWidgets.QWidget):
         navGrid = QtWidgets.QGridLayout()
         
         labelStyle = """QLabel { font-size: 12pt; color: white; padding: 4px; font-family:Montserrat;}
-                        QLabel:hover{color:gainsboro;}
                      """
         labelStyle2 = """QLabel { font-size: 24pt; color: white; padding: 1px; font-family:Montserrat;}
                          QLabel:hover{color:gainsboro;}
