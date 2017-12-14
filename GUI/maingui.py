@@ -5,6 +5,7 @@ from functools import partial
 from PyQt5 import QtWidgets,QtCore,Qt
 from LoginView import LoginView
 from HomeView import HomeView
+from Confirm import *
 from Accounting.AccountingView import AccountingDB as adb
 from Accounting.Accounting_Home import Accounting_HomeView
 from Accounting.DialogView import *
@@ -40,9 +41,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.adb = adb()
         self.setWindowIcon(QtGui.QIcon('Resources/LCG_logo.png'))
         self.login_tab()
+        self.display = True
         #self.accounting_home_view()
     
     def inventory_view(self):
+        if not self.display:
+            self.confirmation.close()
         self.setWindowTitle("Inventory") 
         self.widgetFrame = WindowFrame(InventoryTabs)
         self.setCentralWidget(self.widgetFrame)
@@ -77,13 +81,10 @@ class MainWindow(QtWidgets.QMainWindow):
         #self.init_navbar()
         
     def home_invoice_tab(self):
+        if not self.display:
+            self.confirmation.close()
         self.setWindowTitle("Invoice")
         self.widgetFrame = WindowFrame(InvoiceTabs, self)
-
-        # self.widgetFrame.layout.bAddInvoice.clicked.connect(self.add_invoice_tab)
-        # self.widgetFrame.layout.bViewInvoice.clicked.connect(self.view_invoice_tab)
-        # self.widgetFrame.layout.bInvoiceList.clicked.connect(self.view_list_tab)
-
         self.setCentralWidget(self.widgetFrame)
         self.init_navbar()
 
@@ -124,8 +125,54 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.showMessage('Error Input', "Please select a receivable")
             else:
                 self.showMessage('Error', "No receivable to be paid")
-    pass#ACCOUNTING   
+    
+    def exit(self):
+        self.confirmation.close()
+
+    def accounting_view_confirm(self):
+        if self.display:
+            self.accounting_home_view()
+            self.display = False
+        else:
+            self.confirmation = ConfirmChangeWindow()
+            self.confirmation.show()
+            self.confirmation.layout.layout.bConfirm.clicked.connect(self.accounting_home_view)
+            self.confirmation.layout.layout.bBack.clicked.connect(self.exit)
+
+    def inventory_view_confirm(self):
+        if self.display:
+            self.inventory_view()
+            self.display = False
+        else:
+            self.confirmation = ConfirmChangeWindow()
+            self.confirmation.show()
+            self.confirmation.layout.layout.bConfirm.clicked.connect(self.inventory_view)
+            self.confirmation.layout.layout.bBack.clicked.connect(self.exit)
+
+    def invoice_view_confirm(self):
+        if self.display:
+            self.home_invoice_tab()
+            self.display = False
+        else:
+            self.confirmation = ConfirmChangeWindow()
+            self.confirmation.show()
+            self.confirmation.layout.layout.bConfirm.clicked.connect(self.home_invoice_tab)
+            self.confirmation.layout.layout.bBack.clicked.connect(self.exit)
+
+    def home_view_confirm(self):
+        if self.display:
+            self.home_tab()
+            self.display = False
+        else:
+            self.confirmation = ConfirmChangeWindow()
+            self.confirmation.show()
+            self.confirmation.layout.layout.bConfirm.clicked.connect(self.home_tab)
+            self.confirmation.layout.layout.bBack.clicked.connect(self.exit)
+
     def accounting_home_view(self):
+        if not self.display:
+            self.confirmation.close()
+
         self.setWindowTitle("Accounting")
         self.widgetFrame = WindowFrame(Accounting_HomeView)
         self.setCentralWidget(self.widgetFrame)
@@ -133,7 +180,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.widgetFrame.layout.bView_APayable.clicked.connect(partial(self.cust_monthly_dia, self.view_payable_tab))
         self.widgetFrame.layout.bAdd_APayable.clicked.connect(self.add_apv_tab)
         self.widgetFrame.layout.bView_AReceivable.clicked.connect(partial(self.view_customer_tab,self.adb.get_customer_names()))
-        
+
     pass#RECEIVABLES
     def view_customer_tab(self, customer_names):
         self.setWindowTitle("Customer List")
@@ -272,7 +319,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setCentralWidget(self.widgetFrame)
         self.init_navbar()
         self.widgetFrame.layout.bSubmit.clicked.connect(partial(self.adb.db_add_apv, self))
-        self.widgetFrame.layout.bBack.clicked.connect(self.accounting_home_view)
         self.widgetFrame.layout.bColumn_Add.clicked.connect(self.add_apv_column_window)        
         self.widgetFrame.layout.bColumn_Delete.clicked.connect(self.delete_row)
     
@@ -385,10 +431,10 @@ class MainWindow(QtWidgets.QMainWindow):
     def init_navbar(self):
         """ This method initializes the functionalities of the navbar """
         #TEMPORARY
-        self.widgetFrame.bAccounting.clicked.connect(self.accounting_home_view)
-        self.widgetFrame.bInventory.clicked.connect(self.inventory_view)
-        self.widgetFrame.bInvoice.clicked.connect(self.home_invoice_tab)
-        self.widgetFrame.bLogo.clicked.connect(self.home_tab)
+        self.widgetFrame.bAccounting.clicked.connect(self.accounting_view_confirm)
+        self.widgetFrame.bInventory.clicked.connect(self.inventory_view_confirm)
+        self.widgetFrame.bInvoice.clicked.connect(self.invoice_view_confirm)
+        self.widgetFrame.bLogo.clicked.connect(self.home_view_confirm)
         self.widgetFrame.bLogout.clicked.connect(self.login_tab)
     
     def login_tab(self):
@@ -398,10 +444,13 @@ class MainWindow(QtWidgets.QMainWindow):
         self.widgetFrame.layout.bLogin.clicked.connect(self.login)
     
     def home_tab(self):
+        if not self.display:
+            self.confirmation.close()
         self.setWindowTitle("Home")
         self.widgetFrame = WindowFrame(HomeView)
         self.setCentralWidget(self.widgetFrame)
         self.init_navbar()
+        self.display = True
         #self.widgetFrame.layout.bLogin.clicked.connect(self.login)
     
     def close_subFrame(self):
@@ -434,7 +483,7 @@ class MainWindow(QtWidgets.QMainWindow):
             
             self.username = tempvar["username"]
             self.home_tab()
-            
+            self.display = True
         #WRONG OR DOES NOT EXIST
         else:
             self.showMessage("Invalid Entry", "Invalid username or password")
