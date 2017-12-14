@@ -45,17 +45,54 @@ class ViewInvoice(QtWidgets.QGridLayout):
         indices = self.tProduct_Table.currentRow()
         self.confirm_window = ConfirmWindow()
         self.confirm_window.show()
-        self.confirm_window.layout.layout.bAddInvoice.clicked.connect(self.edit_invoice)
+
+        # self.confirm_window.layout.layout.bAddInvoice.clicked.connect(self.edit_invoice_confirm)
+        
         self.confirm_window.layout.layout.edit_info(self.tProduct_Table.item(self.tProduct_Table.currentRow(),0).text())
 
-    def edit_invoice(self):
+    def edit_invoice_confirm(self):
+        self.removeWidget(self.confirm_window.layout.layout.bAddInvoice)
+        self.confirm_window.layout.layout.bAddInvoice.deleteLater()
         self.confirm_window.layout.layout.tProduct_Table.setEditTriggers(QtWidgets.QAbstractItemView.DoubleClicked)
         model = self.confirm_window.layout.layout.tProduct_Table
         for row in range(self.confirm_window.layout.layout.tProduct_Table.rowCount()):
+
             self.confirm_window.layout.layout.tProduct_Table.item(row,0).setFlags(QtCore.Qt.ItemIsEditable)
             self.confirm_window.layout.layout.tProduct_Table.item(row,1).setFlags(QtCore.Qt.ItemIsEditable)
             self.confirm_window.layout.layout.tProduct_Table.item(row,2).setFlags(QtCore.Qt.ItemIsEditable)
             self.confirm_window.layout.layout.tProduct_Table.item(row,4).setFlags(QtCore.Qt.ItemIsEditable)
+
+        self.confirm_window.layout.layout.tProduct_Table.cellChanged.connect(self.edit_invoice)
+
+    def edit_invoice(self, row):
+        print(self.confirm_window.layout.layout.tProduct_Table.item(row,3).text())
+        nQuantity = int(self.confirm_window.layout.layout.tProduct_Table.item(row,3).text())
+
+        comp = []
+        invoice_query = []
+        total_temp = []
+        invo_db = InvoiceDB()
+
+        invoice_query = invo_db.get_query(self.tProduct_Table.item(self.tProduct_Table.currentRow(),0).text())
+        for comp_row in range(len(invoice_query[11])):
+            if comp_row == row:
+                comp.append(Component(invoice_query[11][row][2], invoice_query[11][row][5], invoice_query[11][row][6], nQuantity, invoice_query[11][row][3], id_comp=invoice_query[11][row][0]))
+                inv_num = invoice_query[11][row][0]
+        
+        invo_db.update_value(inv_num, comp)
+
+
+
+        # self.confirm_window.layout.layout.tProduct_Table.item(row,0).text()
+        # self.confirm_window.layout.layout.tProduct_Table.item(row,1).text()
+        # self.confirm_window.layout.layout.tProduct_Table.item(row,2).text()
+        
+        # self.confirm_window.layout.layout.tProduct_Table.item(row,4).text()
+        print(row)
+
+        invo_db.close_connection()
+
+        self.confirm_window.layout.layout.edit_info(inv_num)
 
     def delete_invoice(self):
         print(self.tProduct_Table.item(0,0).text())
@@ -87,7 +124,7 @@ class ViewInvoice(QtWidgets.QGridLayout):
         self.bEditInvoice = QtWidgets.QPushButton("Edit Invoice")
         self.bEditInvoice.setStyleSheet('QPushButton { font-size: 12pt; padding: 10px;}')
         self.bEditInvoice.setFixedWidth(200)
-        self.bEditInvoice.clicked.connect(self.edit_invoice)
+        self.bEditInvoice.clicked.connect(self.edit_invoice_confirm)
 
         #self.bDelInvoice = QtWidgets.QPushButton("Delete Invoice")
         #self.bDelInvoice.setStyleSheet('QPushButton { font-size: 12pt; padding: 10px;}')

@@ -39,8 +39,13 @@ class AddInvoiceConfirm(QtWidgets.QGridLayout):
             self.add_to_table(row,4, str(invoice_query[11][row][7]))
 
         invo_db.close_connection()
+
+
         
         self.bAddInvoice.setText("Edit") #make amount quantity, update table when change detected dito
+        self.removeWidget(self.bAddInvoice)
+
+        self.bAddInvoice.deleteLater()
 
     def add_to_table(self, row, column, text):
         self.tProduct_Table.setItem(row,column,QtWidgets.QTableWidgetItem(text))

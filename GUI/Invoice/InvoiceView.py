@@ -92,11 +92,8 @@ class InvoiceDB:
 			total_vat += component.vat
 			total_taxable += component.taxable
 			total_profit += component.profit
-			if component.quantity == 0:
-				InvoiceDB.delete_row(self,component_number=component.id)
-			else:
-				sql_statement = "UPDATE `introse`.`component` SET `component_quantity`='" + str(component.quantity) + "', `component_amount`='" + str(component.amount) + "', `component_nonvat`='" + str(component.nonvat) + "', `component_vat`='" + str(component.vat) + "', `component_taxable`='" + str(component.taxable) + "', `component_profit`='" + str(component.profit) + "' WHERE `idcomponent`= '" + str(component.id) + "';"
-				self.cursor.execute(sql_statement)
+			sql_statement = "UPDATE `introse`.`component` SET `component_quantity`='" + str(component.quantity) + "', `component_amount`='" + str(component.amount) + "', `component_nonvat`='" + str(component.nonvat) + "', `component_vat`='" + str(component.vat) + "', `component_taxable`='" + str(component.taxable) + "', `component_profit`='" + str(component.profit) + "' WHERE `idcomponent`= '" + str(component.id) + "';"
+			self.cursor.execute(sql_statement)
 
 		sql_statement = "UPDATE `introse`.`invoice` SET `invoice_amount`='" + str(total_amount) + "', `invoice_nonvat`= '" + str(total_nonvat) + "',`invoice_vat`= '" + str(total_vat) + "',`invoice_taxable`='" + str(total_taxable) + "',`invoice_profit`='" + str(total_profit) + "' WHERE `idinvoice`='" + str(invoice_number) + "';"
 		self.cursor.execute(sql_statement)
