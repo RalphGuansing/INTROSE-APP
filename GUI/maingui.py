@@ -718,10 +718,14 @@ class WindowFrame(QtWidgets.QWidget):
         navGrid.setColumnStretch(5,3)
         navGrid.setColumnStretch(7,1)
         navGrid.addWidget(self.bLogo, 1,1)
-        navGrid.addWidget(self.bInvoice, 1,2)
-        navGrid.addWidget(self.bInventory,1,3)
-        navGrid.addWidget(self.bAccounting,1,4)
-        navGrid.addWidget(self.lUsername,1,6)
+        for x in range(len(employee_role)):
+            if employee_role[x] == 'Invoice':
+                navGrid.addWidget(self.bInvoice, 1,x+2)
+            elif employee_role[x] == 'Inventory':
+                navGrid.addWidget(self.bInventory, 1,x+2)
+            elif employee_role[x] == 'Accounting':
+                navGrid.addWidget(self.bAccounting, 1,x+2)
+        navGrid.addWidget(self.lUsername,1,7)
         navGrid.addWidget(self.bLogout,1,8)
         
         self.navbar.setLayout(navGrid)
