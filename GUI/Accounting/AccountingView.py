@@ -667,32 +667,43 @@ class AccountingDB:
         
         cont = True
         
-        if int(items["id_apv"]) <= 0:
+        non_deci = True 
+        
+        try:
+            if int(items["id_apv"]) <= 0:
+                cont = False
+        except:
+            non_deci =False
             cont = False
 
+#        if items["id_apv_BOOL"] and items["amount_BOOL"] and cont:
+#            try:
+        column_sum = sum(Decimal(i) for i in items["column_val"])
+        print(items["amount"]," ",str(column_sum))
+        if Decimal(items["amount"]) == column_sum :
+            if self.checkAPV_id(items["id_apv"]):
+                self.apv_execute_statement(items["date"], items["name"], items["id_apv"], items["amount"])
+                self.apv_credit_execute_statement(items["column_names"], items["column_val"], items["id_apv"])
+                ui_.showMessage("APV Added", "The APV was successfully added to the database", None, None, 1)
 
-        if items["id_apv_BOOL"] and items["amount_BOOL"] and cont:
-            try:
-                column_sum = sum(Decimal(i) for i in items["column_val"])
-                if Decimal(items["amount"]) == column_sum :
-                    if self.checkAPV_id(items["id_apv"]):
-                        self.apv_execute_statement(items["date"], items["name"], items["id_apv"], items["amount"])
-                        self.apv_credit_execute_statement(items["column_names"], items["column_val"], items["id_apv"])
-                        ui_.showMessage("APV Added", "The APV was successfully added to the database", None, None, 1)
-
-                    # self.close()
-                    else:
-                        # SHOW ERROR WINDOW
-                        print("Duplicate APV ID!")
-                        ui_.showMessage("Error Input", "Duplicate APV ID!")
-                else:
-                    ui_.showMessage("Error Input", "Vouchers payable and column values do not match")
-            except:
-                ui_.showMessage("Error Input", "Please Input a proper values")
-        elif cont == False:
-            ui_.showMessage("Error Input", "Please input non-negative values")
+            # self.close()
+            else:
+                # SHOW ERROR WINDOW
+                print("Duplicate APV ID!")
+                ui_.showMessage("Error Input", "Duplicate APV ID!")
         else:
-            ui_.showMessage("Error Input", "PLEASE INPUT A NUMBER")
+            ui_.showMessage("Error Input", "Vouchers payable and column values do not match")
+#            except:
+#                ui_.showMessage("Error Input", "Please Input a proper values")
+#        elif cont == False:
+#            if non_deci == False:
+#                ui_.showMessage("Error Input", "Please input non-decimal values")
+#            else:
+#                ui_.showMessage("Error Input", "Please input non-negative values")
+#        
+#            
+#        else:
+#            ui_.showMessage("Error Input", "PLEASE INPUT A NUMBER")
 
     def apv_execute_statement(self, date, name, id_apv, amount):
 

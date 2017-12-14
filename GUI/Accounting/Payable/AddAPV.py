@@ -48,7 +48,7 @@ class AddAPVView(QtWidgets.QGridLayout):
 
     
     def get_items(self):
-        
+        self.column_data_val = []
         items = {}
         items["date"] = self.tDate.text()
         items["name"] = self.tName.text()

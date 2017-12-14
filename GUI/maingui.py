@@ -173,9 +173,12 @@ class MainWindow(QtWidgets.QMainWindow):
             self.confirmation.layout.layout.bBack.clicked.connect(self.exit)
 
     def accounting_home_view(self):
-        if not self.display:
-            self.confirmation.close()
-
+        try:
+            if not self.display:
+                self.confirmation.close()
+        except:
+            pass
+                
         self.setWindowTitle("Accounting")
         self.widgetFrame = WindowFrame(Accounting_HomeView)
         self.setCentralWidget(self.widgetFrame)
