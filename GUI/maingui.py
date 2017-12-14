@@ -657,7 +657,7 @@ class WindowFrame(QtWidgets.QWidget):
         navGrid.addWidget(self.bInvoice, 1,2)
         navGrid.addWidget(self.bInventory,1,3)
         navGrid.addWidget(self.bAccounting,1,4)
-        #navGrid.addWidget(self.bAdmin,1,6)
+        navGrid.addWidget(self.bAdmin,1,6)
         navGrid.addWidget(self.bLogout,1,7)
         
         self.navbar.setLayout(navGrid)
