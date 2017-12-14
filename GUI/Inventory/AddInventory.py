@@ -33,13 +33,13 @@ class AddInventoryView(QtWidgets.QGridLayout):
         self.tProduct.clear()
         self.products = db_connection.get_product_list()
         for product in self.products:
-            self.tProduct.addItem(product.name)
+            self.tProduct.addItem(product.name + ', ' + product.packaging)
         db_connection.close_connection()
 
-    def add_product_unit(self):
-        self.unit_list = ['plastic','bottle','tetrapack','yakult-sized']
-        for unit in self.unit_list:
-            self.tUnit.addItem(unit)
+    # def add_product_unit(self):
+    #     self.unit_list = ['plastic','bottle','tetrapack','yakult-sized']
+    #     for unit in self.unit_list:
+    #         self.tUnit.addItem(unit)
 
     def add_new_product(self):
         db_connection = InventoryDatabase()
@@ -48,10 +48,10 @@ class AddInventoryView(QtWidgets.QGridLayout):
 
     def add_product_table(self):
         db_connection = InventoryDatabase()
-        if db_connection.is_product_available(self.products[self.tProduct.currentIndex()].name,self.unit_list[self.tUnit.currentIndex()]):
+        if db_connection.is_product_available(self.products[self.tProduct.currentIndex()].name,self.products[self.tProduct.currentIndex()].packaging):
             exist = False
             for x in range(self.tProduct_Table.rowCount()):
-                if self.tProduct_Table.item(x,2).text() == self.products[self.tProduct.currentIndex()].name and self.tProduct_Table.item(x,1).text() == self.unit_list[self.tUnit.currentIndex()]:
+                if self.tProduct_Table.item(x,2).text() == self.products[self.tProduct.currentIndex()].name and self.tProduct_Table.item(x,1).text() == self.products[self.tProduct.currentIndex()].packaging:
                     quantity = self.tQuantity.value() + int(self.tProduct_Table.item(x,0).text())
                     amount = quantity * self.tUnitPrice.value()
                     self.tProduct_Table.setItem(x,0,QtWidgets.QTableWidgetItem(str(quantity)))
@@ -63,7 +63,7 @@ class AddInventoryView(QtWidgets.QGridLayout):
             if not exist:        
                 self.tProduct_Table.insertRow(self.current_row)
                 self.tProduct_Table.setItem(self.current_row,0,QtWidgets.QTableWidgetItem(str(self.tQuantity.value())))
-                self.tProduct_Table.setItem(self.current_row,1,QtWidgets.QTableWidgetItem(str(self.unit_list[self.tUnit.currentIndex()])))
+                self.tProduct_Table.setItem(self.current_row,1,QtWidgets.QTableWidgetItem(self.products[self.tProduct.currentIndex()].packaging))
                 self.tProduct_Table.setItem(self.current_row,2,QtWidgets.QTableWidgetItem(self.products[self.tProduct.currentIndex()].name))
                 self.tProduct_Table.setItem(self.current_row,3,QtWidgets.QTableWidgetItem(str(self.tUnitPrice.value())))
                 self.tProduct_Table.setItem(self.current_row,4,QtWidgets.QTableWidgetItem(str(int(self.tUnitPrice.value()) * int(self.tQuantity.value()))))
@@ -126,8 +126,6 @@ class AddInventoryView(QtWidgets.QGridLayout):
         self.tDate.setCalendarPopup(True)
         self.tDate.setDisplayFormat("yyyy-MM-dd")
         self.tDate.setDate(datetime.datetime.now())
-        #self.tDate.setDateEditEnabled(True)
-        #self.tDate.textChanged.connect(self.preview_items)
 				
 		#Label#
         self.lProduct_Table = QtWidgets.QLabel("PRODUCTS")
@@ -161,14 +159,6 @@ class AddInventoryView(QtWidgets.QGridLayout):
         self.tQuantity.setFixedWidth(200)		
         self.tQuantity.setMinimum(1)
         self.tQuantity.setMaximum(999999999)
-
-		#Label#
-        self.lUnit = QtWidgets.QLabel("Unit: ")
-        self.lUnit.setStyleSheet('QLabel { font-size: 12pt; padding: 10px;}')
-
-        self.tUnit = QtWidgets.QComboBox(self.frame)
-        self.tUnit.setFixedWidth(200)
-        self.add_product_unit()
 		
         #Label#
         self.lProduct = QtWidgets.QLabel("Product:")
@@ -229,14 +219,10 @@ class AddInventoryView(QtWidgets.QGridLayout):
         self.addWidget(self.lQuantity, 4, 2, 1, 1)
         self.addWidget(self.tQuantity, 4, 3, 1, 1)
 
-        self.addWidget(self.lUnit, 5, 2, 1, 1)
-        self.addWidget(self.tUnit, 5, 3, 1, 1)
-
-        self.addWidget(self.lUnitPrice, 6, 2, 1, 1)
-        self.addWidget(self.tUnitPrice, 6, 3, 1, 1)
+        self.addWidget(self.lUnitPrice, 5, 2, 1, 1)
+        self.addWidget(self.tUnitPrice, 5, 3, 1, 1)
         
-        #self.addWidget(self.lProduct_Code, 1, 1, 1, 1)
         self.addWidget(self.bDelete, 2, 6, 1, 2, QtCore.Qt.AlignCenter)
-        self.addWidget(self.bAdd, 7, 2, 1, 2, QtCore.Qt.AlignCenter)
+        self.addWidget(self.bAdd, 6, 2, 1, 2, QtCore.Qt.AlignCenter)
         self.addWidget(self.bSubmit, 10, 5, 1, 1)
         

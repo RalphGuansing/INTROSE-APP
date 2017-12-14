@@ -206,11 +206,12 @@ class Product:
 
 if __name__ == '__main__':
 	###open database
-	sample = InventoryDatabase()
-	temp = sample.get_product_list()
-	print(sample.edit_product(20,'water flakes','nestle','plastic',10,10,1))
-	sample.close_connection()
-
+	# sample = InventoryDatabase()
+	# temp = sample.get_product_list()
+	# print(sample.edit_product(20,'water flakes','nestle','plastic',10,10,1))
+	# sample.close_connection()
+	sample = 'sky flakes, plastic'
+	print(sample.split(', '))
 
 
 
