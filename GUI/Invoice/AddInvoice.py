@@ -181,6 +181,7 @@ class AddInvoiceView(QtWidgets.QGridLayout):
 
         for index in sorted(indices, reverse=True):
             self.max_quantity += int(self.tProduct_Table.item(index.row(),3).text())
+            self.tQuantity.setMinimum(1)
             self.tQuantity.setMaximum(self.max_quantity)
             model.removeRow(index.row())
             self.current_row -= 1
