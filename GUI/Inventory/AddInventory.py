@@ -80,7 +80,7 @@ class AddInventoryView(QtWidgets.QGridLayout):
         apv_list = []
         for x in range(self.current_row):
             db_connection_inv.update_product(self.tProduct_Table.item(x,2).text(),self.tProduct_Table.item(x,1).text(),self.tProduct_Table.item(x,3).text())
-            db_connection_inv.add_product_quantity(self.tProduct_Table.item(x,2).text(),int(self.tProduct_Table.item(x,0).text()))
+            db_connection_inv.add_product_quantity(self.tProduct_Table.item(x,2).text(),self.tProduct_Table.item(x,1).text(),int(self.tProduct_Table.item(x,0).text()))
             apv_list.append(AccountsPayable(datetime.datetime.now(),self.tProduct_Table.item(x,2).text(),db_connection_apv.get_id_apv(),self.tProduct_Table.item(x,4).text()))
         for apv in apv_list:
             db_connection_apv.add_accountspayable(apv)
