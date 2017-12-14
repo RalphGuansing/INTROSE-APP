@@ -12,7 +12,6 @@ from Invoice.AddInvoiceConfirm import *
 class AddInvoiceView(QtWidgets.QGridLayout):
     def __init__(self, frame, mainwindow=None):
         super().__init__()
-        # if mainwindow != None:
         self.mainwindow = mainwindow
         self.frame = frame
         self.frame.setWindowTitle("Invoice")
@@ -173,19 +172,6 @@ class AddInvoiceView(QtWidgets.QGridLayout):
         items["seller"] = self.tSeller.currentText()
         items["term"] = self.tTerms.currentText()
         
-        # components = []
-        
-        # for i in range(self.tProduct_Table.rowCount()):
-        #     component = {}
-        #     component["quantity"] = self.tProduct_Table.item(i,0).text()
-        #     component["unit"] = self.tProduct_Table.item(i,1).text()
-        #     component["product_name"] = self.tProduct_Table.item(i,2).text()
-        #     component["unit_price"] = self.tProduct_Table.item(i,3).text()
-        #     component["amount"] = self.tProduct_Table.item(i,4).text()
-        #     components.append(component)
-        
-        # items["components"] = components
-        
         return items
                 
     def delete_entry(self):
@@ -194,7 +180,10 @@ class AddInvoiceView(QtWidgets.QGridLayout):
         indices = self.tProduct_Table.selectionModel().selectedRows()
 
         for index in sorted(indices, reverse=True):
+            self.max_quantity += int(self.tProduct_Table.item(index.row(),3).text())
+            self.tQuantity.setMaximum(self.max_quantity)
             model.removeRow(index.row())
+            self.current_row -= 1
             try:
                 total_temp = self.components[index.row()].get_total()
                 del self.components[index.row()]
@@ -357,27 +346,6 @@ class AddInvoiceView(QtWidgets.QGridLayout):
 
         self.Add_Product_Table = QtWidgets.QPushButton("Add Product")
         self.Add_Product_Table.setStyleSheet('QPushButton { font-size: 12pt; padding: 10px;}')
-
-        #self.lnumProducts = QtWidgets.QLabel("Number of Products:")
-        #self.lnumProducts.setStyleSheet('QLabel { font-size: 12pt; padding: 10px;}')
-
-        #TEXT INPUT#
-        #self.tnumProducts = QtWidgets.QSpinBox(self.frame)
-        #self.tnumProducts.setFixedWidth(100)
-
-        #self.lProduct = QtWidgets.QLabel("Product:")
-        #self.lProduct.setStyleSheet('QLabel { font-size: 12pt; padding: 10px;}')
-        
-        #TEXT INPUT#
-        #self.tProduct = QtWidgets.QComboBox(self.frame)
-
-        #Label#
-        #self.lQuantity = QtWidgets.QLabel("Quantity:")
-        #self.lQuantity.setStyleSheet('QLabel { font-size: 12pt; padding: 10px;}')
-        
-        #TEXT INPUT#
-        #self.tQuantity = QtWidgets.QSpinBox(self.frame)
-        #self.tQuantity.setFixedWidth(100)
 
         self.ltaxedTotal = QtWidgets.QLabel("Total taxable: (system generated)")
         self.ltaxedTotal.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)	

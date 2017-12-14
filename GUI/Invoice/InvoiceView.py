@@ -107,9 +107,10 @@ class InvoiceDB:
 			invoice_number (int): The first parameter, the invoice number of the record to be deleted, defaults to 0.
 			component_number (int): The second parameter, the component number of the record to be deleted, defaults to 0.
 		"""
-		# UPDATE `introse`.`invoice` SET `is_delete`= '" + str(1) + "'; dito
-		if invoice_number != 0: #update invoice and component is_delete to 1
-			sql_statement = "DELETE FROM `introse`.`invoice` WHERE `idinvoice`='" + str(invoice_number) + "';"
+		if invoice_number != 0:
+			sql_statement = "UPDATE `introse`.`invoice` SET `is_delete`= '" + str(1) + "' WHERE `idinvoice`='" + str(invoice_number) + "';"
+			self.cursor.execute(sql_statement)
+			sql_statement = "UPDATE `introse`.`component` SET `is_delete`= '" + str(1) + "' WHERE `component_invoicenum`='" + str(invoice_number) + "';"
 			self.cursor.execute(sql_statement)
 		if component_number != 0: #update component is_delete to 1 and update 5 values of invoice
 			sql_statement = "DELETE FROM `introse`.`component` WHERE `idcomponent`='" + str(component_number) + "';"
@@ -121,8 +122,7 @@ class InvoiceDB:
 				[total_amount, total_nonvat, total_vat, total_taxable, total_profit]
 
 		"""
-		# where invoice_deleted not True dito
-		sql_statement = pd.read_sql("SELECT invoice_amount, invoice_nonvat, invoice_vat, invoice_taxable, invoice_profit FROM introse.invoice;",self.connect)
+		sql_statement = pd.read_sql("SELECT invoice_amount, invoice_nonvat, invoice_vat, invoice_taxable, invoice_profit FROM introse.invoice WHERE is_delete != 1;",self.connect)
 		return [sql_statement.invoice_amount.sum(), sql_statement.invoice_nonvat.sum(), sql_statement.invoice_vat.sum(), sql_statement.invoice_taxable.sum(), sql_statement.invoice_profit.sum()]
 
 	def get_client_name(self, client_id=None):
@@ -169,10 +169,10 @@ class InvoiceDB:
 			invoice_number (int): The first parameter, invoice number to be searched.
 		Returns:
 				(idinvoice, invoice_buyer, invoice_seller, invoice_date, invoice_term, invoice_ddate, invoice_amount, invoice_nonvat, invoice_vat, invoice_taxable, invoice_profit, component)
-		""" # where invoice_deleted not True dito
-		sql_statement = pd.read_sql("SELECT * FROM introse.invoice WHERE idinvoice = '" + str(invoice_number) + "';", self.connect)
+		"""
+		sql_statement = pd.read_sql("SELECT * FROM introse.invoice WHERE idinvoice = '" + str(invoice_number) + "' AND is_delete != 1;", self.connect)
 		invoice_query = [(row[1][0], row[1][1], row[1][2], row[1][3], row[1][4], row[1][5], row[1][6], row[1][7], row[1][8], row[1][9], row[1][10]) for row in sql_statement.iterrows()]
-		sql_statement2 = pd.read_sql("SELECT * FROM introse.component WHERE component_invoicenum = '" + str(invoice_number) + "';", self.connect)
+		sql_statement2 = pd.read_sql("SELECT * FROM introse.component WHERE component_invoicenum = '" + str(invoice_number) + "' AND is_delete != 1 ;", self.connect)
 		invoice_query2 = [(row[1][0], row[1][1], row[1][2], row[1][3], row[1][4], row[1][5], row[1][6], row[1][7], row[1][8], row[1][9], row[1][10], row[1][11]) for row in sql_statement2.iterrows()]
 		client_name = InvoiceDB.get_client_name(self, invoice_query[0][1])
 		seller_name = InvoiceDB.get_seller_name(self, invoice_query[0][2])
@@ -183,8 +183,7 @@ class InvoiceDB:
 		Returns:
 				(idinvoice, invoice_buyer, invoice_seller, invoice_date, invoice_term, invoice_ddate, invoice_amount, invoice_nonvat, invoice_vat, invoice_taxable, invoice_profit)
 		"""
-		# where invoice_deleted not True dito
-		sql_statement = pd.read_sql("SELECT * FROM introse.invoice;", self.connect)
+		sql_statement = pd.read_sql("SELECT * FROM introse.invoice WHERE is_delete != 1 ;", self.connect)
 		return [(row[1][0], row[1][1], row[1][2], row[1][3], row[1][4], row[1][5], row[1][6], row[1][7], row[1][8], row[1][9], row[1][10]) for row in sql_statement.iterrows()]
 
 

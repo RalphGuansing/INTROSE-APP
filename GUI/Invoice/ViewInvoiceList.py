@@ -20,10 +20,6 @@ class ViewInvoice(QtWidgets.QGridLayout):
         infoBox.setEscapeButton(QtWidgets.QMessageBox.Close) 
         infoBox.exec_()
 
-    def edit_invoice(self):
-        self.edit_window = EditInvoiceView()
-        self.edit_window.show()
-
     def get_all_invoice(self):
         invo_db = InvoiceDB()
         all_invoice_list = invo_db.get_all_invoice()
@@ -45,12 +41,21 @@ class ViewInvoice(QtWidgets.QGridLayout):
 
         invo_db.close_connection()
 
-    def delete_invoice_confirm(self):
+    def invoice_confirm(self):
         indices = self.tProduct_Table.currentRow()
         self.confirm_window = ConfirmWindow()
         self.confirm_window.show()
-        self.confirm_window.layout.layout.bAddInvoice.clicked.connect(self.delete_invoice)
-        self.confirm_window.layout.layout.delete_info(self.tProduct_Table.item(self.tProduct_Table.currentRow(),0).text())
+        self.confirm_window.layout.layout.bAddInvoice.clicked.connect(self.edit_invoice)
+        self.confirm_window.layout.layout.edit_info(self.tProduct_Table.item(self.tProduct_Table.currentRow(),0).text())
+
+    def edit_invoice(self):
+        self.confirm_window.layout.layout.tProduct_Table.setEditTriggers(QtWidgets.QAbstractItemView.DoubleClicked)
+        model = self.confirm_window.layout.layout.tProduct_Table
+        for row in range(self.confirm_window.layout.layout.tProduct_Table.rowCount()):
+            self.confirm_window.layout.layout.tProduct_Table.item(row,0).setFlags(QtCore.Qt.ItemIsEditable)
+            self.confirm_window.layout.layout.tProduct_Table.item(row,1).setFlags(QtCore.Qt.ItemIsEditable)
+            self.confirm_window.layout.layout.tProduct_Table.item(row,2).setFlags(QtCore.Qt.ItemIsEditable)
+            self.confirm_window.layout.layout.tProduct_Table.item(row,4).setFlags(QtCore.Qt.ItemIsEditable)
 
     def delete_invoice(self):
         print(self.tProduct_Table.item(0,0).text())
@@ -58,11 +63,10 @@ class ViewInvoice(QtWidgets.QGridLayout):
         invo_db = InvoiceDB()
         model = self.tProduct_Table
         total_temp = []
-        indices = self.tProduct_Table.selectionModel().selectedRows()
+        indices = self.tProduct_Table.currentRow()
 
-        for index in sorted(indices):
-            invo_db.delete_row(invoice_number=self.tProduct_Table.item(index.row(),0).text())
-            model.removeRow(index.row())
+        invo_db.delete_row(invoice_number=self.tProduct_Table.item(self.tProduct_Table.currentRow(),0).text())
+        model.removeRow(self.tProduct_Table.currentRow())
 
         self.confirm_window.close()
         total = []
@@ -88,7 +92,7 @@ class ViewInvoice(QtWidgets.QGridLayout):
         #self.bDelInvoice = QtWidgets.QPushButton("Delete Invoice")
         #self.bDelInvoice.setStyleSheet('QPushButton { font-size: 12pt; padding: 10px;}')
         #self.bDelInvoice.setFixedWidth(200)
-        #self.bDelInvoice.clicked.connect(self.delete_invoice_confirm)
+        #self.bDelInvoice.clicked.connect(self.invoice_confirm)
 
 		#Product Table#
         self.tProduct_Table = QtWidgets.QTableWidget()
@@ -103,31 +107,11 @@ class ViewInvoice(QtWidgets.QGridLayout):
         self.tProduct_Table.setColumnWidth(3, tablewidth / 6)
         self.tProduct_Table.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.tProduct_Table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectItems)	
-        self.tProduct_Table.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)		
+        self.tProduct_Table.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
+        self.tProduct_Table.itemDoubleClicked.connect(self.invoice_confirm)		
 
         self.Add_Product_Table = QtWidgets.QPushButton("Add Product")
         self.Add_Product_Table.setStyleSheet('QPushButton { font-size: 12pt; padding: 10px;}')
-		
-        #self.lnumProducts = QtWidgets.QLabel("Number of Products:")
-        #self.lnumProducts.setStyleSheet('QLabel { font-size: 12pt; padding: 10px;}')
-
-        #TEXT INPUT#
-        #self.tnumProducts = QtWidgets.QSpinBox(self.frame)
-        #self.tnumProducts.setFixedWidth(100)
-		
-        #self.lProduct = QtWidgets.QLabel("Product:")
-        #self.lProduct.setStyleSheet('QLabel { font-size: 12pt; padding: 10px;}')
-        
-        #TEXT INPUT#
-        #self.tProduct = QtWidgets.QComboBox(self.frame)
-
-        #Label#
-        #self.lQuantity = QtWidgets.QLabel("Quantity:")
-        #self.lQuantity.setStyleSheet('QLabel { font-size: 12pt; padding: 10px;}')
-        
-        #TEXT INPUT#
-        #self.tQuantity = QtWidgets.QSpinBox(self.frame)
-        #self.tQuantity.setFixedWidth(100)
 		
         self.ltaxedTotal = QtWidgets.QLabel("Total taxable: (system generated)")
         self.ltaxedTotal.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)		

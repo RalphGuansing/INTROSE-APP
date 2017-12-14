@@ -22,7 +22,7 @@ class AddInvoiceConfirm(QtWidgets.QGridLayout):
         self.lTerms.setText("Terms: " + str(info["term"]))
         self.lAddress.setText("Address: " + str(info["Address"]))
 
-    def delete_info(self, invoice_number):
+    def edit_info(self, invoice_number):
         invo_db = InvoiceDB()
 
         invoice_query = []
@@ -31,6 +31,7 @@ class AddInvoiceConfirm(QtWidgets.QGridLayout):
         self.checkout_info(invoice_query[6], invoice_query[8], invoice_query[9], invoice_query[10], user_info)
 
         for row in range(len(invoice_query[11])):
+            self.tProduct_Table.insertRow(row)
             self.add_to_table(row,0, invoice_query[11][row][2])
             self.add_to_table(row,1, invoice_query[11][row][3])
             self.add_to_table(row,2, str(invoice_query[11][row][6]))
@@ -38,6 +39,8 @@ class AddInvoiceConfirm(QtWidgets.QGridLayout):
             self.add_to_table(row,4, str(invoice_query[11][row][7]))
 
         invo_db.close_connection()
+        
+        self.bAddInvoice.setText("Edit") #make amount quantity, update table when change detected dito
 
     def add_to_table(self, row, column, text):
         self.tProduct_Table.setItem(row,column,QtWidgets.QTableWidgetItem(text))
@@ -101,8 +104,7 @@ class AddInvoiceConfirm(QtWidgets.QGridLayout):
         self.lprofitTotal.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)	
 
         self.lConfirmation = QtWidgets.QLabel("Please confirm if these values are correct")
-        self.lTerms.setStyleSheet('QLabel { font-size: 12pt; padding: 10px;}')
-
+        self.lTerms.setStyleSheet('QLabel { font-size: 12pt; padding: 10px;}') 
         
         self.bAddInvoice = QtWidgets.QPushButton("Confirm")
         self.bAddInvoice.setStyleSheet('QPushButton {color: white;background-color: #47c468;border-style: outset;border-width: 2px;border-radius: 10px;border-color: beige;font: bold 14px;min-width: 10em;padding: 6px;}')
