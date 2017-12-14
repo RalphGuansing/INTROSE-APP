@@ -21,7 +21,7 @@ class ViewInvoice(QtWidgets.QGridLayout):
         infoBox.exec_()
 
     def edit_invoice(self):
-        self.edit_window = EditWindow()
+        self.edit_window = EditInvoiceView()
         self.edit_window.show()
 
     def get_all_invoice(self):
@@ -30,6 +30,7 @@ class ViewInvoice(QtWidgets.QGridLayout):
         
         for row in range(len(all_invoice_list)):
             buyer_name = invo_db.get_client_name(all_invoice_list[row][1])
+            self.tProduct_Table.insertRow(self.tProduct_Table.rowCount())
             self.tProduct_Table.setItem(row,0,QtWidgets.QTableWidgetItem(str(all_invoice_list[row][0])))
             self.tProduct_Table.setItem(row,1,QtWidgets.QTableWidgetItem(str(all_invoice_list[row][6])))
             self.tProduct_Table.setItem(row,2,QtWidgets.QTableWidgetItem(buyer_name[0]))
@@ -45,15 +46,11 @@ class ViewInvoice(QtWidgets.QGridLayout):
         invo_db.close_connection()
 
     def delete_invoice_confirm(self):
-        indices = self.tProduct_Table.selectionModel().selectedRows()
-        try:
-            for index in sorted(indices):
-                self.confirm_window = ConfirmWindow()
-                self.confirm_window.show()
-                self.confirm_window.layout.layout.bAddInvoice.clicked.connect(self.delete_invoice)
-                self.confirm_window.layout.layout.delete_info(self.tProduct_Table.item(index.row(),0).text())
-        except (IndexError,AttributeError):
-            self.error_message('Invalid Row')
+        indices = self.tProduct_Table.currentRow()
+        self.confirm_window = ConfirmWindow()
+        self.confirm_window.show()
+        self.confirm_window.layout.layout.bAddInvoice.clicked.connect(self.delete_invoice)
+        self.confirm_window.layout.layout.delete_info(self.tProduct_Table.item(self.tProduct_Table.currentRow(),0).text())
 
     def delete_invoice(self):
         print(self.tProduct_Table.item(0,0).text())
@@ -95,7 +92,7 @@ class ViewInvoice(QtWidgets.QGridLayout):
 
 		#Product Table#
         self.tProduct_Table = QtWidgets.QTableWidget()
-        self.tProduct_Table.setRowCount(10)
+        # self.tProduct_Table.setRowCount(10)
         self.tProduct_Table.setColumnCount(4)
         self.tProduct_Table.setHorizontalHeaderLabels(["Invoice Number", "Amount", "Buyer", "Date"])
         self.tProduct_Table.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
@@ -104,7 +101,9 @@ class ViewInvoice(QtWidgets.QGridLayout):
         self.tProduct_Table.setColumnWidth(1, tablewidth / 6)
         self.tProduct_Table.setColumnWidth(2, tablewidth / 2)
         self.tProduct_Table.setColumnWidth(3, tablewidth / 6)
-        self.tProduct_Table.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)					
+        self.tProduct_Table.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
+        self.tProduct_Table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectItems)	
+        self.tProduct_Table.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)		
 
         self.Add_Product_Table = QtWidgets.QPushButton("Add Product")
         self.Add_Product_Table.setStyleSheet('QPushButton { font-size: 12pt; padding: 10px;}')
