@@ -1,4 +1,8 @@
 # INTROSE-APP
+This project is made for the course INTROSE.
+
+## Description:
+A project made in MVC. It tracks invoices, inventory and accounts of clients. 
 
 ## Libs:
 * pymysql
